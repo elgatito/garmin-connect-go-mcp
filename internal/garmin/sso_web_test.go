@@ -172,6 +172,7 @@ func TestPortalLoginSuccess(t *testing.T) {
 
 func TestPortalLoginMFA(t *testing.T) {
 	routes := portalRoutes(t, func(w http.ResponseWriter, r *http.Request) {
+		http.SetCookie(w, &http.Cookie{Name: "SESSION", Value: "s2", Path: "/"}) // rotates the sign-in cookie
 		writeJSON(w, map[string]any{"responseStatus": map[string]any{"type": "MFA_REQUIRED"},
 			"customerMfaInfo": map[string]any{"mfaLastMethodUsed": "sms"}})
 	})
@@ -181,6 +182,9 @@ func TestPortalLoginMFA(t *testing.T) {
 		if body["mfaVerificationCode"] != "123456" || body["mfaMethod"] != "sms" ||
 			r.URL.Query().Get("clientId") != "GarminConnect" || r.UserAgent() != desktopUserAgent {
 			t.Errorf("portal verify body=%v query=%v UA=%q", body, r.URL.Query(), r.UserAgent())
+		}
+		if c := r.Header.Get("Cookie"); c != "SESSION=s2" {
+			t.Errorf("portal verify Cookie = %q", c)
 		}
 		respond("SUCCESSFUL")(w, r)
 	}

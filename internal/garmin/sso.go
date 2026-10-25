@@ -209,7 +209,7 @@ func (s *ssoLogin) postJSON(ctx context.Context, hc *http.Client, path string, q
 	if err != nil {
 		return res, 0, nil, err
 	}
-	req.Header = hdr
+	req.Header = hdr.Clone() // the client writes jar cookies into req.Header; hdr is reused across requests
 	resp, err := hc.Do(req)
 	if err != nil {
 		return res, 0, nil, err

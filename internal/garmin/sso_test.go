@@ -166,11 +166,22 @@ func TestMobileLoginMFA(t *testing.T) {
 
 func TestMFAFallsBackToPortalEndpoint(t *testing.T) {
 	f := newFakeSSO(t, false, []string{"mobile+plain"}, map[string]http.HandlerFunc{
-		"/mobile/api/login":          respond("MFA_REQUIRED"),
-		"/mobile/api/mfa/verifyCode": status(429),
+		"/mobile/api/login": func(w http.ResponseWriter, r *http.Request) {
+			http.SetCookie(w, &http.Cookie{Name: "SESSION", Value: "s1", Path: "/"})
+			respond("MFA_REQUIRED")(w, r)
+		},
+		"/mobile/api/mfa/verifyCode": func(w http.ResponseWriter, r *http.Request) {
+			if c := r.Header.Get("Cookie"); c != "SESSION=s1" {
+				t.Errorf("mobile verify Cookie = %q", c)
+			}
+			w.WriteHeader(429)
+		},
 		"/portal/api/mfa/verifyCode": func(w http.ResponseWriter, r *http.Request) {
 			if r.URL.Query().Get("clientId") != portalSSOClientID {
 				t.Errorf("portal verify query = %v", r.URL.Query())
+			}
+			if c := r.Header.Get("Cookie"); c != "SESSION=s1" {
+				t.Errorf("portal verify Cookie = %q", c)
 			}
 			respond("SUCCESSFUL")(w, r)
 		},
