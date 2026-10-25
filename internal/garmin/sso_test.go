@@ -80,10 +80,15 @@ func status(code int) http.HandlerFunc {
 
 // diOK checks the service-ticket exchange form and returns a token pair.
 func diOK(t *testing.T) http.HandlerFunc {
+	return diOKFor(t, func(*http.Request) string { return iosServiceURL })
+}
+
+// diOKFor is diOK with the expected service URL computed from the request.
+func diOKFor(t *testing.T, serviceURL func(*http.Request) string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		r.ParseForm()
 		if r.PostForm.Get("service_ticket") != "ST-1" || r.PostForm.Get("grant_type") != diGrantType ||
-			r.PostForm.Get("service_url") != iosServiceURL {
+			r.PostForm.Get("service_url") != serviceURL(r) {
 			t.Errorf("diauth form = %v", r.PostForm)
 		}
 		writeJSON(w, map[string]any{"access_token": fakeJWT(time.Now().Add(time.Hour), jwtClientID), "refresh_token": "R-1"})

@@ -68,7 +68,7 @@ type strategy struct {
 	run  func(ctx context.Context, s *ssoLogin) (Tokens, error)
 }
 
-// strategies is the login chain in order; sso_web.go appends the web fallbacks.
+// strategies is the login chain in order; the web fallbacks live in sso_web.go.
 var strategies = []strategy{
 	{"mobile+utls", func(ctx context.Context, s *ssoLogin) (Tokens, error) {
 		var err error
@@ -82,6 +82,22 @@ var strategies = []strategy{
 	}},
 	{"mobile+plain", func(ctx context.Context, s *ssoLogin) (Tokens, error) {
 		return s.mobileLogin(ctx, s.plainClient())
+	}},
+	{"widget+utls", func(ctx context.Context, s *ssoLogin) (Tokens, error) {
+		return s.widgetLogin(ctx, s.utlsClient(utls.HelloChrome_Auto))
+	}},
+	{"portal+utls", func(ctx context.Context, s *ssoLogin) (Tokens, error) {
+		var err error
+		for _, h := range portalHellos {
+			var tok Tokens
+			if tok, err = s.portalLogin(ctx, s.utlsClient(h)); err == nil || s.stops(ctx, err) {
+				return tok, err
+			}
+		}
+		return Tokens{}, err
+	}},
+	{"portal+plain", func(ctx context.Context, s *ssoLogin) (Tokens, error) {
+		return s.portalLogin(ctx, s.plainClient())
 	}},
 }
 
@@ -182,9 +198,9 @@ func (r ssoResponse) str(keys ...string) string {
 	return s
 }
 
-// postJSON posts body as JSON with the iOS login headers and decodes the reply.
+// postJSON posts body as JSON with the given headers and decodes the reply.
 // It returns the HTTP status; decodeErr is set when the reply is not a JSON object.
-func (s *ssoLogin) postJSON(ctx context.Context, hc *http.Client, path string, q url.Values, body any) (res ssoResponse, code int, decodeErr, err error) {
+func (s *ssoLogin) postJSON(ctx context.Context, hc *http.Client, path string, q url.Values, hdr http.Header, body any) (res ssoResponse, code int, decodeErr, err error) {
 	b, err := json.Marshal(body)
 	if err != nil {
 		return res, 0, nil, err
@@ -193,10 +209,7 @@ func (s *ssoLogin) postJSON(ctx context.Context, hc *http.Client, path string, q
 	if err != nil {
 		return res, 0, nil, err
 	}
-	req.Header.Set("User-Agent", iosLoginUA)
-	req.Header.Set("Accept", "application/json, text/plain, */*")
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Origin", s.ep.SSO)
+	req.Header = hdr
 	resp, err := hc.Do(req)
 	if err != nil {
 		return res, 0, nil, err
@@ -213,18 +226,33 @@ func iosLoginParams() url.Values {
 	return url.Values{"clientId": {iosSSOClientID}, "locale": {"en-US"}, "service": {iosServiceURL}}
 }
 
+func (s *ssoLogin) iosLoginHeaders() http.Header {
+	return http.Header{
+		"User-Agent":   {iosLoginUA},
+		"Accept":       {"application/json, text/plain, */*"},
+		"Content-Type": {"application/json"},
+		"Origin":       {s.ep.SSO},
+	}
+}
+
 // mobileLogin ports _do_mobile_login, with the MFA step done inline.
 func (s *ssoLogin) mobileLogin(ctx context.Context, hc *http.Client) (Tokens, error) {
-	res, code, decodeErr, err := s.postJSON(ctx, hc, "/mobile/api/login", iosLoginParams(), map[string]any{
+	return s.apiLogin(ctx, hc, "mobile", iosLoginParams(), s.iosLoginHeaders())
+}
+
+// apiLogin posts the credentials to /<flow>/api/login ("mobile" or "portal") and handles
+// the JSON reply the way _do_mobile_login and _do_portal_web_login both do.
+func (s *ssoLogin) apiLogin(ctx context.Context, hc *http.Client, flow string, q url.Values, hdr http.Header) (Tokens, error) {
+	res, code, decodeErr, err := s.postJSON(ctx, hc, "/"+flow+"/api/login", q, hdr, map[string]any{
 		"username": s.email, "password": s.password, "rememberMe": true, "captchaToken": "",
 	})
 	switch {
 	case err != nil:
-		return Tokens{}, fmt.Errorf("mobile login: %w", err)
+		return Tokens{}, fmt.Errorf("%s login: %w", flow, err)
 	case code == http.StatusTooManyRequests:
-		return Tokens{}, fmt.Errorf("mobile login: %w", ErrTooManyRequests)
+		return Tokens{}, fmt.Errorf("%s login: %w", flow, ErrTooManyRequests)
 	case decodeErr != nil:
-		return Tokens{}, fmt.Errorf("mobile login failed (non-JSON): HTTP %d", code)
+		return Tokens{}, fmt.Errorf("%s login failed (non-JSON): HTTP %d", flow, code)
 	}
 	switch res.str("responseStatus", "type") {
 	case "MFA_REQUIRED":
@@ -236,20 +264,28 @@ func (s *ssoLogin) mobileLogin(ctx context.Context, hc *http.Client) (Tokens, er
 		if err != nil {
 			return Tokens{}, err
 		}
-		return s.completeMFA(ctx, hc, method, mfaCode)
+		return s.completeMFA(ctx, hc, flow, hdr, method, mfaCode)
 	case "SUCCESSFUL":
-		return s.exchangeServiceTicket(ctx, res.str("serviceTicketId"), iosServiceURL)
+		return s.exchangeServiceTicket(ctx, res.str("serviceTicketId"), s.flowServiceURL(flow))
 	case "INVALID_USERNAME_PASSWORD":
 		return Tokens{}, ErrInvalidCredentials
 	}
 	if res.str("error", "status-code") == "429" {
-		return Tokens{}, fmt.Errorf("mobile login: 429 in JSON body: %w", ErrTooManyRequests)
+		return Tokens{}, fmt.Errorf("%s login: 429 in JSON body: %w", flow, ErrTooManyRequests)
 	}
-	return Tokens{}, fmt.Errorf("mobile login failed: HTTP %d, response type %q", code, res.str("responseStatus", "type"))
+	return Tokens{}, fmt.Errorf("%s login failed: HTTP %d, response type %q", flow, code, res.str("responseStatus", "type"))
 }
 
-// completeMFA ports the iOS branch of _complete_mfa: the mobile verify endpoint, then the portal one.
-func (s *ssoLogin) completeMFA(ctx context.Context, hc *http.Client, method, mfaCode string) (Tokens, error) {
+func (s *ssoLogin) flowServiceURL(flow string) string {
+	if flow == "portal" {
+		return s.portalServiceURL()
+	}
+	return iosServiceURL
+}
+
+// completeMFA ports the ios/portal branches of _complete_mfa: the flow's verify endpoint,
+// then the other one, both with the flow's login headers.
+func (s *ssoLogin) completeMFA(ctx context.Context, hc *http.Client, flow string, hdr http.Header, method, mfaCode string) (Tokens, error) {
 	body := map[string]any{
 		"mfaMethod":           method,
 		"mfaVerificationCode": mfaCode,
@@ -262,12 +298,15 @@ func (s *ssoLogin) completeMFA(ctx context.Context, hc *http.Client, method, mfa
 		q    url.Values
 	}{
 		{"/mobile/api/mfa/verifyCode", iosLoginParams()},
-		{"/portal/api/mfa/verifyCode", url.Values{"clientId": {portalSSOClientID}, "locale": {"en-US"}, "service": {s.ep.Connect + "/app"}}},
+		{"/portal/api/mfa/verifyCode", s.portalLoginParams()},
+	}
+	if flow == "portal" {
+		endpoints[0], endpoints[1] = endpoints[1], endpoints[0]
 	}
 	var failures []string
 	rateLimited := 0
 	for _, e := range endpoints {
-		res, code, decodeErr, err := s.postJSON(ctx, hc, e.path, e.q, body)
+		res, code, decodeErr, err := s.postJSON(ctx, hc, e.path, e.q, hdr, body)
 		switch {
 		case err != nil:
 			failures = append(failures, e.path+": connection error")
@@ -280,7 +319,7 @@ func (s *ssoLogin) completeMFA(ctx context.Context, hc *http.Client, method, mfa
 			failures = append(failures, e.path+": 429 in JSON body")
 			rateLimited++
 		case res.str("responseStatus", "type") == "SUCCESSFUL":
-			return s.exchangeServiceTicket(ctx, res.str("serviceTicketId"), iosServiceURL)
+			return s.exchangeServiceTicket(ctx, res.str("serviceTicketId"), s.flowServiceURL(flow))
 		default:
 			failures = append(failures, fmt.Sprintf("%s: HTTP %d, response type %q", e.path, code, res.str("responseStatus", "type")))
 		}
