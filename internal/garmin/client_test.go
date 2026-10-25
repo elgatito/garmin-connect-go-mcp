@@ -298,3 +298,48 @@ func TestProfileCached(t *testing.T) {
 		t.Errorf("socialProfile calls = %d", social.Load())
 	}
 }
+
+func TestRefreshSurvivesCallerCancel(t *testing.T) {
+	old := Tokens{DIToken: fakeJWT(time.Now().Add(time.Minute), "c1"), DIRefreshToken: "r1", DIClientID: "c1"}
+	newTok := fakeJWT(time.Now().Add(time.Hour), "c1")
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	c, ts := fixture(t, old, bearerOnly(t, newTok), func(w http.ResponseWriter, r *http.Request) {
+		// diauth has accepted the grant; the caller gives up before the body arrives.
+		w.WriteHeader(200)
+		w.(http.Flusher).Flush()
+		cancel()
+		time.Sleep(50 * time.Millisecond)
+		json.NewEncoder(w).Encode(map[string]string{"access_token": newTok, "refresh_token": "r2"})
+	})
+	c.GetJSON(ctx, "x", nil) // may fail: the API call itself runs on the cancelled ctx
+	want := Tokens{DIToken: newTok, DIRefreshToken: "r2", DIClientID: "c1"}
+	if got := c.tokens(); got != want {
+		t.Errorf("in-memory tokens = %#v", got)
+	}
+	if s := ts.savedTokens(); len(s) != 1 || s[0] != want {
+		t.Errorf("saved = %#v", s)
+	}
+}
+
+func TestRefreshUsesStoredRefreshTokenWhenStoredPairExpiring(t *testing.T) {
+	old := Tokens{DIToken: fakeJWT(time.Now().Add(time.Minute), "c1"), DIRefreshToken: "r1", DIClientID: "c1"}
+	stored := Tokens{DIToken: fakeJWT(time.Now().Add(2*time.Minute), "c1"), DIRefreshToken: "rX", DIClientID: "c1"}
+	newTok := fakeJWT(time.Now().Add(time.Hour), "c1")
+	var calls atomic.Int32
+	refresher := diRefresher(t, newTok, &calls)
+	c, ts := fixture(t, old, bearerOnly(t, newTok), func(w http.ResponseWriter, r *http.Request) {
+		r.ParseForm()
+		if got := r.PostForm.Get("refresh_token"); got != "rX" {
+			t.Errorf("refresh_token = %q, want the stored rX (not in-memory r1)", got)
+		}
+		refresher(w, r)
+	})
+	ts.set(stored) // another process rotated the pair, and its access token is expiring too
+	if _, err := c.GetJSON(context.Background(), "x", nil); err != nil {
+		t.Fatal(err)
+	}
+	if calls.Load() != 1 {
+		t.Errorf("diauth calls = %d", calls.Load())
+	}
+}

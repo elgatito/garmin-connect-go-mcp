@@ -271,15 +271,20 @@ func (c *Client) refresh(ctx context.Context, stale string) error {
 		return nil
 	}
 	// Another process sharing the token file may have refreshed already.
-	if st, err := c.ts.Load(); err == nil && st.DIToken != "" && st.DIToken != cur.DIToken && !st.ExpiresSoon(time.Now()) {
+	// Its pair wins even when expiring: our refresh token may already be rotated away.
+	if st, err := c.ts.Load(); err == nil && st.DIToken != "" && st.DIToken != cur.DIToken {
 		c.setTokens(st)
-		return nil
+		if !st.ExpiresSoon(time.Now()) {
+			return nil
+		}
+		cur = st
 	}
 	if cur.DIRefreshToken == "" || cur.DIClientID == "" {
 		return fmt.Errorf("%w: no refresh token available", ErrSessionExpired)
 	}
 
-	ctx, cancel := context.WithTimeout(ctx, refreshRequestTimeout)
+	// Detached from the caller: a cancel after diauth rotates the grant would lose the new refresh token.
+	ctx, cancel := context.WithTimeout(context.WithoutCancel(ctx), refreshRequestTimeout)
 	defer cancel()
 	form := url.Values{
 		"grant_type":    {"refresh_token"},
