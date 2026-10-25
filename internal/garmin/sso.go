@@ -168,22 +168,22 @@ func (s *ssoLogin) plainClient() *http.Client {
 	return c
 }
 
-// ssoResponse is the JSON shape shared by the SSO login and MFA endpoints.
-type ssoResponse struct {
-	ResponseStatus struct {
-		Type string `json:"type"`
-	} `json:"responseStatus"`
-	ServiceTicketID string `json:"serviceTicketId"`
-	CustomerMfaInfo struct {
-		MfaLastMethodUsed string `json:"mfaLastMethodUsed"`
-	} `json:"customerMfaInfo"`
-	Error struct {
-		StatusCode string `json:"status-code"`
-	} `json:"error"`
+// ssoResponse is a decoded SSO login/MFA reply, read leniently like python's res.get(...).
+type ssoResponse map[string]any
+
+// str returns the string at the nested key path, or "" when missing or not a string.
+func (r ssoResponse) str(keys ...string) string {
+	var v any = map[string]any(r)
+	for _, k := range keys {
+		m, _ := v.(map[string]any)
+		v = m[k]
+	}
+	s, _ := v.(string)
+	return s
 }
 
 // postJSON posts body as JSON with the iOS login headers and decodes the reply.
-// It returns the HTTP status; decodeErr is set when the reply is not JSON.
+// It returns the HTTP status; decodeErr is set when the reply is not a JSON object.
 func (s *ssoLogin) postJSON(ctx context.Context, hc *http.Client, path string, q url.Values, body any) (res ssoResponse, code int, decodeErr, err error) {
 	b, err := json.Marshal(body)
 	if err != nil {
@@ -226,9 +226,9 @@ func (s *ssoLogin) mobileLogin(ctx context.Context, hc *http.Client) (Tokens, er
 	case decodeErr != nil:
 		return Tokens{}, fmt.Errorf("mobile login failed (non-JSON): HTTP %d", code)
 	}
-	switch res.ResponseStatus.Type {
+	switch res.str("responseStatus", "type") {
 	case "MFA_REQUIRED":
-		method := res.CustomerMfaInfo.MfaLastMethodUsed
+		method := res.str("customerMfaInfo", "mfaLastMethodUsed")
 		if method == "" {
 			method = "email"
 		}
@@ -238,14 +238,14 @@ func (s *ssoLogin) mobileLogin(ctx context.Context, hc *http.Client) (Tokens, er
 		}
 		return s.completeMFA(ctx, hc, method, mfaCode)
 	case "SUCCESSFUL":
-		return s.exchangeServiceTicket(ctx, res.ServiceTicketID, iosServiceURL)
+		return s.exchangeServiceTicket(ctx, res.str("serviceTicketId"), iosServiceURL)
 	case "INVALID_USERNAME_PASSWORD":
 		return Tokens{}, ErrInvalidCredentials
 	}
-	if res.Error.StatusCode == "429" {
+	if res.str("error", "status-code") == "429" {
 		return Tokens{}, fmt.Errorf("mobile login: 429 in JSON body: %w", ErrTooManyRequests)
 	}
-	return Tokens{}, fmt.Errorf("mobile login failed: HTTP %d, response type %q", code, res.ResponseStatus.Type)
+	return Tokens{}, fmt.Errorf("mobile login failed: HTTP %d, response type %q", code, res.str("responseStatus", "type"))
 }
 
 // completeMFA ports the iOS branch of _complete_mfa: the mobile verify endpoint, then the portal one.
@@ -276,13 +276,13 @@ func (s *ssoLogin) completeMFA(ctx context.Context, hc *http.Client, method, mfa
 			rateLimited++
 		case decodeErr != nil:
 			failures = append(failures, fmt.Sprintf("%s: HTTP %d non-JSON", e.path, code))
-		case res.Error.StatusCode == "429":
+		case res.str("error", "status-code") == "429":
 			failures = append(failures, e.path+": 429 in JSON body")
 			rateLimited++
-		case res.ResponseStatus.Type == "SUCCESSFUL":
-			return s.exchangeServiceTicket(ctx, res.ServiceTicketID, iosServiceURL)
+		case res.str("responseStatus", "type") == "SUCCESSFUL":
+			return s.exchangeServiceTicket(ctx, res.str("serviceTicketId"), iosServiceURL)
 		default:
-			failures = append(failures, fmt.Sprintf("%s: HTTP %d, response type %q", e.path, code, res.ResponseStatus.Type))
+			failures = append(failures, fmt.Sprintf("%s: HTTP %d, response type %q", e.path, code, res.str("responseStatus", "type")))
 		}
 	}
 	if rateLimited == len(endpoints) {

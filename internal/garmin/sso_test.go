@@ -258,3 +258,40 @@ func TestMFANoPrompt(t *testing.T) {
 		t.Fatalf("login hits = %d, want 1", c)
 	}
 }
+
+func TestMobileSuccessWithUnrelatedErrorField(t *testing.T) {
+	f := newFakeSSO(t, false, []string{"mobile+plain"}, map[string]http.HandlerFunc{
+		"/mobile/api/login": func(w http.ResponseWriter, r *http.Request) {
+			m := ssoStatus("SUCCESSFUL")
+			m["error"] = "some string"
+			writeJSON(w, m)
+		},
+	})
+	tok, err := Login(context.Background(), f.ep, "a@b.c", "pw", noPrompt, f.opt)
+	checkTokens(t, tok, err)
+}
+
+func Test429InJSONBodyMovesOn(t *testing.T) {
+	var mu sync.Mutex
+	n := 0
+	f := newFakeSSO(t, false, []string{"mobile+plain", "mobile+plain"}, map[string]http.HandlerFunc{
+		"/mobile/api/login": func(w http.ResponseWriter, r *http.Request) {
+			mu.Lock()
+			n++
+			first := n == 1
+			mu.Unlock()
+			if first {
+				writeJSON(w, map[string]any{"error": map[string]any{"status-code": "429"}})
+				return
+			}
+			respond("SUCCESSFUL")(w, r)
+		},
+	})
+	var log strings.Builder
+	f.opt.Log = &log
+	tok, err := Login(context.Background(), f.ep, "a@b.c", "pw", noPrompt, f.opt)
+	checkTokens(t, tok, err)
+	if !strings.Contains(log.String(), "429 in JSON body") {
+		t.Errorf("log = %q", log.String())
+	}
+}
