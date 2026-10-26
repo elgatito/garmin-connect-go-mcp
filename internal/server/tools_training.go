@@ -105,18 +105,22 @@ func registerTrainingTools(r *registry) {
 	})
 
 	addTool(r, "get_hill_score", "Get hill score data between dates", func(ctx context.Context, s *Session, in rangeIn) (any, error) {
-		data, err := s.Client.GetHillScore(ctx, in.StartDate, in.EndDate)
+		hs, err := s.Client.GetHillScore(ctx, in.StartDate, &in.EndDate)
 		if err != nil {
 			return nil, fmt.Errorf("Error retrieving hill score data: %w", err)
 		}
+		data := hs.Data
 		if falsy(data) {
 			return fmt.Sprintf("No hill score data found between %s and %s.", in.StartDate, in.EndDate), nil
 		}
 		hill := asMap(data)
 		var avgScore any
 		if avg := asMap(hill["periodAvgScore"]); len(avg) > 0 {
-			// shortcut: Python takes the first value in Garmin's key order; Go maps have none, so the smallest key.
-			avgScore = avg[garmin.SortedKeys(avg)[0]]
+			keys := hs.AvgKeys // Garmin's key order, as Python's next(iter(values))
+			if len(keys) == 0 {
+				keys = garmin.SortedKeys(avg)
+			}
+			avgScore = avg[keys[0]]
 		}
 		// Select the most recent score independently of upstream ordering.
 		daily := []any{}
@@ -146,7 +150,7 @@ func registerTrainingTools(r *registry) {
 	})
 
 	addTool(r, "get_endurance_score", "Get endurance score data between dates", func(ctx context.Context, s *Session, in rangeIn) (any, error) {
-		data, err := s.Client.GetEnduranceScore(ctx, in.StartDate, in.EndDate)
+		data, err := s.Client.GetEnduranceScore(ctx, in.StartDate, &in.EndDate)
 		if err != nil {
 			return nil, fmt.Errorf("Error retrieving endurance score data: %w", err)
 		}

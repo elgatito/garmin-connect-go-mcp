@@ -32,13 +32,16 @@ func TestTrainingRequestsAndValidation(t *testing.T) {
 		{"progress", func(c *Client) (any, error) {
 			return c.GetProgressSummaryBetweenDates(ctx, "2024-01-08", "2024-01-15", "duration")
 		}, "GET /fitnessstats-service/activity?aggregation=lifetime&endDate=2024-01-15&groupByParentActivityType=True&metric=duration&startDate=2024-01-08"},
-		{"hill day", func(c *Client) (any, error) { return c.GetHillScore(ctx, "2024-01-08", "") },
+		{"hill day", func(c *Client) (any, error) { h, err := c.GetHillScore(ctx, "2024-01-08", nil); return h, err },
 			"GET /metrics-service/metrics/hillscore?calendarDate=2024-01-08"},
-		{"hill range", func(c *Client) (any, error) { return c.GetHillScore(ctx, "2024-01-08", "2024-01-15") },
+		{"hill range", func(c *Client) (any, error) {
+			h, err := c.GetHillScore(ctx, "2024-01-08", strp("2024-01-15"))
+			return h, err
+		},
 			"GET /metrics-service/metrics/hillscore/stats?aggregation=daily&endDate=2024-01-15&startDate=2024-01-08"},
-		{"endurance day", func(c *Client) (any, error) { return c.GetEnduranceScore(ctx, "2024-01-08", "") },
+		{"endurance day", func(c *Client) (any, error) { return c.GetEnduranceScore(ctx, "2024-01-08", nil) },
 			"GET /metrics-service/metrics/endurancescore?calendarDate=2024-01-08"},
-		{"endurance range", func(c *Client) (any, error) { return c.GetEnduranceScore(ctx, "2024-01-08", "2024-01-15") },
+		{"endurance range", func(c *Client) (any, error) { return c.GetEnduranceScore(ctx, "2024-01-08", strp("2024-01-15")) },
 			"GET /metrics-service/metrics/endurancescore/stats?aggregation=weekly&endDate=2024-01-15&startDate=2024-01-08"},
 		{"tolerance", func(c *Client) (any, error) { return c.GetRunningTolerance(ctx, "2024-01-08", "2024-01-15", "weekly") },
 			"GET /metrics-service/metrics/runningtolerance/stats?aggregation=weekly&endDate=2024-01-15&startDate=2024-01-08"},
@@ -65,13 +68,15 @@ func TestTrainingRequestsAndValidation(t *testing.T) {
 	// Malformed dates and aggregation never reach Garmin.
 	c, seen := serveTraining(t, `{}`)
 	for name, call := range map[string]func() error{
-		"progress start": func() error { _, err := c.GetProgressSummaryBetweenDates(ctx, "nope", "2024-01-15", "x"); return err },
-		"hill":           func() error { _, err := c.GetHillScore(ctx, "2024-02-30", ""); return err },
-		"endurance end":  func() error { _, err := c.GetEnduranceScore(ctx, "2024-01-01", "2024-1-5"); return err },
-		"tolerance agg":  func() error { _, err := c.GetRunningTolerance(ctx, "2024-01-01", "2024-01-02", "monthly"); return err },
-		"reload":         func() error { _, err := c.RequestReload(ctx, "../x"); return err },
-		"lactate":        func() error { _, err := c.GetLactateThreshold(ctx, false, "2024-01-01", "x"); return err },
-		"lactate start":  func() error { _, err := c.GetLactateThreshold(ctx, false, "", ""); return err },
+		"progress start":      func() error { _, err := c.GetProgressSummaryBetweenDates(ctx, "nope", "2024-01-15", "x"); return err },
+		"hill":                func() error { _, err := c.GetHillScore(ctx, "2024-02-30", nil); return err },
+		"endurance end":       func() error { _, err := c.GetEnduranceScore(ctx, "2024-01-01", strp("2024-1-5")); return err },
+		"tolerance agg":       func() error { _, err := c.GetRunningTolerance(ctx, "2024-01-01", "2024-01-02", "monthly"); return err },
+		"hill empty end":      func() error { _, err := c.GetHillScore(ctx, "2024-01-01", strp("")); return err },
+		"endurance empty end": func() error { _, err := c.GetEnduranceScore(ctx, "2024-01-01", strp("")); return err },
+		"reload":              func() error { _, err := c.RequestReload(ctx, "../x"); return err },
+		"lactate":             func() error { _, err := c.GetLactateThreshold(ctx, false, "2024-01-01", "x"); return err },
+		"lactate start":       func() error { _, err := c.GetLactateThreshold(ctx, false, "", ""); return err },
 	} {
 		if call() == nil {
 			t.Errorf("%s: no error", name)
@@ -135,5 +140,22 @@ func TestGetTrainingStatusKeepsDeviceOrder(t *testing.T) {
 		if err != nil || len(ts.StatusKeys) != 0 || len(ts.LoadKeys) != 0 {
 			t.Errorf("%s: %+v %v", body, ts, err)
 		}
+	}
+}
+
+func strp(s string) *string { return &s }
+
+// Only None selects the single-day query; "" must fail validation like Python's _validate_date_format.
+func TestEmptyEndDateIsValidatedNotSingleDay(t *testing.T) {
+	c, seen := serveTraining(t, `{}`)
+	want := "enddate must be in format 'YYYY-MM-DD', got: "
+	if _, err := c.GetHillScore(context.Background(), "2024-01-08", strp("")); err == nil || err.Error() != want {
+		t.Errorf("hill err = %v", err)
+	}
+	if _, err := c.GetEnduranceScore(context.Background(), "2024-01-08", strp("")); err == nil || err.Error() != want {
+		t.Errorf("endurance err = %v", err)
+	}
+	if len(*seen) != 0 {
+		t.Errorf("requests = %v", *seen)
 	}
 }

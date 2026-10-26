@@ -46,28 +46,62 @@ func (c *Client) GetProgressSummaryBetweenDates(ctx context.Context, start, end,
 	})
 }
 
-// GetHillScore is get_hill_score; an empty end is Python's None (single day).
-func (c *Client) GetHillScore(ctx context.Context, start, end string) (any, error) {
-	if end == "" {
-		s, err := ValidateDate(start, "startdate")
-		if err != nil {
-			return nil, err
-		}
-		return c.GetJSON(ctx, hillScorePath, url.Values{"calendarDate": {s}})
-	}
-	return c.statsRange(ctx, hillScorePath+"/stats", start, end, url.Values{"aggregation": {"daily"}})
+// HillScore is the get_hill_score payload plus the key order of periodAvgScore (Python takes its first value).
+type HillScore struct {
+	Data    any
+	AvgKeys []string
 }
 
-// GetEnduranceScore is get_endurance_score; an empty end is Python's None (single day).
-func (c *Client) GetEnduranceScore(ctx context.Context, start, end string) (any, error) {
-	if end == "" {
+// GetHillScore is get_hill_score; a nil end (Python's None) is the single-day query, any string is validated.
+func (c *Client) GetHillScore(ctx context.Context, start string, end *string) (*HillScore, error) {
+	var raw []byte
+	var err error
+	if end == nil {
+		s, verr := ValidateDate(start, "startdate")
+		if verr != nil {
+			return nil, verr
+		}
+		raw, err = c.Do(ctx, Req{Method: http.MethodGet, Path: hillScorePath, Query: url.Values{"calendarDate": {s}}})
+	} else {
+		s, verr := ValidateDate(start, "startdate")
+		if verr != nil {
+			return nil, verr
+		}
+		e, verr := ValidateDate(*end, "enddate")
+		if verr != nil {
+			return nil, verr
+		}
+		raw, err = c.Do(ctx, Req{Method: http.MethodGet, Path: hillScorePath + "/stats",
+			Query: url.Values{"aggregation": {"daily"}, "startDate": {s}, "endDate": {e}}})
+	}
+	if err != nil {
+		return nil, err
+	}
+	hs := &HillScore{}
+	if len(bytes.TrimSpace(raw)) == 0 {
+		return hs, nil
+	}
+	if err := json.Unmarshal(raw, &hs.Data); err != nil {
+		return nil, fmt.Errorf("invalid JSON from %s: %w", hillScorePath, err)
+	}
+	var order struct {
+		Keys objectKeys `json:"periodAvgScore"`
+	}
+	_ = json.Unmarshal(raw, &order) // only the order is lost on a surprising shape
+	hs.AvgKeys = order.Keys
+	return hs, nil
+}
+
+// GetEnduranceScore is get_endurance_score; a nil end (Python's None) is the single-day query, any string is validated.
+func (c *Client) GetEnduranceScore(ctx context.Context, start string, end *string) (any, error) {
+	if end == nil {
 		s, err := ValidateDate(start, "startdate")
 		if err != nil {
 			return nil, err
 		}
 		return c.GetJSON(ctx, enduranceScorePath, url.Values{"calendarDate": {s}})
 	}
-	return c.statsRange(ctx, enduranceScorePath+"/stats", start, end, url.Values{"aggregation": {"weekly"}})
+	return c.statsRange(ctx, enduranceScorePath+"/stats", start, *end, url.Values{"aggregation": {"weekly"}})
 }
 
 // statsRange validates startdate/enddate and GETs path with startDate, endDate and the extra query.

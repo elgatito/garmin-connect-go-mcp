@@ -1580,3 +1580,36 @@ func TestTrainingToolSchemas(t *testing.T) {
 		t.Errorf("saw %d of %d tools", seen, len(want))
 	}
 }
+
+// Extra: end_date "" is not "no end date": it fails validation and nothing is requested.
+func TestHillAndEnduranceScoreRejectEmptyEndDate(t *testing.T) {
+	for tool, prefix := range map[string]string{"get_hill_score": "Error retrieving hill score data: ", "get_endurance_score": "Error retrieving endurance score data: "} {
+		f := newFakeGarmin(t)
+		text, isErr := callTool(t, newSession(t, f, nil), tool, m{"start_date": "2024-01-08", "end_date": ""})
+		if !isErr || text != prefix+"enddate must be in format 'YYYY-MM-DD', got: " {
+			t.Errorf("%s: %v %q", tool, isErr, text)
+		}
+		noRequests(t, f, "GET")
+	}
+}
+
+// Extra: periodAvgScore is taken in Garmin's key order ("overall" sorts after "endurance").
+func TestHillScorePeriodAvgScoreUsesDocumentOrder(t *testing.T) {
+	for name, tc := range map[string]struct {
+		body string
+		want any
+	}{
+		"multi key":  {`{"periodAvgScore":{"overall":50,"endurance":40,"strength":60}}`, 50.0},
+		"single key": {`{"periodAvgScore":{"x":7}}`, 7.0},
+		"null":       {`{"periodAvgScore":null,"maxScore":1}`, nil},
+	} {
+		t.Run(name, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			f.on(hillRoute, rawBody(tc.body))
+			data := callMap(t, f, "get_hill_score", m{"start_date": "2024-01-08", "end_date": "2024-01-15"})
+			if got, ok := data["period_avg_score"]; got != tc.want || ok != (tc.want != nil) {
+				t.Errorf("period_avg_score = %v (%v), want %v", got, ok, tc.want)
+			}
+		})
+	}
+}
