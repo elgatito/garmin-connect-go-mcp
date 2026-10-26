@@ -1312,5 +1312,115 @@
     ]
    }
   ]
+ },
+ "POC_WALK_RUN": {
+  "description": "10m warmup + 7x(60s run / 180s walk) Z3 + 8m cooldown",
+  "sportType": {
+   "sportTypeId": 1,
+   "sportTypeKey": "running"
+  },
+  "workoutName": "POC Walk/Run 7x1m/3m Z3",
+  "workoutSegments": [
+   {
+    "segmentOrder": 1,
+    "sportType": {
+     "sportTypeId": 1,
+     "sportTypeKey": "running"
+    },
+    "workoutSteps": [
+     {
+      "description": "Warmup 10 min",
+      "endCondition": {
+       "conditionTypeId": 2,
+       "conditionTypeKey": "time"
+      },
+      "endConditionValue": 600.0,
+      "stepOrder": 1,
+      "stepType": {
+       "stepTypeId": 1,
+       "stepTypeKey": "warmup"
+      },
+      "targetType": {
+       "workoutTargetTypeId": 1,
+       "workoutTargetTypeKey": "no.target"
+      },
+      "type": "ExecutableStepDTO"
+     },
+     {
+      "endCondition": {
+       "conditionTypeId": 7,
+       "conditionTypeKey": "iterations"
+      },
+      "endConditionValue": 7.0,
+      "numberOfIterations": 7,
+      "smartRepeat": false,
+      "stepOrder": 2,
+      "stepType": {
+       "stepTypeId": 6,
+       "stepTypeKey": "repeat"
+      },
+      "type": "RepeatGroupDTO",
+      "workoutSteps": [
+       {
+        "description": "Run 60s Z3",
+        "endCondition": {
+         "conditionTypeId": 2,
+         "conditionTypeKey": "time"
+        },
+        "endConditionValue": 60.0,
+        "stepOrder": 3,
+        "stepType": {
+         "stepTypeId": 3,
+         "stepTypeKey": "interval"
+        },
+        "targetType": {
+         "workoutTargetTypeId": 4,
+         "workoutTargetTypeKey": "heart.rate.zone"
+        },
+        "type": "ExecutableStepDTO",
+        "zoneNumber": 3
+       },
+       {
+        "description": "Walk 180s Z3",
+        "endCondition": {
+         "conditionTypeId": 2,
+         "conditionTypeKey": "time"
+        },
+        "endConditionValue": 180.0,
+        "stepOrder": 4,
+        "stepType": {
+         "stepTypeId": 4,
+         "stepTypeKey": "recovery"
+        },
+        "targetType": {
+         "workoutTargetTypeId": 4,
+         "workoutTargetTypeKey": "heart.rate.zone"
+        },
+        "type": "ExecutableStepDTO",
+        "zoneNumber": 3
+       }
+      ]
+     },
+     {
+      "description": "Cooldown 8 min",
+      "endCondition": {
+       "conditionTypeId": 2,
+       "conditionTypeKey": "time"
+      },
+      "endConditionValue": 480.0,
+      "stepOrder": 5,
+      "stepType": {
+       "stepTypeId": 2,
+       "stepTypeKey": "cooldown"
+      },
+      "targetType": {
+       "workoutTargetTypeId": 1,
+       "workoutTargetTypeKey": "no.target"
+      },
+      "type": "ExecutableStepDTO"
+     }
+    ]
+   }
+  ]
  }
 }

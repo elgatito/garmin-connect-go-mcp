@@ -266,7 +266,17 @@ func TestProfileFiltering(t *testing.T) {
 		"get_training_load_balance", "get_training_load_trend",
 		"get_training_status", "get_vo2max_trend", "request_reload",
 	}
-	all := append(append(append(append(append([]string{}, core...), health...), activities...), training...), "list_accounts", "set_heart_rate_zones")
+	workouts := []string{
+		"create_run_interval_workout", "create_run_workout", "create_strength_workout",
+		"create_walk_run_workout", "create_z2_walk_workout", "delete_workout",
+		"delete_workouts", "download_workout", "get_calendar_events",
+		"get_garmin_coach_workouts", "get_scheduled_workouts",
+		"get_training_plan_workouts", "get_workout_by_id", "get_workouts",
+		"reschedule_workout", "schedule_week", "schedule_workout",
+		"schedule_workouts", "unschedule_workout", "unschedule_workouts",
+		"upload_workout", "upload_workouts",
+	}
+	all := append(append(append(append(append(append([]string{}, core...), health...), activities...), training...), workouts...), "list_accounts", "set_heart_rate_zones")
 	minimal := append(append(append(append([]string{}, core...), minimalHealth...), minimalActivities...), "list_accounts")
 
 	cases := []struct {
@@ -334,10 +344,10 @@ func TestProfileFiltering(t *testing.T) {
 				"GARMIN_ENABLED_TOOLS":  "  \t",
 				"GARMIN_DISABLED_TOOLS": "get_full_name",
 			},
-			want: append(append(append([]string{}, health...), activities...),
-				append(training,
-					"get_heart_rate_zones", "get_unit_system", "get_user_profile", "get_userprofile_settings",
-					"list_accounts", "set_heart_rate_zones")...),
+			want: append(append(append(append([]string{}, health...), activities...),
+				append(training, workouts...)...),
+				"get_heart_rate_zones", "get_unit_system", "get_user_profile", "get_userprofile_settings",
+				"list_accounts", "set_heart_rate_zones"),
 		},
 		{
 			name: "allowlist takes precedence over denylist",
