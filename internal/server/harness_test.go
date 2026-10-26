@@ -194,6 +194,19 @@ func newSession(t *testing.T, f *fakeGarmin, env map[string]string) *mcp.ClientS
 
 func newSessionWithStore(t *testing.T, f *fakeGarmin, env map[string]string, st accounts.Store) *mcp.ClientSession {
 	t.Helper()
+	return newSessionWithStoreLog(t, f, env, st, io.Discard)
+}
+
+// newSessionWithLog returns a session whose server log is captured in log.
+func newSessionWithLog(t *testing.T, f *fakeGarmin, log io.Writer) *mcp.ClientSession {
+	t.Helper()
+	st := newTestStore(t)
+	seedAccount(t, st, "me@x.com", testJWT(nil))
+	return newSessionWithStoreLog(t, f, nil, st, log)
+}
+
+func newSessionWithStoreLog(t *testing.T, f *fakeGarmin, env map[string]string, st accounts.Store, log io.Writer) *mcp.ClientSession {
+	t.Helper()
 	getenv := func(k string) string { return env[k] }
 	srv, err := New(Options{
 		Store: st,
@@ -207,7 +220,7 @@ func newSessionWithStore(t *testing.T, f *fakeGarmin, env map[string]string, st 
 		},
 		Getenv:  getenv,
 		Version: "test",
-		Log:     io.Discard,
+		Log:     log,
 	})
 	if err != nil {
 		t.Fatalf("New: %v", err)
