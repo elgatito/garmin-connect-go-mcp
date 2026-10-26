@@ -125,29 +125,35 @@ func nativeHeaders() http.Header {
 }
 
 func (c *Client) Do(ctx context.Context, r Req) ([]byte, error) {
+	_, body, err := c.DoStatus(ctx, r)
+	return body, err
+}
+
+// DoStatus is Do that also returns the HTTP status (204 is reported as 204, with the body "{}").
+func (c *Client) DoStatus(ctx context.Context, r Req) (int, []byte, error) {
 	tok := c.tokens()
 	if tok.ExpiresSoon(time.Now()) {
 		if err := c.refresh(ctx, tok.DIToken); err != nil {
-			return nil, err
+			return 0, nil, err
 		}
 	}
 	status, body, used, err := c.send(ctx, r)
 	if err == nil && status == http.StatusUnauthorized {
 		if err := c.refresh(ctx, used); err != nil {
-			return nil, err
+			return 0, nil, err
 		}
 		status, body, _, err = c.send(ctx, r)
 	}
 	if err != nil {
-		return nil, err
+		return 0, nil, err
 	}
 	if status == http.StatusNoContent {
-		return []byte("{}"), nil
+		return status, []byte("{}"), nil
 	}
 	if status >= 400 {
-		return nil, &APIError{Status: status, Message: errorMessage(body)}
+		return status, nil, &APIError{Status: status, Message: errorMessage(body)}
 	}
-	return body, nil
+	return status, body, nil
 }
 
 // send performs one attempt and returns the status, body and the access token it used.
