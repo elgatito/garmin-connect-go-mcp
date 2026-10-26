@@ -2,6 +2,9 @@ package server
 
 import (
 	"bytes"
+	"encoding/hex"
+	"os"
+	"path/filepath"
 	"reflect"
 	"strings"
 	"testing"
@@ -14,6 +17,8 @@ import (
 	"github.com/muktihari/fit/profile/untyped/fieldnum"
 	"github.com/muktihari/fit/profile/untyped/mesgnum"
 	"github.com/muktihari/fit/proto"
+
+	"github.com/elgatito/garmin-connect-go-mcp/internal/accounts"
 )
 
 const fitActivityID = 22041393449
@@ -306,5 +311,288 @@ func TestGetActivityFitMessagesDownloadProblems(t *testing.T) {
 	}
 	if len(f.requests("")) != before {
 		t.Error("bad id must not download")
+	}
+}
+
+// ── download_activity_file / set_fit_download_dir ─────────────────────────
+
+func TestResolveDownloadDirPrefersOutputDirArg(t *testing.T) {
+	dir := t.TempDir()
+	st := newStore(t)
+	if err := st.SaveSettings(testEmail, accounts.Settings{FitDownloadDir: filepath.Join(dir, "cfg")}); err != nil {
+		t.Fatal(err)
+	}
+	s := &Session{Email: testEmail, Store: st, Getenv: envOf(map[string]string{"GARMIN_FIT_DOWNLOAD_DIR": filepath.Join(dir, "env")})}
+	if got := resolveDownloadDir(s, filepath.Join(dir, "arg")); got != filepath.Join(dir, "arg") {
+		t.Errorf("got %q", got)
+	}
+}
+
+func TestResolveDownloadDirUsesEnvVar(t *testing.T) {
+	dir := t.TempDir()
+	s := &Session{Email: testEmail, Store: newStore(t), Getenv: envOf(map[string]string{"GARMIN_FIT_DOWNLOAD_DIR": filepath.Join(dir, "env")})}
+	if got := resolveDownloadDir(s, ""); got != filepath.Join(dir, "env") {
+		t.Errorf("got %q", got)
+	}
+}
+
+// Python reads a global config file; here the saved directory is the account's settings.json fit_download_dir.
+func TestResolveDownloadDirUsesConfigFile(t *testing.T) {
+	dir := t.TempDir()
+	st := newStore(t)
+	if err := st.SaveSettings(testEmail, accounts.Settings{FitDownloadDir: filepath.Join(dir, "saved")}); err != nil {
+		t.Fatal(err)
+	}
+	s := &Session{Email: testEmail, Store: st, Getenv: envOf(nil)}
+	if got := resolveDownloadDir(s, ""); got != filepath.Join(dir, "saved") {
+		t.Errorf("got %q", got)
+	}
+}
+
+func TestResolveDownloadDirReturnsNoneWhenUnconfigured(t *testing.T) {
+	s := &Session{Email: testEmail, Store: newStore(t), Getenv: envOf(nil)}
+	if got := resolveDownloadDir(s, ""); got != "" {
+		t.Errorf("got %q", got)
+	}
+}
+
+func writeSettingsFile(t *testing.T, st accounts.Store, content string) {
+	t.Helper()
+	dir, err := st.Dir(testEmail)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err := os.WriteFile(filepath.Join(dir, "settings.json"), []byte(content), 0o600); err != nil {
+		t.Fatal(err)
+	}
+}
+
+// Python: a missing config file reads as {}. Here: no settings.json reads as defaults with no download dir.
+func TestReadFitConfigMissingReturnsEmpty(t *testing.T) {
+	st := newStore(t)
+	got, err := st.LoadSettings(testEmail)
+	if err != nil || got.FitDownloadDir != "" {
+		t.Errorf("got %+v %v", got, err)
+	}
+}
+
+func TestResolveDownloadDirConfigMissingKeyReturnsNone(t *testing.T) {
+	st := newStore(t)
+	writeSettingsFile(t, st, `{"other": "value"}`)
+	s := &Session{Email: testEmail, Store: st, Getenv: envOf(nil)}
+	if got := resolveDownloadDir(s, ""); got != "" {
+		t.Errorf("got %q", got)
+	}
+}
+
+// Python: a non-dict config reads as {}. Here: an unreadable settings.json means no download dir, and
+// set_fit_download_dir replaces it.
+func TestReadFitConfigNonDictReturnsEmpty(t *testing.T) {
+	st := newStore(t)
+	writeSettingsFile(t, st, "[1, 2, 3]")
+	s := &Session{Email: testEmail, Store: st, Getenv: envOf(nil)}
+	if got := resolveDownloadDir(s, ""); got != "" {
+		t.Errorf("got %q", got)
+	}
+	target := filepath.Join(t.TempDir(), "dl")
+	callOK(t, newSessionWithStore(t, newFakeGarmin(t), st, nil), "set_fit_download_dir", map[string]any{"path": target})
+	if got, err := st.LoadSettings(testEmail); err != nil || got.FitDownloadDir != target {
+		t.Errorf("after set: %+v %v", got, err)
+	}
+}
+
+func envOf(m map[string]string) func(string) string {
+	return func(k string) string { return m[k] }
+}
+
+func TestSetFitDownloadDirPersists(t *testing.T) {
+	st := newStore(t)
+	if err := st.SaveSettings(testEmail, accounts.Settings{Domain: "garmin.cn"}); err != nil {
+		t.Fatal(err)
+	}
+	target := filepath.Join(t.TempDir(), "downloads")
+	data, _ := decode(t, callOK(t, newSessionWithStore(t, newFakeGarmin(t), st, nil), "set_fit_download_dir", map[string]any{"path": target})).(map[string]any)
+
+	dir, _ := st.Dir(testEmail)
+	want := map[string]any{"download_dir": target, "config_path": filepath.Join(dir, "settings.json"),
+		"message": "Default FIT download directory configured."}
+	if !reflect.DeepEqual(data, want) {
+		t.Errorf("got %v", data)
+	}
+	if fi, err := os.Stat(target); err != nil || !fi.IsDir() {
+		t.Errorf("directory not created: %v", err)
+	}
+	got, err := st.LoadSettings(testEmail)
+	if err != nil || got.FitDownloadDir != target || got.Domain != "garmin.cn" {
+		t.Errorf("settings = %+v %v", got, err)
+	}
+}
+
+func TestSetFitDownloadDirResolvesRelativePath(t *testing.T) {
+	t.Chdir(t.TempDir())
+	cwd, _ := os.Getwd()
+	data, _ := decode(t, callOK(t, newSession(t, newFakeGarmin(t), nil), "set_fit_download_dir", map[string]any{"path": "rel/dir"})).(map[string]any)
+	if data["download_dir"] != filepath.Join(cwd, "rel", "dir") {
+		t.Errorf("got %v", data)
+	}
+	// A path that cannot be a directory is reported, not persisted.
+	file := filepath.Join(cwd, "afile")
+	os.WriteFile(file, nil, 0o600)
+	text, isErr := callTool(t, newSession(t, newFakeGarmin(t), nil), "set_fit_download_dir", map[string]any{"path": file})
+	if !isErr || !strings.HasPrefix(text, "Error setting FIT download directory: ") {
+		t.Errorf("file path: %v %q", isErr, text)
+	}
+}
+
+func TestDownloadActivityFileFitSavesFile(t *testing.T) {
+	dir := t.TempDir()
+	fitBytes := "\x0e\x10FITDATA"
+	f := newFakeGarmin(t)
+	f.on(fitOriginalRoute, rawBody(zipOf(t, [2]string{"activity.fit", fitBytes})))
+	data, _ := decode(t, callOK(t, newSession(t, f, nil), "download_activity_file",
+		map[string]any{"activity_id": fitActivityID, "output_dir": dir})).(map[string]any)
+
+	path := filepath.Join(dir, "22041393449.fit")
+	if b, err := os.ReadFile(path); err != nil || string(b) != fitBytes {
+		t.Errorf("file = %q %v", b, err)
+	}
+	want := map[string]any{"activity_id": float64(fitActivityID), "format": "fit", "file_path": path,
+		"size_bytes": float64(len(fitBytes)), "message": "Activity file saved."}
+	if !reflect.DeepEqual(data, want) {
+		t.Errorf("got %v", data)
+	}
+	if n := len(f.requests(fitOriginalRoute)); n != 1 {
+		t.Errorf("downloads = %d", n)
+	}
+}
+
+func TestDownloadActivityFileOtherFormatsWriteRawBytes(t *testing.T) {
+	for _, fmtName := range []string{"gpx", "tcx", "csv"} {
+		t.Run(fmtName, func(t *testing.T) {
+			dir := t.TempDir()
+			payload := "<" + fmtName + ">data</" + fmtName + ">"
+			route := "GET /download-service/export/" + fmtName + "/activity/22041393449"
+			f := newFakeGarmin(t)
+			f.on(route, rawBody(payload))
+			data, _ := decode(t, callOK(t, newSession(t, f, nil), "download_activity_file",
+				map[string]any{"activity_id": fitActivityID, "format": fmtName, "output_dir": dir})).(map[string]any)
+			if b, err := os.ReadFile(filepath.Join(dir, "22041393449."+fmtName)); err != nil || string(b) != payload {
+				t.Errorf("file = %q %v", b, err)
+			}
+			if data["format"] != fmtName || len(f.requests(route)) != 1 {
+				t.Errorf("got %v", data)
+			}
+		})
+	}
+}
+
+func TestDownloadActivityFileInvalidFormat(t *testing.T) {
+	f := newFakeGarmin(t)
+	data, _ := decode(t, callOK(t, newSession(t, f, nil), "download_activity_file",
+		map[string]any{"activity_id": fitActivityID, "format": "pdf", "output_dir": t.TempDir()})).(map[string]any)
+	want := map[string]any{"error": "Invalid format 'pdf'.", "valid_formats": []any{"fit", "gpx", "tcx", "csv"}}
+	if !reflect.DeepEqual(data, want) {
+		t.Errorf("got %v", data)
+	}
+	for _, c := range f.requests("") {
+		if strings.HasPrefix(c.Path, "/download-service/") {
+			t.Errorf("unexpected download %s", c.Path)
+		}
+	}
+}
+
+func TestDownloadActivityFileNeedsSetup(t *testing.T) {
+	f := newFakeGarmin(t)
+	st := newStore(t)
+	data, _ := decode(t, callOK(t, newSessionWithStore(t, f, st, nil), "download_activity_file",
+		map[string]any{"activity_id": fitActivityID})).(map[string]any)
+	cwd, _ := os.Getwd()
+	dir, _ := st.Dir(testEmail)
+	want := map[string]any{
+		"status":            "needs_setup",
+		"suggested_default": cwd,
+		"config_path":       filepath.Join(dir, "settings.json"),
+		"message": "No download directory configured. Ask the user where to save activity files (offer the " +
+			"current working directory as the default), then call set_fit_download_dir(path) before downloading.",
+	}
+	if !reflect.DeepEqual(data, want) {
+		t.Errorf("got %v", data)
+	}
+	if len(f.requests(fitOriginalRoute)) != 0 {
+		t.Error("downloaded before setup")
+	}
+}
+
+func TestDownloadActivityFileNoneResponse(t *testing.T) {
+	dir := t.TempDir()
+	f := newFakeGarmin(t)
+	f.on(fitOriginalRoute, rawBody(nil))
+	text, isErr := callTool(t, newSession(t, f, nil), "download_activity_file", map[string]any{"activity_id": fitActivityID, "output_dir": dir})
+	if isErr || text != "No fit data returned for activity 22041393449" {
+		t.Errorf("got %v %q", isErr, text)
+	}
+}
+
+func TestDownloadActivityFileFitExtractionFailure(t *testing.T) {
+	dir := t.TempDir()
+	raw := zipOf(t, [2]string{"notes.txt", "no fit here"})
+	f := newFakeGarmin(t)
+	f.on(fitOriginalRoute, rawBody(raw))
+	data, _ := decode(t, callOK(t, newSession(t, f, nil), "download_activity_file",
+		map[string]any{"activity_id": fitActivityID, "output_dir": dir})).(map[string]any)
+	dbg, _ := data["debug"].(map[string]any)
+	if data["error"] != "ZIP archive contains no .fit files" || dbg["total_bytes"] != float64(len(raw)) ||
+		dbg["first_16_bytes_hex"] != hexPrefix(raw) {
+		t.Errorf("got %v", data)
+	}
+	if _, err := os.Stat(filepath.Join(dir, "22041393449.fit")); !os.IsNotExist(err) {
+		t.Errorf("file written: %v", err)
+	}
+}
+
+func hexPrefix(b []byte) string {
+	return hex.EncodeToString(b[:min(16, len(b))])
+}
+
+func TestDownloadActivityFileDirectoryPrecedence(t *testing.T) {
+	base := t.TempDir()
+	st := newStore(t)
+	if err := st.SaveSettings(testEmail, accounts.Settings{FitDownloadDir: filepath.Join(base, "saved")}); err != nil {
+		t.Fatal(err)
+	}
+	f := newFakeGarmin(t)
+	f.on("GET /download-service/export/gpx/activity/5", rawBody("<gpx/>"))
+	args := map[string]any{"activity_id": "5", "format": " GPX "}
+	// Saved settings, then the environment, then output_dir; each directory is created.
+	for _, c := range []struct {
+		env  map[string]string
+		out  string
+		want string
+	}{
+		{nil, "", filepath.Join(base, "saved")},
+		{map[string]string{"GARMIN_FIT_DOWNLOAD_DIR": filepath.Join(base, "env")}, "", filepath.Join(base, "env")},
+		{map[string]string{"GARMIN_FIT_DOWNLOAD_DIR": filepath.Join(base, "env")}, filepath.Join(base, "arg"), filepath.Join(base, "arg")},
+	} {
+		if c.out != "" {
+			args["output_dir"] = c.out
+		}
+		data, _ := decode(t, callOK(t, newSessionWithStore(t, f, st, c.env), "download_activity_file", args)).(map[string]any)
+		if data["file_path"] != filepath.Join(c.want, "5.gpx") || data["format"] != "gpx" || data["size_bytes"] != 6.0 {
+			t.Errorf("%v: %v", c, data)
+		}
+	}
+}
+
+func TestDownloadActivityFileErrors(t *testing.T) {
+	f := newFakeGarmin(t)
+	cs := newSession(t, f, nil)
+	text, isErr := callTool(t, cs, "download_activity_file", map[string]any{"activity_id": "x1", "output_dir": t.TempDir()})
+	if !isErr || text != "Error downloading activity x1: invalid literal for int() with base 10: 'x1'" {
+		t.Errorf("bad id: %v %q", isErr, text)
+	}
+	f.on(fitOriginalRoute, status(404, map[string]any{"message": "gone"}))
+	text, isErr = callTool(t, cs, "download_activity_file", map[string]any{"activity_id": fitActivityID, "output_dir": t.TempDir()})
+	if !isErr || text != "Error downloading activity 22041393449: Download client error (404): API Error 404 - gone" {
+		t.Errorf("404: %v %q", isErr, text)
 	}
 }

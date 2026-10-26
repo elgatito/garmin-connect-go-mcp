@@ -153,11 +153,11 @@ func expandUser(p string) string {
 	return p
 }
 
-// resolveDownloadDir is activity_analysis._resolve_download_dir(None): GARMIN_FIT_DOWNLOAD_DIR, then the
-// account's saved download directory; "" when nothing is configured.
-func resolveDownloadDir(s *Session) string {
-	dir := ""
-	if s.Getenv != nil {
+// resolveDownloadDir is activity_analysis._resolve_download_dir: the output_dir argument, then
+// GARMIN_FIT_DOWNLOAD_DIR, then the account's saved download directory; "" when nothing is configured.
+func resolveDownloadDir(s *Session, outputDir string) string {
+	dir := outputDir
+	if dir == "" && s.Getenv != nil {
 		dir = s.Getenv("GARMIN_FIT_DOWNLOAD_DIR")
 	}
 	if dir == "" {
@@ -208,7 +208,7 @@ func downloadCourseGPX(ctx context.Context, s *Session, in downloadCourseGPXIn) 
 	if in.OutputPath != nil {
 		out = *in.OutputPath
 	}
-	target, err := resolveGPXOutputPath(in.CourseID, out, resolveDownloadDir(s))
+	target, err := resolveGPXOutputPath(in.CourseID, out, resolveDownloadDir(s, ""))
 	if err != nil {
 		return fail(err)
 	}
