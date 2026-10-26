@@ -30,6 +30,7 @@ type Session struct {
 	Client *garmin.Client
 	Store  accounts.Store
 	Log    io.Writer // for writeTracker
+	Getenv func(string) string
 }
 
 // Settings returns the account's settings.json (defaults when missing).
@@ -53,7 +54,7 @@ func New(opt Options) (*mcp.Server, error) {
 	srv := mcp.NewServer(&mcp.Implementation{Name: "garmin-mcp", Version: opt.Version}, nil)
 	r := &registry{
 		srv:     srv,
-		mgr:     &manager{store: opt.Store, endpoints: opt.Endpoints, log: opt.Log, clients: map[string]*garmin.Client{}},
+		mgr:     &manager{store: opt.Store, endpoints: opt.Endpoints, getenv: opt.Getenv, log: opt.Log, clients: map[string]*garmin.Client{}},
 		filter:  filter,
 		timeout: resolveCallTimeout(opt.Getenv, opt.Log),
 		log:     opt.Log,
@@ -76,6 +77,7 @@ func New(opt Options) (*mcp.Server, error) {
 	registerWeightTools(r)
 	registerDataTools(r)
 	registerWomensHealthTools(r)
+	registerCourseTools(r)
 	addWorkoutResources(srv)
 
 	if unknown := filter.unknownNames(); len(unknown) > 0 {
@@ -91,6 +93,7 @@ func New(opt Options) (*mcp.Server, error) {
 type manager struct {
 	store     accounts.Store
 	endpoints func(string) garmin.Endpoints
+	getenv    func(string) string
 	log       io.Writer
 	mu        sync.Mutex
 	clients   map[string]*garmin.Client
@@ -122,7 +125,7 @@ func (m *manager) session(email string) (*Session, error) {
 		}
 		m.clients[email] = c
 	}
-	return &Session{Email: email, Client: c, Store: m.store, Log: m.log}, nil
+	return &Session{Email: email, Client: c, Store: m.store, Log: m.log, Getenv: m.getenv}, nil
 }
 
 type accountInfo struct {
