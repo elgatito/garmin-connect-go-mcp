@@ -129,6 +129,12 @@ func falsy(v any) bool {
 		return !x
 	case float64:
 		return x == 0
+	case int:
+		return x == 0
+	case int64:
+		return x == 0
+	case uint64:
+		return x == 0
 	case []any:
 		return len(x) == 0
 	case map[string]any:

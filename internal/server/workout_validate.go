@@ -434,6 +434,12 @@ func pyInt(v any) (int64, error) {
 	switch x := v.(type) {
 	case float64:
 		return int64(x), nil
+	case int:
+		return int64(x), nil
+	case int64:
+		return x, nil
+	case uint64:
+		return int64(x), nil
 	case bool:
 		if x {
 			return 1, nil
