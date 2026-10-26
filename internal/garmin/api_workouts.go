@@ -2,6 +2,7 @@ package garmin
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -78,7 +79,16 @@ func (c *Client) UploadWorkout(ctx context.Context, payload any) (any, error) {
 // ScheduleWorkout is the tools' direct POST of {"date": ...} to the calendar (the schedule endpoint is not
 // idempotent: a second POST adds a second entry, so callers check first).
 func (c *Client) ScheduleWorkout(ctx context.Context, workoutID int64, date string) (any, error) {
-	return c.DoJSON(ctx, Req{Method: http.MethodPost, Path: workoutScheduledPath + "/" + strconv.FormatInt(workoutID, 10), JSON: map[string]any{"date": date}})
+	b, err := c.Do(ctx, Req{Method: http.MethodPost, Path: workoutScheduledPath + "/" + strconv.FormatInt(workoutID, 10), JSON: map[string]any{"date": date}})
+	if err != nil {
+		return nil, err
+	}
+	// The tools ignore a body that is not JSON (Python: response.json() raising ValueError), so a bad body is not an error.
+	var v any
+	if json.Unmarshal(b, &v) != nil {
+		return nil, nil
+	}
+	return v, nil
 }
 
 func (c *Client) GetScheduledWorkoutByID(ctx context.Context, id int64) (any, error) {

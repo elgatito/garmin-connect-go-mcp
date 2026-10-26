@@ -1,6 +1,7 @@
 package server
 
 import (
+	"bytes"
 	"context"
 	"encoding/base64"
 	"encoding/json"
@@ -90,6 +91,7 @@ func (f *fakeGarmin) requests(methodAndPath string) []recordedCall {
 
 func (f *fakeGarmin) serve(w http.ResponseWriter, r *http.Request) {
 	b, _ := io.ReadAll(r.Body)
+	r.Body = io.NopCloser(bytes.NewReader(b)) // handler-func routes can read the body too
 	key := r.Method + " " + r.URL.Path
 	f.mu.Lock()
 	f.calls = append(f.calls, recordedCall{r.Method, r.URL.Path, r.URL.Query(), b, r.Header.Clone()})
