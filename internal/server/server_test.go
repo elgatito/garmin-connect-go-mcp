@@ -646,3 +646,21 @@ func TestHandlerPanicIsToolError(t *testing.T) {
 		t.Errorf("log lacks the stack trace: %q", s)
 	}
 }
+
+func TestRemovedAccountStopsWorkingAndStaysRemoved(t *testing.T) {
+	f := newFakeGarmin(t)
+	st := newStore(t)
+	cs := newSessionWithStore(t, f, st, nil)
+	callOK(t, cs, "get_full_name", nil) // caches the client
+	if err := st.Remove(testEmail); err != nil {
+		t.Fatal(err)
+	}
+	text, isErr := callTool(t, cs, "get_full_name", nil)
+	if !isErr || !strings.HasPrefix(text, `No Garmin account "me@x.com" is set up.`) {
+		t.Fatalf("got %v %q", isErr, text)
+	}
+	dir, _ := st.Dir(testEmail)
+	if _, err := os.Stat(dir); !os.IsNotExist(err) {
+		t.Fatalf("account folder recreated: %v", err)
+	}
+}

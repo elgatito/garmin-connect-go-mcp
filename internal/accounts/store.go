@@ -116,7 +116,25 @@ type emailTokens struct {
 }
 
 func (t emailTokens) Load() (garmin.Tokens, error) { return t.st.LoadTokens(t.email) }
-func (t emailTokens) Save(tok garmin.Tokens) error { return t.st.SaveTokens(t.email, tok) }
+
+// Save refuses to write once the account was removed, so a late refresh cannot resurrect it.
+// shortcut: the check and the write are not atomic, a removal in between can still be undone; fine for a CLI-driven remove.
+func (t emailTokens) Save(tok garmin.Tokens) error {
+	if !t.st.HasAccount(t.email) {
+		return fmt.Errorf("%w: %s", ErrNoAccount, t.email)
+	}
+	return t.st.SaveTokens(t.email, tok)
+}
+
+// HasAccount reports whether the account's tokens.json exists.
+func (s Store) HasAccount(email string) bool {
+	dir, err := s.Dir(email)
+	if err != nil {
+		return false
+	}
+	_, err = os.Stat(filepath.Join(dir, "tokens.json"))
+	return err == nil
+}
 
 // TokenStatus is "ok", "expired" (the access token is past exp; the refresh token may still work) or "invalid".
 func (s Store) TokenStatus(email string) string {

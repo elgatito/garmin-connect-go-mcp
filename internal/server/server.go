@@ -109,6 +109,10 @@ func (m *manager) session(email string) (*Session, error) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 	c := m.clients[email]
+	if c != nil && !m.store.HasAccount(email) { // removed while the server runs
+		delete(m.clients, email)
+		c = nil
+	}
 	if c == nil {
 		settings, _ := m.store.LoadSettings(email) // falls back to garmin.com
 		var err error

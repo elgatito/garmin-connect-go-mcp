@@ -133,3 +133,24 @@ func TestDefaultBase(t *testing.T) {
 		t.Fatalf("%q %v", got, err)
 	}
 }
+
+func TestTokenStoreSaveRefusesRemovedAccount(t *testing.T) {
+	s := Store{Base: t.TempDir()}
+	if err := s.SaveTokens("a@b.c", garmin.Tokens{DIToken: "t"}); err != nil {
+		t.Fatal(err)
+	}
+	ts := s.TokenStore("a@b.c")
+	if err := ts.Save(garmin.Tokens{DIToken: "t2"}); err != nil {
+		t.Fatal(err)
+	}
+	if err := s.Remove("a@b.c"); err != nil {
+		t.Fatal(err)
+	}
+	if err := ts.Save(garmin.Tokens{DIToken: "t3"}); !errors.Is(err, ErrNoAccount) {
+		t.Fatalf("err = %v", err)
+	}
+	dir, _ := s.Dir("a@b.c")
+	if _, err := os.Stat(dir); !os.IsNotExist(err) {
+		t.Fatalf("folder recreated: %v", err)
+	}
+}
