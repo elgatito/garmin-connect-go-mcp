@@ -460,27 +460,7 @@ func (c *Client) GetMorningTrainingReadiness(ctx context.Context, date string) (
 
 // GetActivities returns recent activities.
 func (c *Client) GetActivities(ctx context.Context, start, limit int) (any, error) {
-	if _, err := ValidateNonNegativeInteger(start, "start"); err != nil {
-		return nil, err
-	}
-	var err error
-	if limit, err = ValidatePositiveInteger(limit, "limit"); err != nil {
-		return nil, err
-	}
-	if limit > maxActivityLimit {
-		return nil, fmt.Errorf("limit cannot exceed %d", maxActivityLimit)
-	}
-	v, err := c.GetJSON(ctx, activitiesSearchPath, url.Values{
-		"start": {fmt.Sprint(start)},
-		"limit": {fmt.Sprint(limit)},
-	})
-	if err != nil {
-		return nil, err
-	}
-	if v == nil {
-		return []any{}, nil
-	}
-	return v, nil
+	return c.GetActivitiesByType(ctx, start, limit, "")
 }
 
 // GetDailyStatsRange fetches per-day stats of statsType from the daily stats

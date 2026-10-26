@@ -119,6 +119,7 @@ func New(opt Options) (*mcp.Server, error) {
 	registerDataManagementTools(r)
 	registerWomensHealthTools(r)
 	registerCourseTools(r)
+	registerActivityAnalysisTools(r)
 	addPlainTool(r, "list_accounts", "List the configured Garmin Connect accounts.", r.listAccounts)
 	registerWorkoutResources(srv)
 	r.logFilterWarnings()

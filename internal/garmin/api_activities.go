@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 const (
@@ -23,6 +24,12 @@ const (
 	activityTypeQueryKey   = "activityType"
 	activityIDParam        = "activity_id"
 	userProfileQueryParam  = "userProfilePk"
+
+	activityDownloadPath    = "/download-service/files/activity"
+	activityTCXDownloadPath = "/download-service/export/tcx/activity"
+	activityGPXDownloadPath = "/download-service/export/gpx/activity"
+	activityKMLDownloadPath = "/download-service/export/kml/activity"
+	activityCSVDownloadPath = "/download-service/export/csv/activity"
 )
 
 // activityPath returns the activity-service path for id, validating it as
@@ -48,6 +55,56 @@ func numberString(v any) string {
 		return strconv.FormatInt(x, 10)
 	}
 	return fmt.Sprint(v)
+}
+
+// GetActivitiesByType fetches recent activities, optionally filtered by type.
+func (c *Client) GetActivitiesByType(ctx context.Context, start, limit int, activityType string) (any, error) {
+	if _, err := ValidateNonNegativeInteger(start, "start"); err != nil {
+		return nil, err
+	}
+	var err error
+	if limit, err = ValidatePositiveInteger(limit, "limit"); err != nil {
+		return nil, err
+	}
+	if limit > maxActivityLimit {
+		return nil, fmt.Errorf("limit cannot exceed %d", maxActivityLimit)
+	}
+	q := url.Values{
+		"start": {fmt.Sprint(start)},
+		"limit": {fmt.Sprint(limit)},
+	}
+	if activityType != "" {
+		q.Set(activityTypeQueryKey, activityType)
+	}
+	v, err := c.GetJSON(ctx, activitiesSearchPath, q)
+	if err != nil {
+		return nil, err
+	}
+	if v == nil {
+		return []any{}, nil
+	}
+	return v, nil
+}
+
+// DownloadActivity returns one activity in the requested format: fit/original,
+// gpx, tcx, kml or csv.
+func (c *Client) DownloadActivity(ctx context.Context, id int64, format string) ([]byte, error) {
+	var base string
+	switch strings.ToLower(format) {
+	case "fit", "original":
+		base = activityDownloadPath
+	case "gpx":
+		base = activityGPXDownloadPath
+	case "tcx":
+		base = activityTCXDownloadPath
+	case "kml":
+		base = activityKMLDownloadPath
+	case "csv":
+		base = activityCSVDownloadPath
+	default:
+		return nil, fmt.Errorf("unexpected activity download format %q", format)
+	}
+	return c.Download(ctx, base+"/"+strconv.FormatInt(id, 10), nil)
 }
 
 // GetActivitiesByDatePage fetches one page of activities between two dates.

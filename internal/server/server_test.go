@@ -250,17 +250,18 @@ func TestProfileFiltering(t *testing.T) {
 	}
 	activities := []string{
 		"add_gear_to_activity", "count_activities", "create_manual_activity",
-		"delete_activity", "delete_course", "download_course_gpx",
-		"get_activities", "get_activities_by_date",
+		"delete_activity", "delete_course", "download_activity_file",
+		"download_course_gpx", "get_activities", "get_activities_by_date",
 		"get_activities_fordate", "get_activity", "get_activity_exercise_sets",
-		"get_activity_gear", "get_activity_hr_in_timezones",
-		"get_activity_power_in_timezones", "get_activity_split_summaries",
-		"get_activity_splits", "get_activity_typed_splits", "get_activity_types",
-		"get_activity_weather", "get_course_details", "get_courses",
-		"get_gear", "remove_gear_from_activity",
-		"set_activity_description", "set_activity_event_type",
-		"set_activity_exercise_sets", "set_activity_feel", "set_activity_name",
-		"set_activity_type", "set_perceived_effort", "upload_course",
+		"get_activity_fit_data", "get_activity_fit_messages", "get_activity_gear",
+		"get_activity_hr_in_timezones", "get_activity_power_in_timezones",
+		"get_activity_split_summaries", "get_activity_splits",
+		"get_activity_typed_splits", "get_activity_types", "get_activity_weather",
+		"get_course_details", "get_courses", "get_gear", "get_power_duration_curve",
+		"remove_gear_from_activity", "set_activity_description",
+		"set_activity_event_type", "set_activity_exercise_sets", "set_activity_feel",
+		"set_activity_name", "set_activity_type", "set_fit_download_dir",
+		"set_perceived_effort", "upload_course",
 	}
 	training := []string{
 		"get_acclimation", "get_adhoc_challenges", "get_available_badge_challenges",
