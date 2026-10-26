@@ -1,0 +1,1316 @@
+{
+ "MOCK_ACTIVITIES": [
+  {
+   "activityId": 12345678901,
+   "activityName": "Morning Run",
+   "activityType": {
+    "typeId": 1,
+    "typeKey": "running"
+   },
+   "averageHR": 145,
+   "averageSpeed": 2.78,
+   "calories": 350,
+   "distance": 5000.0,
+   "duration": 1800.0,
+   "eventType": {
+    "typeId": 1,
+    "typeKey": "race"
+   },
+   "maxHR": 165,
+   "maxSpeed": 3.5,
+   "startTimeLocal": "2024-01-15 07:00:00"
+  },
+  {
+   "activityId": 12345678902,
+   "activityName": "Cycling",
+   "activityType": {
+    "typeId": 2,
+    "typeKey": "cycling"
+   },
+   "averageHR": 130,
+   "calories": 600,
+   "distance": 20000.0,
+   "duration": 3600.0,
+   "eventType": {
+    "typeId": 6,
+    "typeKey": "training"
+   },
+   "maxHR": 155,
+   "startTimeLocal": "2024-01-14 16:00:00"
+  }
+ ],
+ "MOCK_ACTIVITY_COUNT": 523,
+ "MOCK_ACTIVITY_DETAILS": {
+  "activityId": 12345678901,
+  "activityName": "Morning Run",
+  "activityType": {
+   "typeId": 1,
+   "typeKey": "running"
+  },
+  "activityTypeDTO": {
+   "parentTypeId": 17,
+   "typeId": 1,
+   "typeKey": "running"
+  },
+  "averageHR": 145,
+  "calories": 350,
+  "description": "Felt strong throughout. New shoes.",
+  "distance": 5000.0,
+  "duration": 1800.0,
+  "eventTypeDTO": {
+   "sortOrder": 5,
+   "typeId": 1,
+   "typeKey": "race"
+  },
+  "maxHR": 165,
+  "metadataDTO": {
+   "deviceName": "Garmin Forerunner 945",
+   "lapCount": 2
+  },
+  "startTimeLocal": "2024-01-15 07:00:00",
+  "summaryDTO": {
+   "averageHR": 145,
+   "calories": 350,
+   "distance": 5000.0,
+   "duration": 1800.0,
+   "elevationGain": 50.5,
+   "maxHR": 165,
+   "startTimeGMT": "2024-01-15 07:00:00",
+   "startTimeLocal": "2024-01-15 07:00:00"
+  }
+ },
+ "MOCK_ACTIVITY_SPLITS": {
+  "lapDTOs": [
+   {
+    "averageHR": 142,
+    "averageSpeed": 2.78,
+    "distance": 1000.0,
+    "duration": 360.0,
+    "elevationGain": 25.5,
+    "elevationLoss": 10.2,
+    "lapIndex": 1
+   },
+   {
+    "averageHR": 145,
+    "averageSpeed": 2.86,
+    "distance": 1000.0,
+    "duration": 350.0,
+    "elevationGain": 15.0,
+    "elevationLoss": 30.8,
+    "lapIndex": 2
+   }
+  ]
+ },
+ "MOCK_ACTIVITY_TYPES": [
+  {
+   "displayName": "Running",
+   "isHidden": false,
+   "parentTypeId": null,
+   "typeId": 1,
+   "typeKey": "running"
+  },
+  {
+   "displayName": "Cycling",
+   "isHidden": false,
+   "parentTypeId": null,
+   "typeId": 2,
+   "typeKey": "cycling"
+  },
+  {
+   "displayName": "Hiking",
+   "isHidden": false,
+   "parentTypeId": 17,
+   "typeId": 3,
+   "typeKey": "hiking"
+  },
+  {
+   "displayName": "Yoga",
+   "isHidden": false,
+   "parentTypeId": 29,
+   "typeId": 163,
+   "typeKey": "yoga"
+  }
+ ],
+ "MOCK_BADGES": [
+  {
+   "badgeDescription": "Achieved 10,000 steps for 7 consecutive days",
+   "badgeId": 1,
+   "badgeName": "10K Steps - 7 Days",
+   "earnedDate": "2024-01-15"
+  }
+ ],
+ "MOCK_BLOOD_PRESSURE": [
+  {
+   "diastolic": 80,
+   "measurementTimeStamp": 1705276800000,
+   "pulse": 65,
+   "systolic": 120
+  }
+ ],
+ "MOCK_BODY_BATTERY": [
+  {
+   "bodyBatteryMostRecentValue": 75,
+   "bodyBatteryValuesList": [
+    {
+     "timestampGMT": 1705276800000,
+     "value": 100
+    },
+    {
+     "timestampGMT": 1705280400000,
+     "value": 90
+    },
+    {
+     "timestampGMT": 1705284000000,
+     "value": 80
+    }
+   ],
+   "chargedValue": 100,
+   "drainedValue": 25,
+   "endTimestampGMT": 1705363200000,
+   "startTimestampGMT": 1705276800000
+  }
+ ],
+ "MOCK_BODY_BATTERY_EVENTS": {
+  "events": [
+   {
+    "endTimeGMT": 1705280400000,
+    "impact": -10,
+    "startTimeGMT": 1705276800000,
+    "type": "STRESS"
+   },
+   {
+    "endTimeGMT": 1705284000000,
+    "impact": -15,
+    "startTimeGMT": 1705280400000,
+    "type": "ACTIVITY"
+   }
+  ]
+ },
+ "MOCK_BODY_COMPOSITION": {
+  "bmi": 22.5,
+  "bodyFat": 15.0,
+  "bodyWater": 60.0,
+  "boneMass": 3.2,
+  "measurementTimeStamp": 1705276800000,
+  "muscleMass": 32.5,
+  "weight": 70000
+ },
+ "MOCK_CYCLING_FTP": {
+  "biometricSourceType": "CHANGE_LOG",
+  "calendarDate": "2024-03-15T10:30:00.000",
+  "functionalThresholdPower": 294,
+  "isStale": false,
+  "sequence": 1710498600000,
+  "sport": "CYCLING",
+  "userProfilePK": 12345678,
+  "version": 1710498600000
+ },
+ "MOCK_DAILY_STEPS": [
+  {
+   "calendarDate": "2024-01-15",
+   "dailyStepGoal": 8000,
+   "steps": 10000
+  },
+  {
+   "calendarDate": "2024-01-14",
+   "dailyStepGoal": 8000,
+   "steps": 9500
+  }
+ ],
+ "MOCK_DAILY_WEIGH_INS": {
+  "dateWeightList": [
+   {
+    "bmi": 22.5,
+    "bodyFat": 15.0,
+    "bodyWater": 60.0,
+    "boneMass": 3200,
+    "calendarDate": "2024-01-15",
+    "muscleMass": 32500,
+    "samplePk": 1705276800000,
+    "sourceType": "MANUAL",
+    "timestampGMT": 1705276800000,
+    "weight": 70000
+   }
+  ],
+  "endDate": "2024-01-15",
+  "startDate": "2024-01-15",
+  "totalAverage": {
+   "bmi": 22.5,
+   "weight": 70000
+  }
+ },
+ "MOCK_DEVICES": [
+  {
+   "batteryStatus": "GOOD",
+   "deviceId": 123456789,
+   "deviceStatus": "ACTIVE",
+   "displayName": "Garmin Forerunner 945",
+   "productNumber": "006-B3069-00",
+   "softwareVersion": "15.50"
+  }
+ ],
+ "MOCK_DEVICE_LAST_USED": {
+  "imageUrl": "https://example.com/device.png",
+  "lastUsedDeviceApplicationKey": "123456789",
+  "lastUsedDeviceName": "Garmin Forerunner 945",
+  "lastUsedDeviceUploadTime": 1706457600000,
+  "userDeviceId": 4113247000,
+  "userProfileNumber": 80653452
+ },
+ "MOCK_DEVICE_SETTINGS": {
+  "activityTrackingOn": true,
+  "autoGoalEnabled": true,
+  "backlightMode": "AUTO",
+  "deviceId": 123456789,
+  "displayName": "Garmin Forerunner 945",
+  "timeFormat": "24_HOUR"
+ },
+ "MOCK_DEVICE_SOLAR_DATA": {
+  "solarDailyDataDTOs": [
+   {
+    "deviceId": 123456789,
+    "localConnectDate": "2024-01-15",
+    "solarInputReadings": [
+     {
+      "activityTimeGainedMs": 0,
+      "readingTimestampGmt": "2024-01-15T09:00:00.0",
+      "readingTimestampLocal": "2024-01-15T10:00:00.0",
+      "solarUtilization": 0.0
+     },
+     {
+      "activityTimeGainedMs": 12000,
+      "readingTimestampGmt": "2024-01-15T09:01:00.0",
+      "readingTimestampLocal": "2024-01-15T10:01:00.0",
+      "solarUtilization": 40.0
+     },
+     {
+      "activityTimeGainedMs": 30000,
+      "readingTimestampGmt": "2024-01-15T09:02:00.0",
+      "readingTimestampLocal": "2024-01-15T10:02:00.0",
+      "solarUtilization": 100.0
+     },
+     {
+      "activityTimeGainedMs": 6000,
+      "readingTimestampGmt": "2024-01-15T09:03:00.0",
+      "readingTimestampLocal": "2024-01-15T10:03:00.0",
+      "solarUtilization": 20.0
+     }
+    ],
+    "totalActivityTimeGainedMs": 1800000
+   }
+  ]
+ },
+ "MOCK_ENDURANCE_SCORE": {
+  "avg": 5631,
+  "endDate": "2024-01-15",
+  "enduranceScoreDTO": {
+   "calendarDate": "2024-01-15",
+   "classification": 2,
+   "classificationLowerLimitElite": 8600,
+   "classificationLowerLimitExpert": 7200,
+   "classificationLowerLimitIntermediate": 5100,
+   "classificationLowerLimitSuperior": 7900,
+   "classificationLowerLimitTrained": 5800,
+   "classificationLowerLimitWellTrained": 6500,
+   "contributors": [
+    {
+     "activityTypeId": null,
+     "contribution": 87.47,
+     "group": 0
+    },
+    {
+     "activityTypeId": 3,
+     "contribution": 5.49,
+     "group": null
+    },
+    {
+     "activityTypeId": 163,
+     "contribution": 3.13,
+     "group": null
+    },
+    {
+     "activityTypeId": null,
+     "contribution": 3.91,
+     "group": 8
+    }
+   ],
+   "deviceId": 1234567890,
+   "feedbackPhrase": 38,
+   "gaugeLowerLimit": 3570,
+   "gaugeUpperLimit": 10320,
+   "overallScore": 5712,
+   "primaryTrainingDevice": true,
+   "userProfilePK": 12345678
+  },
+  "groupMap": {
+   "2024-01-08": {
+    "enduranceContributorDTOList": [
+     {
+      "activityTypeId": 3,
+      "contribution": 8.89,
+      "group": null
+     },
+     {
+      "activityTypeId": null,
+      "contribution": 82.15,
+      "group": 0
+     },
+     {
+      "activityTypeId": null,
+      "contribution": 4.1,
+      "group": 1
+     },
+     {
+      "activityTypeId": null,
+      "contribution": 4.86,
+      "group": 8
+     }
+    ],
+    "groupAverage": 5548,
+    "groupMax": 5561
+   }
+  },
+  "max": 5740,
+  "startDate": "2024-01-08",
+  "userProfilePK": 12345678
+ },
+ "MOCK_FLOORS": {
+  "floorsAscended": 15,
+  "floorsAscendedGoal": 10,
+  "floorsDescended": 12,
+  "floorsList": [
+   {
+    "floors": 3,
+    "timestampGMT": 1705276800000
+   },
+   {
+    "floors": 5,
+    "timestampGMT": 1705280400000
+   },
+   {
+    "floors": 7,
+    "timestampGMT": 1705284000000
+   }
+  ]
+ },
+ "MOCK_GEAR": [
+  {
+   "customMakeModel": "Asics Nimbus 25",
+   "dateBegin": "2024-03-15T00:00:00.0",
+   "dateEnd": null,
+   "displayName": "Nimbus 25",
+   "gearMakeName": "Other",
+   "gearModelName": "Unknown Shoes",
+   "gearPk": 37406207,
+   "gearStatusName": "active",
+   "gearTypeName": "Shoes",
+   "maximumMeters": 643738.0,
+   "notified": true,
+   "userProfilePk": 80653452,
+   "uuid": "8abfc40d71fb4860bce19072b6c79644"
+  },
+  {
+   "customMakeModel": "ASICS Gel-Nimbus 24",
+   "dateBegin": "2022-09-09T23:00:00.0",
+   "dateEnd": "2024-04-01T19:14:05.0",
+   "displayName": "Nimbus 24",
+   "gearMakeName": "Other",
+   "gearModelName": "Unknown Shoes",
+   "gearPk": 30974314,
+   "gearStatusName": "retired",
+   "gearTypeName": "Shoes",
+   "maximumMeters": 700000.0,
+   "notified": true,
+   "userProfilePk": 80653452,
+   "uuid": "6f27ed27397749ac9f6f450e039c2424"
+  }
+ ],
+ "MOCK_GEAR_DEFAULTS": [
+  {
+   "activityTypePk": 1,
+   "defaultGear": true,
+   "uuid": "8abfc40d71fb4860bce19072b6c79644"
+  }
+ ],
+ "MOCK_GEAR_STATS": {
+  "createDate": 1710511566000,
+  "gearPk": 37406207,
+  "isProcessing": false,
+  "processing": false,
+  "totalActivities": 137,
+  "totalDistance": 881406.607421875,
+  "updateDate": 1769631904000,
+  "uuid": "8abfc40d71fb4860bce19072b6c79644"
+ },
+ "MOCK_GEAR_V2": [
+  {
+   "name": "Nimbus 25",
+   "notes": "Rotation shoe; blue laces.",
+   "uuid": "8ABFC40D-71FB-4860-BCE1-9072B6C79644"
+  },
+  {
+   "name": "Nimbus 24",
+   "uuid": "6f27ed27-3977-49ac-9f6f-450e039c2424"
+  }
+ ],
+ "MOCK_GOALS": {
+  "goals": [
+   {
+    "currentValue": 10000,
+    "goalType": "STEPS",
+    "goalValue": 8000,
+    "progress": 125
+   }
+  ]
+ },
+ "MOCK_HEART_RATES": {
+  "heartRateValues": [
+   [
+    1705276800000,
+    55
+   ],
+   [
+    1705280400000,
+    65
+   ],
+   [
+    1705284000000,
+    75
+   ]
+  ],
+  "lastSevenDaysAvgRestingHeartRate": 57,
+  "maxHeartRate": 180,
+  "minHeartRate": 45,
+  "restingHeartRate": 55
+ },
+ "MOCK_HRV_DATA": {
+  "hrvReadings": [
+   {
+    "hrvValue": 45,
+    "readingTimeGMT": "2024-01-15T00:15:00.0",
+    "readingTimeLocal": "2024-01-15T00:15:00.0"
+   },
+   {
+    "hrvValue": 48,
+    "readingTimeGMT": "2024-01-15T00:20:00.0",
+    "readingTimeLocal": "2024-01-15T00:20:00.0"
+   },
+   {
+    "hrvValue": 52,
+    "readingTimeGMT": "2024-01-15T00:25:00.0",
+    "readingTimeLocal": "2024-01-15T00:25:00.0"
+   }
+  ],
+  "hrvSummary": {
+   "baseline": {
+    "balancedLow": 40,
+    "balancedUpper": 55,
+    "lowUpper": 35,
+    "markerValue": 0.5
+   },
+   "calendarDate": "2024-01-15",
+   "createTimeStamp": "2024-01-15T07:30:00.000",
+   "feedbackPhrase": "HRV_BALANCED_2",
+   "lastNight5MinHigh": 52,
+   "lastNightAvg": 48,
+   "status": "BALANCED",
+   "weeklyAvg": 45
+  },
+  "sleepEndTimestampLocal": "2024-01-15T07:30:00.0",
+  "sleepStartTimestampLocal": "2024-01-15T00:10:00.0",
+  "userProfilePk": 12345678
+ },
+ "MOCK_HYDRATION_DATA": {
+  "goalInML": 2500,
+  "sweatLossInML": 500,
+  "valueInML": 2000
+ },
+ "MOCK_LACTATE_THRESHOLD": {
+  "power": {
+   "calendarDate": "2024-01-15T11:00:00.000",
+   "functionalThresholdPower": 334,
+   "isStale": false,
+   "origin": "weight",
+   "powerToWeight": 4.575,
+   "sport": "RUNNING",
+   "userProfilePk": 12345678,
+   "weight": 73.0
+  },
+  "speed_and_heart_rate": {
+   "calendarDate": "2024-01-15T10:30:00.000",
+   "heartRate": 169,
+   "heartRateCycling": null,
+   "speed": 0.3888878,
+   "userProfilePK": 12345678
+  }
+ },
+ "MOCK_LACTATE_THRESHOLD_RANGE": {
+  "heart_rate": [
+   {
+    "from": "2024-01-08",
+    "series": "running",
+    "until": "2024-01-08",
+    "updatedDate": "2024-01-08",
+    "value": 165
+   },
+   {
+    "from": "2024-01-12",
+    "series": "running",
+    "until": "2024-01-12",
+    "updatedDate": "2024-01-12",
+    "value": 167
+   },
+   {
+    "from": "2024-01-15",
+    "series": "running",
+    "until": "2024-01-15",
+    "updatedDate": "2024-01-15",
+    "value": 169
+   }
+  ],
+  "power": [
+   {
+    "from": "2024-01-15",
+    "series": "running",
+    "until": "2024-01-15",
+    "updatedDate": "2024-01-15",
+    "value": 334.0
+   }
+  ],
+  "speed": [
+   {
+    "from": "2024-01-08",
+    "series": "running",
+    "until": "2024-01-08",
+    "updatedDate": "2024-01-08",
+    "value": 0.39166557
+   },
+   {
+    "from": "2024-01-12",
+    "series": "running",
+    "until": "2024-01-12",
+    "updatedDate": "2024-01-12",
+    "value": 0.39166557
+   },
+   {
+    "from": "2024-01-15",
+    "series": "running",
+    "until": "2024-01-15",
+    "updatedDate": "2024-01-15",
+    "value": 0.3888878
+   }
+  ]
+ },
+ "MOCK_LIFESTYLE_LOGGING_DATA": {
+  "calendarDate": "2024-01-15",
+  "lifestyleLogs": [
+   {
+    "notes": "Morning coffee",
+    "timestamp": "2024-01-15T08:00:00",
+    "type": "caffeine_consumption",
+    "value": "2 cups"
+   },
+   {
+    "notes": "Red wine",
+    "timestamp": "2024-01-15T20:00:00",
+    "type": "alcohol_consumption",
+    "value": "1 glass"
+   }
+  ]
+ },
+ "MOCK_MENSTRUAL_DATA": {
+  "calendarDate": "2024-01-15",
+  "cycleDay": 15,
+  "phase": "FOLLICULAR",
+  "symptoms": []
+ },
+ "MOCK_MORNING_TRAINING_READINESS": {
+  "acuteLoad": 310,
+  "acwrFactorFeedback": "VERY_GOOD",
+  "acwrFactorPercent": 95,
+  "calendarDate": "2024-01-15",
+  "feedbackShort": "WELL_RECOVERED",
+  "hrvFactorFeedback": "GOOD",
+  "hrvFactorPercent": 70,
+  "hrvWeeklyAverage": 58,
+  "inputContext": "AFTER_WAKEUP_RESET",
+  "level": "MODERATE",
+  "recoveryTime": 330,
+  "recoveryTimeChangePhrase": "NO_CHANGE_SLEEP",
+  "recoveryTimeFactorFeedback": "GOOD",
+  "recoveryTimeFactorPercent": 90,
+  "score": 62,
+  "sleepHistoryFactorFeedback": "MODERATE",
+  "sleepHistoryFactorPercent": 65,
+  "sleepScore": 81,
+  "sleepScoreFactorFeedback": "GOOD",
+  "sleepScoreFactorPercent": 78,
+  "stressHistoryFactorFeedback": "GOOD",
+  "stressHistoryFactorPercent": 80,
+  "timestamp": "2024-01-15T14:05:00.0",
+  "timestampLocal": "2024-01-15T06:05:00.0"
+ },
+ "MOCK_PERSONAL_RECORD": [
+  {
+   "activityId": 12345678901,
+   "activityName": "Evening Run",
+   "activityType": "running",
+   "id": 1001,
+   "poolLengthUnit": null,
+   "prStartTimeGmt": 1705304700000,
+   "prStartTimeGmtFormatted": "2024-01-15T07:45:00.0",
+   "prStartTimeLocal": 1705275900000,
+   "prStartTimeLocalFormatted": "2024-01-14T23:45:00.0",
+   "prTypeLabelKey": null,
+   "status": "ACCEPTED",
+   "typeId": 3,
+   "value": 1200.0
+  },
+  {
+   "activityId": null,
+   "activityName": null,
+   "activityType": null,
+   "id": 1002,
+   "poolLengthUnit": null,
+   "prStartTimeGmt": 1704873600000,
+   "prStartTimeGmtFormatted": "2024-01-10T08:00:00.0",
+   "prStartTimeLocal": 1704844800000,
+   "prStartTimeLocalFormatted": "2024-01-10T00:00:00.0",
+   "prTypeLabelKey": null,
+   "status": "ACCEPTED",
+   "typeId": 12,
+   "value": 25000.0
+  }
+ ],
+ "MOCK_PROGRESS_SUMMARY": {
+  "aerobicEffect": 3.5,
+  "anaerobicEffect": 2.0,
+  "totalDistance": 50000,
+  "totalDuration": 360000,
+  "trainingLoad": 250
+ },
+ "MOCK_RESPIRATION_DATA": {
+  "avgRespirationRate": 14.5,
+  "calendarDate": "2024-01-15",
+  "maxRespirationRate": 18,
+  "minRespirationRate": 12,
+  "sleepAvgRespirationRate": 13.0
+ },
+ "MOCK_RHR_DAY": {
+  "calendarDate": "2024-01-15",
+  "lastNightAvgRestingHeartRate": 53,
+  "lastSevenDaysAvgRestingHeartRate": 57,
+  "restingHeartRate": 55
+ },
+ "MOCK_RUNNING_TOLERANCE_DAILY": [
+  {
+   "acuteDistance": 22000,
+   "acuteImpactLoad": 25000,
+   "acuteTolerance": 34000,
+   "calendarDate": "2024-01-15",
+   "runningToleranceFeedBackPhrase": "MEDIUM_LOAD",
+   "userProfilePK": 12345678
+  }
+ ],
+ "MOCK_RUNNING_TOLERANCE_DAILY_TREND": [
+  {
+   "acuteDistance": 23000,
+   "acuteImpactLoad": 26000,
+   "acuteTolerance": 34500,
+   "calendarDate": "2024-01-16",
+   "runningToleranceFeedBackPhrase": "MEDIUM_LOAD",
+   "userProfilePK": 12345678
+  },
+  {
+   "acuteDistance": 22000,
+   "acuteImpactLoad": 25000,
+   "acuteTolerance": 34000,
+   "calendarDate": "2024-01-15",
+   "runningToleranceFeedBackPhrase": "MEDIUM_LOAD",
+   "userProfilePK": 12345678
+  }
+ ],
+ "MOCK_RUNNING_TOLERANCE_WEEKLY": [
+  {
+   "calendarDate": "2024-01-08",
+   "endOfWeek": "2024-01-08",
+   "startOfWeek": "2024-01-02",
+   "tolerance": 33000,
+   "totalDistance": 24000.0,
+   "totalImpactLoad": 26000,
+   "userProfilePK": 12345678,
+   "weekIndex": 1900
+  },
+  {
+   "calendarDate": "2024-01-15",
+   "endOfWeek": "2024-01-15",
+   "startOfWeek": "2024-01-09",
+   "tolerance": 34000,
+   "totalDistance": 26000.0,
+   "totalImpactLoad": 28000,
+   "userProfilePK": 12345678,
+   "weekIndex": 1901
+  }
+ ],
+ "MOCK_SLEEP_DATA": {
+  "avgOvernightHrv": 45,
+  "dailySleepDTO": {
+   "avgSleepStress": 15,
+   "awakeCount": 2,
+   "awakeSleepSeconds": 0,
+   "calendarDate": "2024-01-15",
+   "deepSleepSeconds": 7200,
+   "id": 123456,
+   "lightSleepSeconds": 14400,
+   "napTimeSeconds": 0,
+   "remSleepSeconds": 7200,
+   "restingHeartRate": 55,
+   "restlessMomentsCount": 15,
+   "sleepEndTimestampGMT": 1705305600000,
+   "sleepScores": {
+    "durationScore": {
+     "value": 90
+    },
+    "overall": {
+     "optimalEnd": 100,
+     "optimalStart": 75,
+     "qualifierKey": "GOOD",
+     "value": 85
+    },
+    "qualityScore": {
+     "value": 80
+    }
+   },
+   "sleepStartTimestampGMT": 1705276800000,
+   "sleepStress": {
+    "avgSleepStress": 15,
+    "maxSleepStress": 25
+   },
+   "sleepTimeSeconds": 28800,
+   "unmeasurableSleepSeconds": 0
+  },
+  "sleepMovement": [],
+  "wellnessSpO2SleepSummaryDTO": {
+   "averageSpo2": 96,
+   "calendarDate": "2024-01-15",
+   "highestSpo2": 98,
+   "lowestSpo2": 93
+  }
+ },
+ "MOCK_SPO2_DATA": {
+  "averageSpo2": 96,
+  "calendarDate": "2024-01-15",
+  "highestSpo2": 98,
+  "lowestSpo2": 93,
+  "spo2Values": [
+   [
+    1705276800000,
+    96
+   ],
+   [
+    1705280400000,
+    95
+   ],
+   [
+    1705284000000,
+    97
+   ]
+  ]
+ },
+ "MOCK_STATS": {
+  "activeKilocalories": 800,
+  "averageStressLevel": 25,
+  "bmrKilocalories": 1700,
+  "burnedKilocalories": 2500,
+  "dailyStepGoal": 8000,
+  "maxStressLevel": 60,
+  "restingHeartRate": 55,
+  "totalKilocalories": 2500,
+  "totalSteps": 10000,
+  "wellnessActiveKilocalories": 800,
+  "wellnessDistanceMeters": 7500.0,
+  "wellnessKilocalories": 2300
+ },
+ "MOCK_STEPS_DATA": {
+  "dailyStepGoal": 8000,
+  "stepGoalDistance": 10000,
+  "steps": 10000,
+  "stepsMilestone": [
+   {
+    "steps": 2000,
+    "timestampGMT": 1705276800000
+   },
+   {
+    "steps": 5000,
+    "timestampGMT": 1705280400000
+   },
+   {
+    "steps": 8000,
+    "timestampGMT": 1705284000000
+   },
+   {
+    "steps": 10000,
+    "timestampGMT": 1705287600000
+   }
+  ],
+  "totalDistance": 7500,
+  "wellnessDistanceUnit": "meter"
+ },
+ "MOCK_STRESS_DATA": {
+  "avgStressLevel": 25,
+  "calendarDate": "2024-01-15",
+  "maxStressLevel": 60,
+  "stressChartValueOffset": 0,
+  "stressValueDescriptorList": [
+   {
+    "index": 0,
+    "key": "LOW"
+   },
+   {
+    "index": 1,
+    "key": "MEDIUM"
+   },
+   {
+    "index": 2,
+    "key": "HIGH"
+   }
+  ],
+  "stressValuesArray": [
+   [
+    1705276800000,
+    20
+   ],
+   [
+    1705280400000,
+    30
+   ],
+   [
+    1705284000000,
+    25
+   ]
+  ]
+ },
+ "MOCK_SWIM_ACTIVITY_SPLITS": {
+  "activityId": 22526515067,
+  "lapDTOs": [
+   {
+    "averageHR": 136.0,
+    "averageMovingSpeed": 0.67566553875138,
+    "averageSWOLF": 45.0,
+    "averageSpeed": 0.6759999990463257,
+    "averageStrokeDistance": 0.0,
+    "averageStrokes": 12.0,
+    "averageSwimCadence": 22.0,
+    "bmrCalories": 85.0,
+    "calories": 552.0,
+    "distance": 2024.0,
+    "duration": 2995.565,
+    "elapsedDuration": 2995.565,
+    "lapIndex": 1,
+    "lengthDTOs": [
+     {
+      "averageHR": 121.0,
+      "averageSWOLF": 42.0,
+      "averageSpeed": 0.7099999785423279,
+      "calories": 6.0,
+      "distance": 22.0,
+      "duration": 31.0,
+      "lengthIndex": 1,
+      "maxHR": 134.0,
+      "maxSpeed": 0.7099999785423279,
+      "startTimeGMT": "2026-04-14T17:19:08.0",
+      "swimStroke": "FREESTYLE",
+      "totalNumberOfStrokes": 11
+     },
+     {
+      "averageHR": 135.0,
+      "averageSWOLF": 43.0,
+      "averageSpeed": 0.7070000171661376,
+      "calories": 6.0,
+      "distance": 22.0,
+      "duration": 31.125,
+      "lengthIndex": 2,
+      "maxHR": 142.0,
+      "maxSpeed": 0.7070000171661376,
+      "startTimeGMT": "2026-04-14T17:19:39.0",
+      "swimStroke": "FREESTYLE",
+      "totalNumberOfStrokes": 12
+     }
+    ],
+    "maxHR": 152.0,
+    "maxSpeed": 0.7689999938011169,
+    "movingDuration": 2995.565,
+    "numberOfActiveLengths": 92,
+    "startTimeGMT": "2026-04-14T17:19:08.0",
+    "totalNumberOfStrokes": 1104,
+    "wktStepIndex": 0
+   }
+  ]
+ },
+ "MOCK_SWIM_WORKOUT_DETAILS": {
+  "createdDate": "2026-04-06T12:37:29.0",
+  "description": "Example swim workout with Garmin secondary pace targets",
+  "estimatedDistanceInMeters": 3000.0,
+  "sportType": {
+   "sportTypeId": 4,
+   "sportTypeKey": "swimming"
+  },
+  "updatedDate": "2026-04-07T09:59:49.0",
+  "workoutId": 1528077786,
+  "workoutName": "Long Swim - intermittent 1000m",
+  "workoutSegments": [
+   {
+    "segmentOrder": 1,
+    "sportType": {
+     "sportTypeId": 4,
+     "sportTypeKey": "swimming"
+    },
+    "workoutSteps": [
+     {
+      "description": "2:24-3:42/100m",
+      "endCondition": {
+       "conditionTypeId": 3,
+       "conditionTypeKey": "distance"
+      },
+      "endConditionValue": 500.0,
+      "secondaryTargetType": {
+       "workoutTargetTypeId": 6,
+       "workoutTargetTypeKey": "pace.zone"
+      },
+      "secondaryTargetValueOne": 0.45,
+      "secondaryTargetValueTwo": 0.6916667,
+      "stepId": 12984228432,
+      "stepOrder": 1,
+      "stepType": {
+       "stepTypeId": 1,
+       "stepTypeKey": "warmup"
+      },
+      "targetType": null,
+      "type": "ExecutableStepDTO"
+     },
+     {
+      "numberOfIterations": 2,
+      "stepId": 12984228433,
+      "stepOrder": 2,
+      "stepType": {
+       "stepTypeId": 6,
+       "stepTypeKey": "repeat"
+      },
+      "type": "RepeatGroupDTO",
+      "workoutSteps": [
+       {
+        "description": "1:56-2:09/100m",
+        "endCondition": {
+         "conditionTypeId": 3,
+         "conditionTypeKey": "distance"
+        },
+        "endConditionValue": 1000.0,
+        "secondaryTargetType": {
+         "workoutTargetTypeId": 6,
+         "workoutTargetTypeKey": "pace.zone"
+        },
+        "secondaryTargetValueOne": 0.7751938,
+        "secondaryTargetValueTwo": 0.8583333,
+        "stepId": 12984228434,
+        "stepOrder": 3,
+        "stepType": {
+         "stepTypeId": 3,
+         "stepTypeKey": "interval"
+        },
+        "targetType": null,
+        "type": "ExecutableStepDTO"
+       },
+       {
+        "endCondition": {
+         "conditionTypeId": 8,
+         "conditionTypeKey": "fixed.rest"
+        },
+        "endConditionValue": 60.0,
+        "stepId": 12984228435,
+        "stepOrder": 4,
+        "stepType": {
+         "stepTypeId": 5,
+         "stepTypeKey": "rest"
+        },
+        "targetType": null,
+        "type": "ExecutableStepDTO"
+       }
+      ]
+     }
+    ]
+   }
+  ]
+ },
+ "MOCK_TRAINING_READINESS": [
+  {
+   "acuteLoad": 310,
+   "acwrFactorFeedback": "VERY_GOOD",
+   "acwrFactorPercent": 95,
+   "calendarDate": "2024-01-15",
+   "feedbackShort": "WELL_RECOVERED",
+   "hrvFactorFeedback": "GOOD",
+   "hrvFactorPercent": 70,
+   "hrvWeeklyAverage": 58,
+   "inputContext": "AFTER_WAKEUP_RESET",
+   "level": "MODERATE",
+   "recoveryTime": 330,
+   "recoveryTimeChangePhrase": "NO_CHANGE_SLEEP",
+   "recoveryTimeFactorFeedback": "GOOD",
+   "recoveryTimeFactorPercent": 90,
+   "score": 62,
+   "sleepHistoryFactorFeedback": "MODERATE",
+   "sleepHistoryFactorPercent": 65,
+   "sleepScore": 81,
+   "sleepScoreFactorFeedback": "GOOD",
+   "sleepScoreFactorPercent": 78,
+   "stressHistoryFactorFeedback": "GOOD",
+   "stressHistoryFactorPercent": 80,
+   "timestamp": "2024-01-15T14:05:00.0",
+   "timestampLocal": "2024-01-15T06:05:00.0"
+  },
+  {
+   "acuteLoad": 395,
+   "acwrFactorFeedback": "GOOD",
+   "acwrFactorPercent": 85,
+   "calendarDate": "2024-01-15",
+   "feedbackShort": "TAKE_IT_EASY",
+   "hrvFactorFeedback": "GOOD",
+   "hrvFactorPercent": 70,
+   "hrvWeeklyAverage": 58,
+   "inputContext": "AFTER_POST_EXERCISE_RESET",
+   "level": "LOW",
+   "recoveryTime": 1080,
+   "recoveryTimeChangePhrase": "INCREASED_EXERCISE",
+   "recoveryTimeFactorFeedback": "POOR",
+   "recoveryTimeFactorPercent": 40,
+   "score": 38,
+   "timestamp": "2024-01-15T19:40:00.0",
+   "timestampLocal": "2024-01-15T11:40:00.0"
+  }
+ ],
+ "MOCK_TRAINING_STATUS": {
+  "mostRecentTrainingLoadBalance": {},
+  "mostRecentTrainingStatus": {
+   "latestTrainingStatusData": {
+    "device-123456": {
+     "acuteTrainingLoadDTO": {
+      "acwrPercent": 75,
+      "acwrStatus": "OPTIMAL",
+      "dailyAcuteChronicWorkloadRatio": 1.14,
+      "dailyTrainingLoadAcute": 250,
+      "dailyTrainingLoadChronic": 220
+     },
+     "calendarDate": "2024-01-15",
+     "fitnessTrend": "INCREASING",
+     "sport": "RUNNING",
+     "trainingStatus": "PRODUCTIVE",
+     "trainingStatusFeedbackPhrase": "MAINTAINING"
+    }
+   }
+  },
+  "mostRecentVO2Max": {
+   "cycling": {
+    "vo2MaxPreciseValue": 55.12,
+    "vo2MaxValue": 55.0
+   },
+   "generic": {
+    "vo2MaxPreciseValue": 52.47,
+    "vo2MaxValue": 52.5
+   }
+  }
+ },
+ "MOCK_UNIT_SYSTEM": {
+  "distanceUnit": "KILOMETER",
+  "elevationUnit": "METER",
+  "temperatureUnit": "CELSIUS",
+  "unitSystem": "METRIC",
+  "weightUnit": "KILOGRAM"
+ },
+ "MOCK_USER_PROFILE": {
+  "age": 30,
+  "displayName": "Test User",
+  "email": "test@example.com",
+  "fitnessAge": 25,
+  "fullName": "Test User Full Name",
+  "gender": "MALE",
+  "height": 175.0,
+  "profileId": 123456,
+  "vo2Max": 52.5,
+  "weight": 70.0
+ },
+ "MOCK_USER_SUMMARY": {
+  "activeKilocalories": 800,
+  "dailyStepGoal": 8000,
+  "displayName": "Test User",
+  "intensityMinutesGoal": 150,
+  "moderateIntensityMinutes": 45,
+  "restingHeartRate": 55,
+  "totalDistanceMeters": 7500.0,
+  "totalKilocalories": 2500,
+  "totalSteps": 10000,
+  "userId": 123456,
+  "vigorousIntensityMinutes": 15
+ },
+ "MOCK_WEEKLY_INTENSITY_MINUTES": [
+  {
+   "calendarDate": "2024-01-08",
+   "moderateValue": 120,
+   "vigorousValue": 45,
+   "weeklyGoal": 150
+  },
+  {
+   "calendarDate": "2024-01-01",
+   "moderateValue": 90,
+   "vigorousValue": 30,
+   "weeklyGoal": 150
+  }
+ ],
+ "MOCK_WEEKLY_STEPS": [
+  {
+   "calendarDate": "2024-01-08",
+   "values": {
+    "averageDistance": 7142,
+    "averageSteps": 10000,
+    "totalDistance": 50000,
+    "totalSteps": 70000,
+    "wellnessDataDaysCount": 7
+   }
+  },
+  {
+   "calendarDate": "2024-01-01",
+   "values": {
+    "averageDistance": 6571,
+    "averageSteps": 9285,
+    "totalDistance": 46000,
+    "totalSteps": 65000,
+    "wellnessDataDaysCount": 7
+   }
+  }
+ ],
+ "MOCK_WEEKLY_STRESS": [
+  {
+   "calendarDate": "2024-01-08",
+   "value": 35
+  },
+  {
+   "calendarDate": "2024-01-01",
+   "value": 38
+  }
+ ],
+ "MOCK_WEIGH_INS": {
+  "dailyWeightSummaries": [
+   {
+    "allWeightMetrics": [
+     {
+      "bmi": 22.5,
+      "bodyFat": 15.0,
+      "bodyWater": 60.0,
+      "boneMass": 3200,
+      "calendarDate": "2024-01-15",
+      "muscleMass": 32500,
+      "samplePk": 1705276800000,
+      "sourceType": "MANUAL",
+      "timestampGMT": 1705276800000,
+      "weight": 70000
+     }
+    ],
+    "numOfWeightEntries": 1,
+    "summaryDate": "2024-01-15"
+   }
+  ],
+  "totalAverage": {
+   "bmi": 22.5,
+   "weight": 70000
+  }
+ },
+ "MOCK_WORKOUTS": [
+  {
+   "sportType": {
+    "sportTypeId": 1,
+    "sportTypeKey": "running"
+   },
+   "workoutId": 123456,
+   "workoutName": "5K Tempo Run",
+   "workoutProvider": "GARMIN_COACH"
+  }
+ ],
+ "MOCK_WORKOUT_DETAILS": {
+  "createdDate": "2024-01-15T10:00:00.0",
+  "description": "Tempo run workout for 5K training",
+  "estimatedDistance": 5000,
+  "estimatedDuration": 2400,
+  "sportType": {
+   "sportTypeId": 1,
+   "sportTypeKey": "running"
+  },
+  "updatedDate": "2024-01-15T10:00:00.0",
+  "workoutId": 123456,
+  "workoutName": "5K Tempo Run",
+  "workoutSegments": [
+   {
+    "segmentOrder": 1,
+    "sportType": {
+     "sportTypeId": 1,
+     "sportTypeKey": "running"
+    },
+    "workoutSteps": [
+     {
+      "description": "Easy warm up run",
+      "endCondition": {
+       "conditionTypeId": 2,
+       "conditionTypeKey": "time"
+      },
+      "endConditionValue": 600.0,
+      "stepId": 1001,
+      "stepOrder": 1,
+      "stepType": {
+       "stepTypeId": 1,
+       "stepTypeKey": "warmup"
+      },
+      "targetType": {
+       "workoutTargetTypeId": 1,
+       "workoutTargetTypeKey": "no.target"
+      }
+     },
+     {
+      "description": "Tempo pace",
+      "endCondition": {
+       "conditionTypeId": 3,
+       "conditionTypeKey": "distance"
+      },
+      "endConditionValue": 5000.0,
+      "stepId": 1002,
+      "stepOrder": 2,
+      "stepType": {
+       "stepTypeId": 3,
+       "stepTypeKey": "interval"
+      },
+      "targetType": {
+       "workoutTargetTypeId": 6,
+       "workoutTargetTypeKey": "pace.zone"
+      },
+      "zoneNumber": 4
+     },
+     {
+      "description": "Cool down jog",
+      "endCondition": {
+       "conditionTypeId": 2,
+       "conditionTypeKey": "time"
+      },
+      "endConditionValue": 300.0,
+      "stepId": 1003,
+      "stepOrder": 3,
+      "stepType": {
+       "stepTypeId": 2,
+       "stepTypeKey": "cooldown"
+      },
+      "targetType": {
+       "workoutTargetTypeId": 1,
+       "workoutTargetTypeKey": "no.target"
+      }
+     }
+    ]
+   }
+  ]
+ }
+}
