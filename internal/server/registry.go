@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"runtime/debug"
 	"sort"
 	"strconv"
 	"strings"
@@ -30,6 +31,7 @@ type registry struct {
 	mgr         *manager
 	filter      *toolFilter
 	timeout     time.Duration // 0: no limit
+	log         io.Writer
 	unannotated []string
 }
 
@@ -63,7 +65,15 @@ func addPlainTool[In any](r *registry, name, description string, h func(ctx cont
 		r.unannotated = append(r.unannotated, name)
 	}
 	mcp.AddTool(r.srv, &mcp.Tool{Name: name, Description: description, Annotations: ann},
-		func(ctx context.Context, _ *mcp.CallToolRequest, in In) (*mcp.CallToolResult, any, error) {
+		func(ctx context.Context, _ *mcp.CallToolRequest, in In) (res *mcp.CallToolResult, _ any, _ error) {
+			// The SDK doesn't recover; a panicking handler would kill the server for every account.
+			defer func() {
+				if p := recover(); p != nil {
+					msg := fmt.Sprintf("internal error in %s: %v", name, p)
+					fmt.Fprintf(r.log, "%s\n%s", msg, debug.Stack())
+					res = toolResult(nil, errors.New(msg))
+				}
+			}()
 			if r.timeout > 0 {
 				var cancel context.CancelFunc
 				ctx, cancel = context.WithTimeout(ctx, r.timeout)

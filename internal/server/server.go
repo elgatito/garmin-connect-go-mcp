@@ -56,6 +56,7 @@ func New(opt Options) (*mcp.Server, error) {
 		mgr:     &manager{store: opt.Store, endpoints: opt.Endpoints, log: opt.Log, clients: map[string]*garmin.Client{}},
 		filter:  filter,
 		timeout: resolveCallTimeout(opt.Getenv, opt.Log),
+		log:     opt.Log,
 	}
 
 	addPlainTool(r, "list_accounts", "List the configured Garmin Connect accounts. Use an email from this list as the email argument of every other tool.", r.mgr.listAccounts)

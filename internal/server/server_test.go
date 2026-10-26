@@ -612,3 +612,37 @@ func TestWorkoutResources(t *testing.T) {
 		t.Errorf("sport %s: %v vs %v", id, ref[id], sport)
 	}
 }
+
+func TestHandlerPanicIsToolError(t *testing.T) {
+	var log bytes.Buffer
+	filter, err := newToolFilter(func(string) string { return "" })
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := &registry{srv: mcp.NewServer(&mcp.Implementation{Name: "t", Version: "0"}, nil), filter: filter, log: &log}
+	addPlainTool(r, "boom", "panics", func(context.Context, struct{}) (any, error) {
+		var m map[string]any
+		return m["x"].(string), nil // nil interface assertion panics
+	})
+	addPlainTool(r, "fine", "works", func(context.Context, struct{}) (any, error) { return "ok", nil })
+	cs := connect(t, r.srv)
+	call := func(name string) (string, bool) {
+		res, err := cs.CallTool(context.Background(), &mcp.CallToolParams{Name: name, Arguments: map[string]any{}})
+		if err != nil {
+			t.Fatalf("%s: %v", name, err)
+		}
+		return res.Content[0].(*mcp.TextContent).Text, res.IsError
+	}
+	for i := 0; i < 2; i++ {
+		text, isErr := call("boom")
+		if !isErr || !strings.HasPrefix(text, "internal error in boom: interface conversion") || strings.Contains(text, "goroutine") {
+			t.Fatalf("boom: %v %q", isErr, text)
+		}
+		if text, isErr := call("fine"); isErr || text != "ok" {
+			t.Fatalf("fine after panic: %v %q", isErr, text)
+		}
+	}
+	if s := log.String(); !strings.Contains(s, "internal error in boom") || !strings.Contains(s, "goroutine") {
+		t.Errorf("log lacks the stack trace: %q", s)
+	}
+}
