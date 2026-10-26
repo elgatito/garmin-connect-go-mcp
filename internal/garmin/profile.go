@@ -50,3 +50,13 @@ func (c *Client) Profile(ctx context.Context) (Profile, error) {
 	c.mu.Unlock()
 	return p, nil
 }
+
+// CachedProfile returns the profile if Profile has already fetched it; it never touches the network.
+func (c *Client) CachedProfile() (Profile, bool) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.profile == nil {
+		return Profile{}, false
+	}
+	return *c.profile, true
+}

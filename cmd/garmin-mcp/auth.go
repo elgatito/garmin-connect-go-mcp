@@ -13,15 +13,6 @@ import (
 	"github.com/elgatito/garmin-connect-go-mcp/internal/garmin"
 )
 
-// emailTokens adapts the account store to garmin.TokenStore for one email.
-type emailTokens struct {
-	st    accounts.Store
-	email string
-}
-
-func (s emailTokens) Load() (garmin.Tokens, error) { return s.st.LoadTokens(s.email) }
-func (s emailTokens) Save(t garmin.Tokens) error   { return s.st.SaveTokens(s.email, t) }
-
 // parseFlags returns (exit code, true) when the caller should stop.
 func parseFlags(fs *flag.FlagSet, args []string, e env) (int, bool) {
 	fs.SetOutput(e.Stderr)
@@ -112,7 +103,7 @@ func cmdAuth(ctx context.Context, args []string, e env, st accounts.Store) int {
 		return 1
 	}
 
-	client, err := garmin.NewClient(ep, emailTokens{st, addr}, nil)
+	client, err := garmin.NewClient(ep, st.TokenStore(addr), nil)
 	if err == nil {
 		var p garmin.Profile
 		if p, err = client.Profile(ctx); err == nil {
@@ -137,13 +128,7 @@ func cmdAccounts(e env, st accounts.Store) int {
 	}
 	for _, email := range list {
 		settings, _ := st.LoadSettings(email) // falls back to garmin.com on error
-		status := "ok"
-		if tok, err := st.LoadTokens(email); err != nil {
-			status = "invalid"
-		} else if exp, ok := tok.Expiry(); ok && time.Now().After(exp) {
-			status = "expired" // the refresh token may still work
-		}
-		fmt.Fprintf(e.Stdout, "%s  %s  %s\n", email, settings.Domain, status)
+		fmt.Fprintf(e.Stdout, "%s  %s  %s\n", email, settings.Domain, st.TokenStatus(email))
 	}
 	return 0
 }

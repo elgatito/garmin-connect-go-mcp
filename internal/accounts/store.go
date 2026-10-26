@@ -10,6 +10,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/elgatito/garmin-connect-go-mcp/internal/garmin"
 )
@@ -104,6 +105,29 @@ func (s Store) LoadSettings(email string) (Settings, error) {
 
 func (s Store) SaveSettings(email string, st Settings) error {
 	return s.save(email, "settings.json", st)
+}
+
+// TokenStore adapts the store to garmin.TokenStore for one email.
+func (s Store) TokenStore(email string) garmin.TokenStore { return emailTokens{s, email} }
+
+type emailTokens struct {
+	st    Store
+	email string
+}
+
+func (t emailTokens) Load() (garmin.Tokens, error) { return t.st.LoadTokens(t.email) }
+func (t emailTokens) Save(tok garmin.Tokens) error { return t.st.SaveTokens(t.email, tok) }
+
+// TokenStatus is "ok", "expired" (the access token is past exp; the refresh token may still work) or "invalid".
+func (s Store) TokenStatus(email string) string {
+	tok, err := s.LoadTokens(email)
+	if err != nil {
+		return "invalid"
+	}
+	if exp, ok := tok.Expiry(); ok && time.Now().After(exp) {
+		return "expired"
+	}
+	return "ok"
 }
 
 // List returns the sorted emails whose folder holds a tokens.json.
