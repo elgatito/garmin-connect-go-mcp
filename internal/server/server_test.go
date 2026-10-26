@@ -238,8 +238,9 @@ func TestProfileFiltering(t *testing.T) {
 	}
 	minimalHealth := []string{
 		"get_body_battery", "get_daily_steps", "get_heart_rates_summary",
-		"get_sleep_data", "get_sleep_summary", "get_stats", "get_stress_summary",
-		"get_training_readiness", "get_user_summary",
+		"get_hrv_data", "get_sleep_data", "get_sleep_summary", "get_stats",
+		"get_stress_summary", "get_training_readiness", "get_training_status",
+		"get_user_summary",
 	}
 	minimalActivities := []string{
 		"get_activities", "get_activities_by_date", "get_activity", "get_activity_splits",
@@ -256,7 +257,16 @@ func TestProfileFiltering(t *testing.T) {
 		"set_activity_exercise_sets", "set_activity_feel", "set_activity_name",
 		"set_activity_type", "set_perceived_effort",
 	}
-	all := append(append(append(append([]string{}, core...), health...), activities...), "list_accounts", "set_heart_rate_zones")
+	training := []string{
+		"get_acclimation", "get_cycling_ftp", "get_endurance_score",
+		"get_fitnessage_data", "get_hill_score", "get_hrv_data", "get_hrv_trend",
+		"get_lactate_threshold", "get_progress_summary_between_dates",
+		"get_respiration_trend", "get_running_tolerance",
+		"get_running_tolerance_trend", "get_training_effect",
+		"get_training_load_balance", "get_training_load_trend",
+		"get_training_status", "get_vo2max_trend", "request_reload",
+	}
+	all := append(append(append(append(append([]string{}, core...), health...), activities...), training...), "list_accounts", "set_heart_rate_zones")
 	minimal := append(append(append(append([]string{}, core...), minimalHealth...), minimalActivities...), "list_accounts")
 
 	cases := []struct {
@@ -290,9 +300,10 @@ func TestProfileFiltering(t *testing.T) {
 			},
 			want: []string{
 				"get_full_name", "get_unit_system", "get_user_profile", "get_userprofile_settings",
-				"get_body_battery", "get_daily_steps", "get_heart_rates_summary", "get_sleep_data",
-				"get_sleep_summary", "get_stats", "get_stress_summary", "get_training_readiness",
-				"get_user_summary", "get_activities", "get_activities_by_date", "get_activity",
+				"get_body_battery", "get_daily_steps", "get_heart_rates_summary", "get_hrv_data",
+				"get_sleep_data", "get_sleep_summary", "get_stats", "get_stress_summary",
+				"get_training_readiness", "get_training_status", "get_user_summary",
+				"get_activities", "get_activities_by_date", "get_activity",
 				"get_activity_splits", "list_accounts",
 			},
 		},
@@ -305,9 +316,10 @@ func TestProfileFiltering(t *testing.T) {
 			},
 			want: []string{
 				"get_unit_system", "get_user_profile", "get_userprofile_settings",
-				"get_body_battery", "get_daily_steps", "get_heart_rates_summary", "get_sleep_data",
-				"get_sleep_summary", "get_stats", "get_stress_summary", "get_training_readiness",
-				"get_user_summary", "get_activities", "get_activities_by_date", "get_activity",
+				"get_body_battery", "get_daily_steps", "get_heart_rates_summary", "get_hrv_data",
+				"get_sleep_data", "get_sleep_summary", "get_stats", "get_stress_summary",
+				"get_training_readiness", "get_training_status", "get_user_summary",
+				"get_activities", "get_activities_by_date", "get_activity",
 				"get_activity_splits", "list_accounts", "set_heart_rate_zones",
 			},
 		},
@@ -323,8 +335,9 @@ func TestProfileFiltering(t *testing.T) {
 				"GARMIN_DISABLED_TOOLS": "get_full_name",
 			},
 			want: append(append(append([]string{}, health...), activities...),
-				"get_heart_rate_zones", "get_unit_system", "get_user_profile", "get_userprofile_settings",
-				"list_accounts", "set_heart_rate_zones"),
+				append(training,
+					"get_heart_rate_zones", "get_unit_system", "get_user_profile", "get_userprofile_settings",
+					"list_accounts", "set_heart_rate_zones")...),
 		},
 		{
 			name: "allowlist takes precedence over denylist",
