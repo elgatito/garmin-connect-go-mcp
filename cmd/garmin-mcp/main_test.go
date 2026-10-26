@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"bytes"
 	"context"
 	"encoding/base64"
@@ -239,12 +240,22 @@ func TestNoArgsWithAccountsPrintsList(t *testing.T) {
 }
 
 func TestNoArgsNotTerminalServes(t *testing.T) {
-	r := newRig(t, "must not be read\n", false)
-	if code := r.run(); code != 0 {
-		t.Fatalf("code=%d", code)
+	r := newRig(t, "", false)
+	// The SDK drops in-flight replies on stdin EOF, so keep stdin open until the reply arrives, like a real client.
+	inR, inW := io.Pipe()
+	outR, outW := io.Pipe()
+	r.env.Stdin, r.env.Stdout = inR, outW
+	done := make(chan int)
+	go func() { code := r.run(); outW.Close(); done <- code }()
+	go inW.Write([]byte(`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"t","version":"0"}}}` + "\n"))
+	reply, err := bufio.NewReader(outR).ReadString('\n')
+	go io.Copy(io.Discard, outR)
+	inW.Close()
+	if code := <-done; code != 0 || err != nil {
+		t.Fatalf("code=%d err=%v stderr=%q", code, err, r.errb.String())
 	}
-	if r.out.Len() != 0 || r.errb.Len() != 0 || r.count("/mobile/api/login") != 0 {
-		t.Fatalf("out=%q err=%q", r.out.String(), r.errb.String())
+	if !strings.Contains(reply, `"serverInfo":{"name":"garmin-mcp"`) || r.errb.Len() != 0 || r.count("/mobile/api/login") != 0 {
+		t.Fatalf("reply=%q stderr=%q", reply, r.errb.String())
 	}
 }
 

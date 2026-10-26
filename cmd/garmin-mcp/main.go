@@ -8,10 +8,12 @@ import (
 	"os/signal"
 	"syscall"
 
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"golang.org/x/term"
 
 	"github.com/elgatito/garmin-connect-go-mcp/internal/accounts"
 	"github.com/elgatito/garmin-connect-go-mcp/internal/garmin"
+	"github.com/elgatito/garmin-connect-go-mcp/internal/server"
 )
 
 var version = "dev"
@@ -59,8 +61,27 @@ commands:
   serve                               run the MCP server over stdio
   version                             print version`
 
-// serve is a stub; the server task replaces it.
-func serve(ctx context.Context, e env, st accounts.Store) int { return 0 }
+func serve(ctx context.Context, e env, st accounts.Store) int {
+	srv, err := server.New(server.Options{Store: st, Endpoints: e.Endpoints, Getenv: e.Getenv, Version: version, Log: e.Stderr})
+	if err != nil {
+		fmt.Fprintln(e.Stderr, err)
+		return 1
+	}
+	// Same as mcp.StdioTransport, but over e's streams so tests can drive it.
+	in, ok := e.Stdin.(io.ReadCloser)
+	if !ok {
+		in = io.NopCloser(e.Stdin)
+	}
+	if err := srv.Run(ctx, &mcp.IOTransport{Reader: in, Writer: nopWriteCloser{e.Stdout}}); err != nil && ctx.Err() == nil {
+		fmt.Fprintln(e.Stderr, err)
+		return 1
+	}
+	return 0
+}
+
+type nopWriteCloser struct{ io.Writer }
+
+func (nopWriteCloser) Close() error { return nil }
 
 func run(ctx context.Context, args []string, e env) int {
 	cmd := ""
