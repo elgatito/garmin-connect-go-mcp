@@ -276,7 +276,15 @@ func TestProfileFiltering(t *testing.T) {
 		"schedule_workouts", "unschedule_workout", "unschedule_workouts",
 		"upload_workout", "upload_workouts",
 	}
-	all := append(append(append(append(append(append([]string{}, core...), health...), activities...), training...), workouts...), "list_accounts", "set_heart_rate_zones")
+	nutrition := []string{
+		"create_custom_food", "delete_custom_food", "delete_food_log",
+		"get_custom_food_serving_units", "get_custom_foods",
+		"get_nutrition_daily_food_log", "get_nutrition_daily_meals",
+		"get_nutrition_daily_settings", "get_nutrition_summary_between_dates",
+		"log_custom_food", "log_food", "search_foods",
+		"set_nutrition_daily_settings", "update_custom_food", "upsert_and_log",
+	}
+	all := append(append(append(append(append(append(append([]string{}, core...), health...), activities...), training...), workouts...), nutrition...), "list_accounts", "set_heart_rate_zones")
 	minimal := append(append(append(append([]string{}, core...), minimalHealth...), minimalActivities...), "list_accounts")
 
 	cases := []struct {
@@ -344,8 +352,8 @@ func TestProfileFiltering(t *testing.T) {
 				"GARMIN_ENABLED_TOOLS":  "  \t",
 				"GARMIN_DISABLED_TOOLS": "get_full_name",
 			},
-			want: append(append(append(append([]string{}, health...), activities...),
-				append(training, workouts...)...),
+			want: append(append(append(append(append([]string{}, health...), activities...),
+				append(training, workouts...)...), nutrition...),
 				"get_heart_rate_zones", "get_unit_system", "get_user_profile", "get_userprofile_settings",
 				"list_accounts", "set_heart_rate_zones"),
 		},
