@@ -69,6 +69,7 @@ func New(opt Options) (*mcp.Server, error) {
 	registerTrainingTools(r)
 	registerWorkoutTools(r)
 	registerCalendarTools(r)
+	registerNutritionTools(r)
 	registerWorkoutBuilderTools(r)
 	addWorkoutResources(srv)
 
