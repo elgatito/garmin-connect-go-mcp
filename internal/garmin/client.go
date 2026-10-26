@@ -80,9 +80,13 @@ type Client struct {
 	mu  sync.Mutex
 	tok Tokens
 
-	profileMu     sync.Mutex
-	profile       Profile
-	profileCached bool
+	profileMu      sync.Mutex
+	profile        Profile
+	profileCached  bool
+	social         map[string]any
+	socialCached   bool
+	settings       map[string]any
+	settingsCached bool
 }
 
 // NewClient loads the account tokens and returns a client using hc, or the

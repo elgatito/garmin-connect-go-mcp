@@ -2,14 +2,18 @@ package main
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/elgatito/garmin-connect-go-mcp/internal/accounts"
 	"github.com/elgatito/garmin-connect-go-mcp/internal/garmin"
+	"github.com/elgatito/garmin-connect-go-mcp/internal/server"
+	"github.com/modelcontextprotocol/go-sdk/mcp"
 	"golang.org/x/term"
 )
 
@@ -110,8 +114,47 @@ func run(ctx context.Context, args []string, e env) int {
 	return 0
 }
 
-// serve is replaced by the real MCP server in Task 8.
-func serve(ctx context.Context, e env, st accounts.Store) int { return 0 }
+// serve runs the MCP server over stdio.
+func serve(ctx context.Context, e env, st accounts.Store) int {
+	srv, err := server.New(server.Options{
+		Store:     st,
+		Endpoints: e.Endpoints,
+		Getenv:    e.Getenv,
+		Version:   version,
+		Log:       e.Stderr,
+	})
+	if err != nil {
+		fmt.Fprintf(e.Stderr, "garmin-mcp: %v\n", err)
+		return 1
+	}
+	// IOTransport rather than StdioTransport so a piped request is handled
+	// before the EOF that follows it closes the session.
+	transport := &mcp.IOTransport{
+		Reader: io.NopCloser(eofGraceReader{os.Stdin}),
+		Writer: nopWriteCloser{os.Stdout},
+	}
+	if err := srv.Run(ctx, transport); err != nil {
+		fmt.Fprintf(e.Stderr, "garmin-mcp: %v\n", err)
+		return 1
+	}
+	return 0
+}
+
+// eofGraceReader delays EOF briefly so already-buffered requests are handled
+// before the session closes.
+type eofGraceReader struct{ io.Reader }
+
+func (r eofGraceReader) Read(p []byte) (int, error) {
+	n, err := r.Reader.Read(p)
+	if n == 0 && errors.Is(err, io.EOF) {
+		time.Sleep(200 * time.Millisecond)
+	}
+	return n, err
+}
+
+type nopWriteCloser struct{ io.Writer }
+
+func (nopWriteCloser) Close() error { return nil }
 
 func storeFor(e env) (accounts.Store, error) {
 	getenv := e.Getenv
