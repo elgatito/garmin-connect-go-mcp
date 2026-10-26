@@ -29,7 +29,8 @@ garmin-mcp auth [--email E] [--cn] [--force]
 
 - `--email E` skips the email prompt.
 - `--cn` logs in to Garmin Connect China (`garmin.cn`).
-- `--force` logs in again even if the saved session is still valid (use it when a session has expired).
+- `--force` logs in again even if the saved session is still valid. An expired or soon-to-expire session is replaced
+  without it; the server's "session expired" message suggests `--force`, which is harmless in that case.
 
 ## More accounts
 
@@ -39,7 +40,8 @@ Run `garmin-mcp auth` again for each additional account. Other commands:
 - `garmin-mcp remove <email> [--yes]` deletes an account's saved data after a confirmation.
 - `garmin-mcp serve` runs the server over stdio explicitly; `garmin-mcp version` prints the version.
 
-Started by an MCP client (stdin or stdout is not a terminal), `garmin-mcp` runs the server by itself.
+Started by an MCP client (stdin or stdout is not a terminal), `garmin-mcp` runs the server by itself. Run with no
+arguments in a terminal and with accounts already saved, it only lists them and prints the usage; it does not serve.
 
 ## Client configuration
 
@@ -76,9 +78,9 @@ synced or backed-up shared folders (Dropbox, iCloud, OneDrive, git).
 | Variable | Meaning |
 |---|---|
 | `GARMIN_TOOL_PROFILE` | Expose only a subset of tools. Profiles: `minimal`, `health`, `activities`, `workouts`, `training`, `nutrition`, `all` (default). Comma-separate to combine. `list_accounts` and the core identity tools are in every profile. Unknown names stop the server at startup. |
-| `GARMIN_ENABLED_TOOLS` | Comma-separated allowlist of tool names (added to the profile selection). |
+| `GARMIN_ENABLED_TOOLS` | Comma-separated tool names. With `GARMIN_TOOL_PROFILE` set, they are added to the profile (and `GARMIN_DISABLED_TOOLS` still removes tools from the result). Without a profile it is an exclusive allowlist: only these tools are exposed (`list_accounts` only if you list it) and `GARMIN_DISABLED_TOOLS` is ignored. |
 | `GARMIN_DISABLED_TOOLS` | Comma-separated tool names to remove. Unknown names are warned about on stderr. |
-| `GARMIN_FIT_DOWNLOAD_DIR` | Default directory for downloaded FIT files and GPX courses; overrides the per-account setting from `set_fit_download_dir`. An explicit `output_dir` argument wins over both. |
+| `GARMIN_FIT_DOWNLOAD_DIR` | Default directory for downloaded FIT files and GPX courses (created if missing, mode 0755); overrides the per-account setting from `set_fit_download_dir`. An explicit `output_dir` argument wins over both. |
 | `GARMIN_MCP_CALL_TIMEOUT` | Per-tool-call timeout in seconds. Default `90`; `0` or negative disables it. |
 | `GARMIN_MCP_HOME` | Base folder for account data (default `~/.garmin-mcp`). |
 
@@ -115,9 +117,9 @@ names, argument names and descriptions match the Python original, so its documen
 - stdio only: no HTTP/SSE transport, bearer token, Docker or `.dxt` packaging.
 - Login happens in a terminal (`garmin-mcp auth`); there are no login tools and no `GARMIN_EMAIL`,
   `GARMIN_PASSWORD`, `GARMINTOKENS` or `GARMIN_IS_CN` environment variables.
-- The FIT download directory is per account (`set_fit_download_dir` writes to that account's `settings.json`).
-- JSON results have keys in alphabetical order.
-- Some error texts differ (account and session errors name the `garmin-mcp auth` command to run).
+- The FIT download directory is per account (`set_fit_download_dir` writes to that account's `settings.json` and creates the directory, mode 0755).
+- Key order in JSON results may differ from the Python original (map-based results are sorted alphabetically; results built from typed structs keep field order), and whole-number floats print as integers (`56`, not `56.0`).
+- Error texts differ: tool error messages after the `Error ...:` prefix come from Go (for example `API Error 403 - ...`), and session problems tell the user to run `garmin-mcp auth`.
 - Tool annotations, structured write errors and profiles are ported unchanged.
 
 ## Security notes
