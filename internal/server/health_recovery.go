@@ -129,7 +129,7 @@ func curateTrainingReadiness(r map[string]any) map[string]any {
 type recoveryClient interface {
 	GetTrainingReadiness(ctx context.Context, date string) (any, error)
 	GetMorningTrainingReadiness(ctx context.Context, date string) (any, error)
-	GetActivities(ctx context.Context, start, limit int) (any, error)
+	GetActivities(ctx context.Context, start, limit int, activityType string) (any, error)
 }
 
 // activityEndUTC estimates an activity's end from its list-search fields.
@@ -144,7 +144,7 @@ func activityEndUTC(a map[string]any) (time.Time, bool) {
 
 // recoveryFromRecentActivities decays the latest activity-assigned recoveryTime to now.
 func recoveryFromRecentActivities(ctx context.Context, c recoveryClient, now time.Time, srcErrs *[]map[string]string) map[string]any {
-	items, err := c.GetActivities(ctx, 0, 20)
+	items, err := c.GetActivities(ctx, 0, 20, "")
 	if err != nil {
 		*srcErrs = append(*srcErrs, map[string]string{"source": "get_activities", "error": err.Error()})
 		return nil

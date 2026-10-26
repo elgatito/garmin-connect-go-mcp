@@ -74,7 +74,7 @@ func (f *fakeRecovery) GetMorningTrainingReadiness(context.Context, string) (any
 	return f.morning, f.morningErr
 }
 
-func (f *fakeRecovery) GetActivities(context.Context, int, int) (any, error) {
+func (f *fakeRecovery) GetActivities(context.Context, int, int, string) (any, error) {
 	f.activityCalls++
 	return f.activities, f.activitiesErr
 }

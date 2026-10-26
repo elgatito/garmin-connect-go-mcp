@@ -363,8 +363,9 @@ func (c *Client) GetLifestyleLoggingData(ctx context.Context, cdate string) (any
 	return c.getByDate(ctx, "/lifestylelogging-service/dailyLog", "cdate", cdate)
 }
 
-// GetActivities lists recent activities (start offset, limit up to 1000); an empty response is [].
-func (c *Client) GetActivities(ctx context.Context, start, limit int) (any, error) {
+// GetActivities lists recent activities (start offset, limit up to 1000, optional activityType filter);
+// an empty response is [].
+func (c *Client) GetActivities(ctx context.Context, start, limit int, activityType string) (any, error) {
 	if start < 0 {
 		return nil, fmt.Errorf("start must be non-negative, got: %d", start)
 	}
@@ -374,8 +375,11 @@ func (c *Client) GetActivities(ctx context.Context, start, limit int) (any, erro
 	if limit > 1000 {
 		return nil, errors.New("limit cannot exceed 1000")
 	}
-	v, err := c.GetJSON(ctx, "/activitylist-service/activities/search/activities",
-		url.Values{"start": {strconv.Itoa(start)}, "limit": {strconv.Itoa(limit)}})
+	q := url.Values{"start": {strconv.Itoa(start)}, "limit": {strconv.Itoa(limit)}}
+	if activityType != "" {
+		q.Set("activityType", activityType)
+	}
+	v, err := c.GetJSON(ctx, activitiesSearchPath, q)
 	if v == nil && err == nil {
 		return []any{}, nil
 	}
