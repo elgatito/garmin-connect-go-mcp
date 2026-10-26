@@ -67,16 +67,19 @@ type loginState struct {
 	mfaMethod  string
 	serviceURL string
 	flow       string
+	page       string // widget signin response holding the MFA CSRF token
 }
 
-// loginStrategies is the ordered chain. Task 6 appends the widget and portal
-// strategies to this table.
+// loginStrategies is the ordered chain.
 var loginStrategies = []struct {
 	name string
 	run  func(context.Context, Endpoints, string, string, *LoginOptions, *loginState) (Tokens, error)
 }{
 	{"mobile+utls", mobileUTLSLogin},
 	{"mobile+plain", mobilePlainLogin},
+	{"widget+utls", widgetUTLSLogin},
+	{"portal+utls", portalUTLSLogin},
+	{"portal+plain", portalPlainLogin},
 }
 
 const ssoRequestTimeout = 30 * time.Second
@@ -279,6 +282,9 @@ func completeMFA(ctx context.Context, ep Endpoints, code string, st *loginState,
 	if st == nil || st.client == nil {
 		return Tokens{}, errors.New("MFA verification failed: missing login session")
 	}
+	if st.flow == "widget" {
+		return completeWidgetMFA(ctx, ep, code, st, opt)
+	}
 
 	base := strings.TrimRight(ep.SSO, "/")
 	flowPath := st.flow
@@ -300,16 +306,12 @@ func completeMFA(ctx context.Context, ep Endpoints, code string, st *loginState,
 		headers: st.headers,
 	}}
 	if flowPath == "mobile" {
-		portalService := strings.TrimRight(ep.Connect, "/") + "/app"
-		if ep.Connect == "" {
-			portalService = portalSSOServiceURL
-		}
 		endpoints = append(endpoints, endpoint{
 			url: base + "/portal/api/mfa/verifyCode",
 			params: url.Values{
 				"clientId": {portalSSOClientID},
 				"locale":   {"en-US"},
-				"service":  {portalService},
+				"service":  {portalService(ep)},
 			},
 			headers: st.headers,
 		})
