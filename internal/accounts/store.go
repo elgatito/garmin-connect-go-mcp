@@ -22,6 +22,10 @@ type Settings struct {
 
 var ErrNoAccount = errors.New("account not found")
 
+// ErrCorruptSettings marks a settings.json that exists but is not valid JSON; LoadSettings then returns defaults.
+// Any other LoadSettings error (permissions, sharing violation) means the real settings are unknown.
+var ErrCorruptSettings = errors.New("corrupt settings")
+
 var emailRe = regexp.MustCompile(`^[^@\s/\\:*?"<>|]+@[^@\s/\\:*?"<>|]+$`)
 
 // DefaultBase returns $GARMIN_MCP_HOME, or <user home>/.garmin-mcp.
@@ -95,7 +99,7 @@ func (s Store) LoadSettings(email string) (Settings, error) {
 		return st, err
 	}
 	if err := json.Unmarshal(b, &st); err != nil {
-		return Settings{Domain: "garmin.com"}, fmt.Errorf("corrupt settings.json for %s: %w", email, err)
+		return Settings{Domain: "garmin.com"}, fmt.Errorf("corrupt settings.json for %s: %w (%w)", email, ErrCorruptSettings, err)
 	}
 	if st.Domain == "" {
 		st.Domain = "garmin.com"

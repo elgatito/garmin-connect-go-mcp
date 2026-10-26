@@ -5,10 +5,13 @@ package server
 import (
 	"context"
 	"encoding/hex"
+	"errors"
 	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/elgatito/garmin-connect-go-mcp/internal/accounts"
 )
 
 const fitDebugHint = "1f8b = gzip, 504b = ZIP, 0e10/0c10 = raw FIT, 3c or 7b = HTML/JSON error from Garmin"
@@ -239,9 +242,14 @@ func setFitDownloadDir(_ context.Context, s *Session, in setFitDownloadDirIn) (a
 		err = os.MkdirAll(abs, 0o755)
 	}
 	if err == nil {
-		st, _ := s.Settings() // an unreadable settings.json yields defaults, like Python's invalid config ({})
-		st.FitDownloadDir = abs
-		err = s.Store.SaveSettings(s.Email, st)
+		var st accounts.Settings
+		if st, err = s.Settings(); errors.Is(err, accounts.ErrCorruptSettings) { // like Python's invalid config ({})
+			st, err = accounts.Settings{Domain: s.Client.Domain()}, nil // the live client knows the real domain
+		}
+		if err == nil {
+			st.FitDownloadDir = abs
+			err = s.Store.SaveSettings(s.Email, st)
+		}
 	}
 	if err != nil {
 		return nil, fmt.Errorf("Error setting FIT download directory: %w", err)

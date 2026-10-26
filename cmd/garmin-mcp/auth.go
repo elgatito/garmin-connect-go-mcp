@@ -76,7 +76,11 @@ func cmdAuth(ctx context.Context, args []string, e env, st accounts.Store) int {
 	}
 
 	// An existing account keeps its stored region; --cn forces China.
-	prior, _ := st.LoadSettings(addr)
+	prior, err := st.LoadSettings(addr) // a corrupt file falls back to defaults and is overwritten below
+	if err != nil && !errors.Is(err, accounts.ErrCorruptSettings) {
+		fmt.Fprintf(e.Stderr, "Login failed: reading settings: %v\n", err)
+		return 1
+	}
 	domain := prior.Domain
 	if *cn {
 		domain = "garmin.cn"
@@ -100,10 +104,7 @@ func cmdAuth(ctx context.Context, args []string, e env, st accounts.Store) int {
 		fmt.Fprintf(e.Stderr, "Login failed: saving tokens: %v\n", err)
 		return 1
 	}
-	settings, err := st.LoadSettings(addr)
-	if err != nil {
-		settings = accounts.Settings{} // corrupt settings.json: overwrite it
-	}
+	settings := prior // corrupt settings.json came back as defaults: overwrite it
 	settings.Domain = domain
 	if err := st.SaveSettings(addr, settings); err != nil {
 		fmt.Fprintf(e.Stderr, "Login failed: saving settings: %v\n", err)

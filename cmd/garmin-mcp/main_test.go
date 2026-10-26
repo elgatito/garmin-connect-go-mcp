@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"runtime"
 	"strings"
 	"sync"
 	"testing"
@@ -332,5 +333,29 @@ func TestAuthNewAccountDefaultsToCom(t *testing.T) {
 	st, _ := r.store().LoadSettings("new@x.com")
 	if st.Domain != "garmin.com" || r.domains[0] != "garmin.com" || !strings.Contains(r.out.String(), "Using Garmin Connect (garmin.com)") {
 		t.Fatalf("settings=%+v domains=%v out=%q", st, r.domains, r.out.String())
+	}
+}
+
+func TestAuthUnreadableSettingsAborts(t *testing.T) {
+	if runtime.GOOS == "windows" || os.Geteuid() == 0 {
+		t.Skip("chmod 000 does not block reads here")
+	}
+	r := newRig(t, "", true)
+	if err := r.store().SaveSettings("me@x.com", accounts.Settings{Domain: "garmin.cn", FitDownloadDir: "/keep"}); err != nil {
+		t.Fatal(err)
+	}
+	dir, _ := r.store().Dir("me@x.com")
+	if err := os.Chmod(filepath.Join(dir, "settings.json"), 0); err != nil {
+		t.Fatal(err)
+	}
+	if code := r.run("auth", "--email", "me@x.com"); code == 0 {
+		t.Fatalf("code=0 stdout=%q", r.out.String())
+	}
+	os.Chmod(filepath.Join(dir, "settings.json"), 0o600)
+	if got, err := r.store().LoadSettings("me@x.com"); err != nil || got.Domain != "garmin.cn" || got.FitDownloadDir != "/keep" {
+		t.Fatalf("settings changed: %+v %v", got, err)
+	}
+	if !strings.Contains(r.errb.String(), "settings.json") {
+		t.Fatalf("stderr = %q", r.errb.String())
 	}
 }

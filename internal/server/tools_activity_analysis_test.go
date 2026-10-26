@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"strings"
 	"testing"
 
@@ -594,5 +595,40 @@ func TestDownloadActivityFileErrors(t *testing.T) {
 	text, isErr = callTool(t, cs, "download_activity_file", map[string]any{"activity_id": fitActivityID, "output_dir": t.TempDir()})
 	if !isErr || text != "Error downloading activity 22041393449: Download client error (404): API Error 404 - gone" {
 		t.Errorf("404: %v %q", isErr, text)
+	}
+}
+
+// A settings.json that cannot be read must not be replaced by defaults.
+func TestSetFitDownloadDirUnreadableSettingsDoesNotWrite(t *testing.T) {
+	if runtime.GOOS == "windows" || os.Geteuid() == 0 {
+		t.Skip("chmod 000 does not block reads here")
+	}
+	st := newStore(t)
+	writeSettingsFile(t, st, `{"domain":"garmin.cn","fit_download_dir":"/keep"}`)
+	dir, _ := st.Dir(testEmail)
+	if err := os.Chmod(filepath.Join(dir, "settings.json"), 0); err != nil {
+		t.Fatal(err)
+	}
+	cs := newSessionWithStore(t, newFakeGarmin(t), st, nil)
+	text, isErr := callTool(t, cs, "set_fit_download_dir", map[string]any{"path": filepath.Join(t.TempDir(), "dl")})
+	if !isErr || !strings.HasPrefix(text, "Error setting FIT download directory:") {
+		t.Fatalf("got %v %q", isErr, text)
+	}
+	os.Chmod(filepath.Join(dir, "settings.json"), 0o600)
+	if got, err := st.LoadSettings(testEmail); err != nil || got.Domain != "garmin.cn" || got.FitDownloadDir != "/keep" {
+		t.Fatalf("settings changed: %+v %v", got, err)
+	}
+}
+
+// A corrupt settings.json falls back to the live client's domain, not garmin.com.
+func TestSetFitDownloadDirCorruptSettingsKeepsClientDomain(t *testing.T) {
+	st := newStore(t)
+	writeSettingsFile(t, st, "{not json")
+	f := newFakeGarmin(t)
+	callOK(t, newSessionWithStore(t, f, st, nil), "set_fit_download_dir", map[string]any{"path": filepath.Join(t.TempDir(), "dl")})
+	got, err := st.LoadSettings(testEmail)
+	want := strings.TrimPrefix(f.URL, "http://")
+	if err != nil || got.Domain != want {
+		t.Fatalf("settings = %+v %v, want domain %q", got, err, want)
 	}
 }
