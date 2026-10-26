@@ -28,7 +28,7 @@ jobs:
             else
               ext=
             fi
-            CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${GITHUB_REF_NAME}" -o "dist/stage/garmin-mcp${ext}" ./cmd/garmin-mcp
+            CGO_ENABLED=0 GOOS=$os GOARCH=$arch go build -trimpath -ldflags "-s -w -X main.version=${GITHUB_REF_NAME}" -o "dist/stage/garmin-mcp${ext}" ./cmd/garmin-mcp
             cp README.md LICENSE dist/stage/
             if [ "$os" = windows ]; then
               (cd dist/stage && zip -j "../garmin-mcp_${GITHUB_REF_NAME}_${os}_${arch}.zip" "garmin-mcp${ext}" README.md LICENSE)
