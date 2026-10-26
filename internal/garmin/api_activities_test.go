@@ -3,6 +3,7 @@ package garmin
 import (
 	"context"
 	"net/http"
+	"strings"
 	"testing"
 )
 
@@ -32,5 +33,36 @@ func TestActivityIDMustBePositive(t *testing.T) {
 	}
 	if err := c.DeleteActivity(context.Background(), -5); err == nil {
 		t.Error("DeleteActivity accepted -5")
+	}
+}
+
+func TestGearUUIDCannotEscapeItsPathSegment(t *testing.T) {
+	const evil = "x/../../foo?a=b#frag"
+	calls := map[string]func(*Client) error{
+		"/gear-service/gear/link/":   func(c *Client) error { _, err := c.AddGearToActivity(context.Background(), evil, 5); return err },
+		"/gear-service/gear/unlink/": func(c *Client) error { _, err := c.RemoveGearFromActivity(context.Background(), evil, 5); return err },
+		"/gear-service/gear/stats/":  func(c *Client) error { _, err := c.GetGearStats(context.Background(), evil); return err },
+		"/gear-service/gear/user/":   func(c *Client) error { _, err := c.GetGearDefaults(context.Background(), evil); return err },
+	}
+	for prefix, call := range calls {
+		var uri string
+		c, _ := fixture(t, freshTokens("c1"), func(w http.ResponseWriter, r *http.Request) {
+			uri = r.RequestURI
+			w.Write([]byte(`{}`))
+		}, nil)
+		if err := call(c); err != nil {
+			t.Fatal(err)
+		}
+		if !strings.HasPrefix(uri, prefix+"x%2F..%2F..%2Ffoo%3Fa=b%23frag") || strings.Contains(uri, "?") || strings.Contains(uri, "#") {
+			t.Errorf("%s: request URI %q escapes its segment", prefix, uri)
+		}
+	}
+}
+
+func TestPathSegEscapesDotSegments(t *testing.T) {
+	for in, want := range map[string]string{"..": "%2E%2E", ".": "%2E", "a/b": "a%2Fb", "a b?": "a%20b%3F", "abc": "abc"} {
+		if got := pathSeg(in); got != want {
+			t.Errorf("pathSeg(%q) = %q, want %q", in, got, want)
+		}
 	}
 }

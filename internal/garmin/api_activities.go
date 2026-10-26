@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
 )
 
 // Port of the python-garminconnect activity and gear methods (GC/__init__.py).
@@ -21,6 +22,15 @@ const (
 	gearBasePath         = "/gear-service/gear"
 	deviceLastUsedPath   = "/device-service/deviceservice/mylastused"
 )
+
+// pathSeg escapes a caller-supplied string for use as ONE path segment ("/", "?", "#" and ".." cannot
+// change the request's path). Use it for every free-text value interpolated into an API path.
+func pathSeg(s string) string {
+	if s == "." || s == ".." { // dot segments are resolved by servers even when nothing else is special
+		return strings.ReplaceAll(s, ".", "%2E")
+	}
+	return url.PathEscape(s)
+}
 
 // validActivityID is str(_validate_positive_integer(int(activity_id), "activity_id")).
 func validActivityID(id int64) (string, error) {
@@ -174,7 +184,7 @@ func (c *Client) GetGear(ctx context.Context, userProfileNumber string) (any, er
 
 // GetGearStats returns {} for gear Garmin no longer knows (404).
 func (c *Client) GetGearStats(ctx context.Context, gearUUID string) (any, error) {
-	v, err := c.GetJSON(ctx, gearBasePath+"/stats/"+gearUUID, nil)
+	v, err := c.GetJSON(ctx, gearBasePath+"/stats/"+pathSeg(gearUUID), nil)
 	var apiErr *APIError
 	if errors.As(err, &apiErr) && apiErr.Status == http.StatusNotFound {
 		return map[string]any{}, nil
@@ -183,7 +193,7 @@ func (c *Client) GetGearStats(ctx context.Context, gearUUID string) (any, error)
 }
 
 func (c *Client) GetGearDefaults(ctx context.Context, userProfileNumber string) (any, error) {
-	return c.GetJSON(ctx, gearBasePath+"/user/"+userProfileNumber+"/activityTypes", nil)
+	return c.GetJSON(ctx, gearBasePath+"/user/"+pathSeg(userProfileNumber)+"/activityTypes", nil)
 }
 
 // linkGear PUTs link/unlink; a 404 becomes GC's "gear not found" error.
@@ -192,7 +202,7 @@ func (c *Client) linkGear(ctx context.Context, verb, preposition, gearUUID strin
 	if err != nil {
 		return nil, err
 	}
-	v, err := c.DoJSON(ctx, Req{Method: http.MethodPut, Path: gearBasePath + "/" + verb + "/" + gearUUID + "/activity/" + s})
+	v, err := c.DoJSON(ctx, Req{Method: http.MethodPut, Path: gearBasePath + "/" + verb + "/" + pathSeg(gearUUID) + "/activity/" + s})
 	var apiErr *APIError
 	if errors.As(err, &apiErr) && apiErr.Status == http.StatusNotFound {
 		return nil, fmt.Errorf("Cannot %s gear %s %s activity %s: gear not found (likely retired/removed)",
