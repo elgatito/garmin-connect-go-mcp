@@ -1,13 +1,16 @@
 package garmin
 
 import (
+	"context"
 	"crypto/x509"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
 	"net/http/cookiejar"
 	"net/http/httptest"
 	"testing"
+	"time"
 
 	utls "github.com/refraction-networking/utls"
 )
@@ -98,5 +101,59 @@ func TestUTLSCookieJar(t *testing.T) {
 	}
 	if got, want := string(body), "session=abc"; got != want {
 		t.Fatalf("cookie = %q, want %q", got, want)
+	}
+}
+
+func TestUTLSContextCancel(t *testing.T) {
+	started := make(chan struct{}, 1)
+	release := make(chan struct{})
+	srv := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		select {
+		case started <- struct{}{}:
+		default:
+		}
+		select {
+		case <-release:
+		case <-r.Context().Done():
+		}
+	}))
+	t.Cleanup(func() {
+		close(release)
+		srv.Close()
+	})
+
+	pool := x509.NewCertPool()
+	pool.AddCert(srv.Certificate())
+
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, srv.URL, nil)
+	if err != nil {
+		t.Fatalf("new request: %v", err)
+	}
+
+	done := make(chan error, 1)
+	go func() {
+		resp, err := newUTLSClient(utls.HelloIOS_Auto, pool, nil).Do(req)
+		if err == nil {
+			resp.Body.Close()
+		}
+		done <- err
+	}()
+
+	select {
+	case <-started:
+	case <-time.After(5 * time.Second):
+		t.Fatal("server never received the request")
+	}
+	cancel()
+
+	select {
+	case err := <-done:
+		if !errors.Is(err, context.Canceled) {
+			t.Fatalf("err = %v, want context.Canceled", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("request did not return after context cancel")
 	}
 }

@@ -2,6 +2,7 @@ package garmin
 
 import (
 	"bufio"
+	"context"
 	"crypto/x509"
 	"io"
 	"net"
@@ -48,23 +49,32 @@ func (t *utlsTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	}
 
 	conn := utls.UClient(raw, &utls.Config{ServerName: host, RootCAs: t.roots}, t.hello)
+	// Cancellation without a deadline (and a peer that stalls forever) is not
+	// covered by SetDeadline; closing the conn unblocks handshake and reads.
+	stop := context.AfterFunc(ctx, func() { conn.Close() })
 	if err := conn.HandshakeContext(ctx); err != nil {
+		stop()
 		raw.Close()
-		return nil, err
+		return nil, contextErr(ctx, err)
 	}
 
 	if conn.ConnectionState().NegotiatedProtocol == "h2" {
 		cc, err := (&http2.Transport{}).NewClientConn(conn)
 		if err != nil {
+			stop()
 			conn.Close()
-			return nil, err
+			return nil, contextErr(ctx, err)
 		}
 		resp, err := cc.RoundTrip(req)
 		if err != nil {
+			stop()
 			cc.Close()
-			return nil, err
+			return nil, contextErr(ctx, err)
 		}
-		resp.Body = &connClosingBody{ReadCloser: resp.Body, close: cc.Close}
+		resp.Body = &connClosingBody{ReadCloser: resp.Body, close: func() error {
+			stop()
+			return cc.Close()
+		}}
 		return resp, nil
 	}
 
@@ -73,17 +83,30 @@ func (t *utlsTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req = req.Clone(ctx)
 	req.Close = true
 	if err := req.Write(conn); err != nil {
+		stop()
 		conn.Close()
-		return nil, err
+		return nil, contextErr(ctx, err)
 	}
 	resp, err := http.ReadResponse(bufio.NewReader(conn), req)
 	if err != nil {
+		stop()
 		conn.Close()
-		return nil, err
+		return nil, contextErr(ctx, err)
 	}
 	resp.Request = req
-	resp.Body = &connClosingBody{ReadCloser: resp.Body, close: conn.Close}
+	resp.Body = &connClosingBody{ReadCloser: resp.Body, close: func() error {
+		stop()
+		return conn.Close()
+	}}
 	return resp, nil
+}
+
+// contextErr reports the context error when cancellation closed the conn.
+func contextErr(ctx context.Context, err error) error {
+	if cerr := ctx.Err(); cerr != nil {
+		return cerr
+	}
+	return err
 }
 
 // connClosingBody closes the connection when the response body is closed.
