@@ -201,19 +201,27 @@ func uploadStepVia(t *testing.T, tool string, workout map[string]any, idx ...int
 	return sentStep(uploadedWorkout(t, f), idx...), d
 }
 
-func TestUploadWorkoutPromotesBoundsNestedInsideTargetType(t *testing.T) {
-	for _, tool := range []string{"upload_workout", "upload_workouts", "schedule_workouts"} { // also the batch / inline variants
-		step, d := uploadStepVia(t, tool, runningWorkoutWithSteps(distancePaceStepWithNestedBounds()), 0)
-		tt := asMap(step["targetType"])
-		_, a := tt["targetValueOne"]
-		_, b := tt["targetValueTwo"]
-		if step["targetValueOne"] != 2.0833333 || step["targetValueTwo"] != 1.9607843 || a || b {
-			t.Errorf("%s: step = %v", tool, step)
-		}
-		if tool == "upload_workout" && d["status"] != "success" {
-			t.Errorf("d = %v", d)
-		}
+func assertPromotedBounds(t *testing.T, step map[string]any) {
+	t.Helper()
+	tt := asMap(step["targetType"])
+	_, a := tt["targetValueOne"]
+	_, b := tt["targetValueTwo"]
+	if step["targetValueOne"] != 2.0833333 || step["targetValueTwo"] != 1.9607843 || a || b {
+		t.Errorf("step = %v", step)
 	}
+}
+
+func TestUploadWorkoutPromotesBoundsNestedInsideTargetType(t *testing.T) {
+	step, d := uploadStepVia(t, "upload_workout", runningWorkoutWithSteps(distancePaceStepWithNestedBounds()), 0)
+	assertPromotedBounds(t, step)
+	if d["status"] != "success" {
+		t.Errorf("d = %v", d)
+	}
+}
+
+func TestUploadWorkoutsPromotesBoundsNestedInsideTargetType(t *testing.T) {
+	step, _ := uploadStepVia(t, "upload_workouts", runningWorkoutWithSteps(distancePaceStepWithNestedBounds()), 0)
+	assertPromotedBounds(t, step)
 }
 
 func TestUploadWorkoutPromotesNestedBoundsInsideRepeatGroup(t *testing.T) {

@@ -59,6 +59,8 @@ func New(opt Options) (*mcp.Server, error) {
 		log:     opt.Log,
 	}
 
+	srv.AddReceivingMiddleware(r.stringifiedArgs)
+
 	addPlainTool(r, "list_accounts", "List the configured Garmin Connect accounts. Use an email from this list as the email argument of every other tool.", r.mgr.listAccounts)
 	registerUserProfileTools(r)
 	registerHealthTools(r)

@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"reflect"
 	"runtime/debug"
 	"sort"
 	"strconv"
@@ -33,6 +34,7 @@ type registry struct {
 	timeout     time.Duration // 0: no limit
 	log         io.Writer
 	unannotated []string
+	argKinds    map[string]map[string]byte // tool -> property -> 'o' (object) or 'a' (array)
 }
 
 // addTool registers an account tool: it resolves the email to a Session, applies the call timeout,
@@ -60,6 +62,7 @@ func addPlainTool[In any](r *registry, name, description string, h func(ctx cont
 	if !r.filter.allow(name) {
 		return
 	}
+	r.noteArgKinds(name, reflect.TypeFor[In]())
 	ann := annotationsFor(name)
 	if ann == nil {
 		r.unannotated = append(r.unannotated, name)
@@ -207,4 +210,89 @@ func resolveCallTimeout(getenv func(string) string, log io.Writer) time.Duration
 		return 0
 	}
 	return time.Duration(v * float64(time.Second))
+}
+
+// noteArgKinds records which properties of a tool's input struct are objects (maps) or arrays (slices).
+func (r *registry) noteArgKinds(tool string, t reflect.Type) {
+	kinds := map[string]byte{}
+	var walk func(t reflect.Type)
+	walk = func(t reflect.Type) {
+		if t.Kind() != reflect.Struct {
+			return
+		}
+		for i := 0; i < t.NumField(); i++ {
+			f := t.Field(i)
+			if f.Anonymous {
+				walk(f.Type)
+				continue
+			}
+			name, _, _ := strings.Cut(f.Tag.Get("json"), ",")
+			if name == "" {
+				name = f.Name
+			}
+			switch f.Type.Kind() {
+			case reflect.Map:
+				kinds[name] = 'o'
+			case reflect.Slice:
+				kinds[name] = 'a'
+			}
+		}
+	}
+	walk(t)
+	if len(kinds) == 0 {
+		return
+	}
+	if r.argKinds == nil {
+		r.argKinds = map[string]map[string]byte{}
+	}
+	r.argKinds[tool] = kinds
+}
+
+// stringifiedArgs is receiving middleware that mirrors FastMCP's pre_parse_json: LLM clients often send nested
+// objects and arrays as JSON strings, so before the SDK validates a tools/call, an object/array property that
+// arrives as a string holding JSON of the right kind is replaced by the parsed value. Anything else is left
+// alone, so normal validation reports it.
+func (r *registry) stringifiedArgs(next mcp.MethodHandler) mcp.MethodHandler {
+	return func(ctx context.Context, method string, req mcp.Request) (mcp.Result, error) {
+		if cr, ok := req.(*mcp.CallToolRequest); ok && cr.Params != nil {
+			cr.Params.Arguments = parseStringifiedArgs(r.argKinds[cr.Params.Name], cr.Params.Arguments)
+		}
+		return next(ctx, method, req)
+	}
+}
+
+func parseStringifiedArgs(kinds map[string]byte, args json.RawMessage) json.RawMessage {
+	if len(kinds) == 0 || len(args) == 0 {
+		return args
+	}
+	var m map[string]json.RawMessage
+	if json.Unmarshal(args, &m) != nil {
+		return args
+	}
+	changed := false
+	for name, kind := range kinds {
+		raw, ok := m[name]
+		var str string
+		if !ok || json.Unmarshal(raw, &str) != nil {
+			continue
+		}
+		var parsed any
+		if json.Unmarshal([]byte(str), &parsed) != nil {
+			continue
+		}
+		_, isObj := parsed.(map[string]any)
+		_, isArr := parsed.([]any)
+		if (kind == 'o' && isObj) || (kind == 'a' && isArr) {
+			m[name] = json.RawMessage(str)
+			changed = true
+		}
+	}
+	if !changed {
+		return args
+	}
+	out, err := json.Marshal(m)
+	if err != nil {
+		return args
+	}
+	return out
 }
