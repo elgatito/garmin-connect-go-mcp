@@ -329,34 +329,17 @@ func (c *Client) GetDailyWeighIns(ctx context.Context, date string) (any, error)
 	return c.GetJSON(ctx, weightPath+"/weight/dayview/"+d, url.Values{"includeAll": {"true"}})
 }
 
-// DeleteWeighIns deletes a day's weigh-ins. The int result is false when
-// nothing was deleted (no entries, or several without deleteAll).
-func (c *Client) DeleteWeighIns(ctx context.Context, date string, deleteAll bool) (int, bool, error) {
+// DeleteWeighIn deletes one weigh-in version. Callers read the day view first
+// so validation happens before the write tracker is marked sent.
+func (c *Client) DeleteWeighIn(ctx context.Context, date string, samplePk any) (any, error) {
 	d, err := ValidateDate(date, "cdate")
 	if err != nil {
-		return 0, false, err
+		return nil, err
 	}
-	data, err := c.GetDailyWeighIns(ctx, d)
-	if err != nil {
-		return 0, false, err
-	}
-	list := jsonList(jsonMap(data)["dateWeightList"])
-	if len(list) == 0 {
-		return 0, false, nil
-	}
-	if len(list) > 1 && !deleteAll {
-		return 0, false, nil
-	}
-	for _, item := range list {
-		pk := numericIDString(jsonMap(item)["samplePk"])
-		if _, err := c.DoJSON(ctx, Req{
-			Method: http.MethodDelete,
-			Path:   weightPath + "/weight/" + d + "/byversion/" + pk,
-		}); err != nil {
-			return 0, false, err
-		}
-	}
-	return len(list), true, nil
+	return c.DoJSON(ctx, Req{
+		Method: http.MethodDelete,
+		Path:   weightPath + "/weight/" + d + "/byversion/" + numericIDString(samplePk),
+	})
 }
 
 func numericIDString(v any) string {
@@ -373,20 +356,6 @@ func numericIDString(v any) string {
 		return x.String()
 	}
 	return fmt.Sprint(v)
-}
-
-func validateWeightUnit(unitKey string) error {
-	if unitKey != "kg" && unitKey != "lbs" {
-		return errors.New("unitKey must be one of {'kg', 'lbs'}")
-	}
-	return nil
-}
-
-func validateWeight(weight float64) error {
-	if math.IsNaN(weight) || math.IsInf(weight, 0) || weight <= 0 {
-		return fmt.Errorf("weight must be positive, got: %v", weight)
-	}
-	return nil
 }
 
 func formatMillis(t time.Time) string {
@@ -417,10 +386,10 @@ func weighInPayload(weight float64, unitKey string, dateTimestamp, gmtTimestamp 
 
 // AddWeighIn adds a weigh-in timestamped now.
 func (c *Client) AddWeighIn(ctx context.Context, weight float64, unitKey string) (any, error) {
-	if err := validateWeight(weight); err != nil {
+	if err := ValidateWeight(weight); err != nil {
 		return nil, err
 	}
-	if err := validateWeightUnit(unitKey); err != nil {
+	if err := ValidateWeightUnit(unitKey); err != nil {
 		return nil, err
 	}
 	now := time.Now()
@@ -431,19 +400,14 @@ func (c *Client) AddWeighIn(ctx context.Context, weight float64, unitKey string)
 	})
 }
 
-// AddWeighInWithTimestamps adds a weigh-in with explicit local/GMT timestamps.
-func (c *Client) AddWeighInWithTimestamps(ctx context.Context, weight float64, unitKey, dateTimestamp, gmtTimestamp string) (any, error) {
-	if err := validateWeightUnit(unitKey); err != nil {
-		return nil, err
-	}
-	if err := validateWeight(weight); err != nil {
-		return nil, err
-	}
+// weighInTimestamps resolves the local/GMT pair, deriving GMT from local when
+// it is omitted.
+func weighInTimestamps(dateTimestamp, gmtTimestamp string) (time.Time, time.Time, error) {
 	var local time.Time
 	if dateTimestamp != "" {
 		parsed, err := parseSoftTime(dateTimestamp, time.Local)
 		if err != nil {
-			return nil, err
+			return time.Time{}, time.Time{}, err
 		}
 		local = parsed.Local()
 	} else {
@@ -453,11 +417,26 @@ func (c *Client) AddWeighInWithTimestamps(ctx context.Context, weight float64, u
 	if gmtTimestamp != "" {
 		parsed, err := parseSoftTime(gmtTimestamp, time.UTC)
 		if err != nil {
-			return nil, err
+			return time.Time{}, time.Time{}, err
 		}
 		gmt = parsed.UTC()
 	} else {
 		gmt = local.UTC()
+	}
+	return local, gmt, nil
+}
+
+// AddWeighInWithTimestamps adds a weigh-in with explicit local/GMT timestamps.
+func (c *Client) AddWeighInWithTimestamps(ctx context.Context, weight float64, unitKey, dateTimestamp, gmtTimestamp string) (any, error) {
+	if err := ValidateWeightUnit(unitKey); err != nil {
+		return nil, err
+	}
+	if err := ValidateWeight(weight); err != nil {
+		return nil, err
+	}
+	local, gmt, err := weighInTimestamps(dateTimestamp, gmtTimestamp)
+	if err != nil {
+		return nil, err
 	}
 	return c.DoJSON(ctx, Req{
 		Method: http.MethodPost,
@@ -504,19 +483,8 @@ func (c *Client) AddBodyComposition(ctx context.Context, date string, bc BodyCom
 
 // SetBloodPressure records a manual blood pressure measurement.
 func (c *Client) SetBloodPressure(ctx context.Context, systolic, diastolic, pulse int, notes *string) (any, error) {
-	for _, check := range []struct {
-		name string
-		val  int
-		lo   int
-		hi   int
-	}{
-		{"systolic", systolic, 70, 260},
-		{"diastolic", diastolic, 40, 150},
-		{"pulse", pulse, 20, 250},
-	} {
-		if check.val < check.lo || check.val > check.hi {
-			return nil, fmt.Errorf("%s must be an int in [%d, %d]", check.name, check.lo, check.hi)
-		}
+	if err := ValidateBloodPressure(systolic, diastolic, pulse); err != nil {
+		return nil, err
 	}
 	now := time.Now()
 	var note any
@@ -538,21 +506,31 @@ func (c *Client) SetBloodPressure(ctx context.Context, systolic, diastolic, puls
 	})
 }
 
-// AddHydrationData logs a hydration amount for a local timestamp.
-func (c *Client) AddHydrationData(ctx context.Context, valueInML int, cdate, timestamp string) (any, error) {
+// hydrationTimestamp validates a hydration amount, date and timestamp and
+// returns the normalized date and parsed local timestamp.
+func hydrationTimestamp(valueInML int, cdate, timestamp string) (string, time.Time, error) {
 	if math.Abs(float64(valueInML)) > 10000 {
-		return nil, fmt.Errorf("value_in_ml seems unreasonably high (>10000ml)")
+		return "", time.Time{}, fmt.Errorf("value_in_ml seems unreasonably high (>10000ml)")
 	}
 	d, err := ValidateDate(cdate, "cdate")
 	if err != nil {
-		return nil, err
+		return "", time.Time{}, err
 	}
 	ts, err := parseSoftTime(timestamp, time.Local)
 	if err != nil {
-		return nil, err
+		return "", time.Time{}, err
 	}
 	if ts.Format("2006-01-02") != d {
-		return nil, fmt.Errorf("timestamp date (%s) doesn't match cdate (%s)", ts.Format("2006-01-02"), d)
+		return "", time.Time{}, fmt.Errorf("timestamp date (%s) doesn't match cdate (%s)", ts.Format("2006-01-02"), d)
+	}
+	return d, ts, nil
+}
+
+// AddHydrationData logs a hydration amount for a local timestamp.
+func (c *Client) AddHydrationData(ctx context.Context, valueInML int, cdate, timestamp string) (any, error) {
+	d, ts, err := hydrationTimestamp(valueInML, cdate, timestamp)
+	if err != nil {
+		return nil, err
 	}
 	return c.DoJSON(ctx, Req{
 		Method: http.MethodPut,

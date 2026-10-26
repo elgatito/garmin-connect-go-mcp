@@ -162,7 +162,7 @@ func getDeviceSettings(ctx context.Context, s *Session, in getDeviceSettingsInpu
 		return nil, fmt.Errorf("Error retrieving device settings: %w", err)
 	}
 	if !truthy(settingsValue) {
-		return fmt.Sprintf("No settings found for device ID %v.", deviceID), nil
+		return fmt.Sprintf("No settings found for device ID %s.", numToStr(deviceID)), nil
 	}
 	settings := asMap(settingsValue)
 
@@ -259,8 +259,8 @@ func roundHalfUp(v float64, places int) float64 {
 
 func getDeviceSolarData(ctx context.Context, s *Session, in deviceSolarDataInput) (any, error) {
 	noSolar := fmt.Sprintf(
-		"No solar data available for device ID %v on %s. This device may not have solar capabilities.",
-		in.DeviceID, in.Date,
+		"No solar data available for device ID %s on %s. This device may not have solar capabilities.",
+		numToStr(in.DeviceID), in.Date,
 	)
 	solarValue, err := s.Client.GetDeviceSolarData(ctx, in.DeviceID, in.Date)
 	if err != nil {
@@ -270,7 +270,7 @@ func getDeviceSolarData(ctx context.Context, s *Session, in deviceSolarDataInput
 		return nil, fmt.Errorf("Error retrieving solar data: %w", err)
 	}
 	if !truthy(solarValue) {
-		return fmt.Sprintf("No solar data found for device ID %v on %s.", in.DeviceID, in.Date), nil
+		return fmt.Sprintf("No solar data found for device ID %s on %s.", numToStr(in.DeviceID), in.Date), nil
 	}
 	daily := asList(asMap(solarValue)["solarDailyDataDTOs"])
 	if len(daily) == 0 {
@@ -419,8 +419,8 @@ func pushWorkoutToDevice(ctx context.Context, s *Session, in pushWorkoutToDevice
 		"workout_name": workoutName,
 		"device_id":    deviceID,
 		"message": fmt.Sprintf(
-			"Queued workout %d for device %v; it arrives on the device at its next sync",
-			in.WorkoutID, deviceID,
+			"Queued workout %d for device %s; it arrives on the device at its next sync",
+			in.WorkoutID, numToStr(deviceID),
 		),
 	}, nil
 }

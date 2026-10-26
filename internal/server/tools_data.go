@@ -81,6 +81,12 @@ func addBodyComposition(ctx context.Context, s *Session, in addBodyCompositionIn
 			return fmt.Sprintf("Error adding body composition data: %s", msg), nil
 		}
 	}
+	if _, err := garmin.ValidateDate(in.Date, "date"); err != nil {
+		return fmt.Sprintf("Error adding body composition data: %v", err), nil
+	}
+	if err := garmin.ValidateWeight(in.Weight); err != nil {
+		return fmt.Sprintf("Error adding body composition data: %v", err), nil
+	}
 
 	tracker := newWriteTracker("add_body_composition", s.logWriter()).
 		withPrefix("Error adding body composition data")
@@ -107,6 +113,9 @@ func addBodyComposition(ctx context.Context, s *Session, in addBodyCompositionIn
 }
 
 func setBloodPressure(ctx context.Context, s *Session, in setBloodPressureInput) (any, error) {
+	if err := garmin.ValidateBloodPressure(in.Systolic, in.Diastolic, in.Pulse); err != nil {
+		return fmt.Sprintf("Error setting blood pressure values: %v", err), nil
+	}
 	tracker := newWriteTracker("set_blood_pressure", s.logWriter()).
 		withPrefix("Error setting blood pressure values")
 	tracker.Sent()
@@ -119,6 +128,9 @@ func setBloodPressure(ctx context.Context, s *Session, in setBloodPressureInput)
 }
 
 func addHydrationData(ctx context.Context, s *Session, in addHydrationDataInput) (any, error) {
+	if err := garmin.ValidateHydration(in.ValueInML, in.Cdate, in.Timestamp); err != nil {
+		return fmt.Sprintf("Error adding hydration data: %v", err), nil
+	}
 	tracker := newWriteTracker("add_hydration_data", s.logWriter()).
 		withPrefix("Error adding hydration data")
 	tracker.Sent()

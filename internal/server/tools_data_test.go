@@ -131,3 +131,100 @@ func TestAddHydrationDataTool(t *testing.T) {
 		t.Fatalf("timestampLocal = %v", payload["timestampLocal"])
 	}
 }
+
+// --- pre-send validation ---
+
+func TestAddBodyCompositionRejectsInvalidDateBeforeWrite(t *testing.T) {
+	f := newFakeGarmin(t)
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "add_body_composition", map[string]any{
+		"date": "2024-13-40", "weight": 70.0,
+	})
+	if isErr {
+		t.Fatalf("unexpected structured error: %s", text)
+	}
+	if !strings.Contains(text, "Error adding body composition data:") {
+		t.Fatalf("text = %q", text)
+	}
+	if calls := f.callsMatching("POST", dataUploadPath); len(calls) != 0 {
+		t.Fatalf("upload calls = %d", len(calls))
+	}
+}
+
+func TestAddBodyCompositionRejectsZeroWeightBeforeWrite(t *testing.T) {
+	f := newFakeGarmin(t)
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "add_body_composition", map[string]any{
+		"date": "2024-01-15", "weight": 0,
+	})
+	if isErr {
+		t.Fatalf("unexpected structured error: %s", text)
+	}
+	if !strings.Contains(text, "weight must be positive") {
+		t.Fatalf("text = %q", text)
+	}
+	if calls := f.callsMatching("POST", dataUploadPath); len(calls) != 0 {
+		t.Fatalf("upload calls = %d", len(calls))
+	}
+}
+
+func TestSetBloodPressureRejectsInvalidRangeBeforeWrite(t *testing.T) {
+	f := newFakeGarmin(t)
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "set_blood_pressure", map[string]any{
+		"systolic": 300, "diastolic": 80, "pulse": 65,
+	})
+	if isErr {
+		t.Fatalf("unexpected structured error: %s", text)
+	}
+	if !strings.Contains(text, "Error setting blood pressure values:") ||
+		!strings.Contains(text, "systolic must be an int in [70, 260]") {
+		t.Fatalf("text = %q", text)
+	}
+	if calls := f.callsMatching("POST", dataBloodPressurePath); len(calls) != 0 {
+		t.Fatalf("post calls = %d", len(calls))
+	}
+}
+
+func TestAddHydrationDataRejectsInvalidInputBeforeWrite(t *testing.T) {
+	cases := []struct {
+		name string
+		args map[string]any
+		want string
+	}{
+		{
+			"unreasonable amount",
+			map[string]any{"value_in_ml": 20000, "cdate": "2024-01-15", "timestamp": "2024-01-15T10:00:00"},
+			"unreasonably high",
+		},
+		{
+			"mismatched timestamp",
+			map[string]any{"value_in_ml": 500, "cdate": "2024-01-15", "timestamp": "2024-01-16T10:00:00"},
+			"doesn't match cdate",
+		},
+		{
+			"invalid date",
+			map[string]any{"value_in_ml": 500, "cdate": "2024-13-40", "timestamp": "2024-01-15T10:00:00"},
+			"invalid cdate",
+		},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			cs := newSession(t, f, nil)
+			text, isErr := callTool(t, cs, "add_hydration_data", tc.args)
+			if isErr {
+				t.Fatalf("unexpected structured error: %s", text)
+			}
+			if !strings.Contains(text, "Error adding hydration data:") || !strings.Contains(text, tc.want) {
+				t.Fatalf("text = %q", text)
+			}
+			if calls := f.callsMatching("PUT", dataHydrationPath); len(calls) != 0 {
+				t.Fatalf("put calls = %d", len(calls))
+			}
+		})
+	}
+}

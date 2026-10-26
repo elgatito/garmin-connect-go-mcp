@@ -364,3 +364,112 @@ func TestAddWeighInWithTimestampsRequiresLocalWithGmt(t *testing.T) {
 		t.Fatalf("post calls = %d", len(calls))
 	}
 }
+
+// --- pre-send validation and tracker ordering ---
+
+func TestAddWeighInRejectsInvalidInputBeforeWrite(t *testing.T) {
+	cases := []struct {
+		name string
+		args map[string]any
+		want string
+	}{
+		{"invalid unit", map[string]any{"weight": 70.5, "unit_key": "stones"}, "unitKey must be one of"},
+		{"zero weight", map[string]any{"weight": 0, "unit_key": "kg"}, "weight must be positive"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			cs := newSession(t, f, nil)
+			text, isErr := callTool(t, cs, "add_weigh_in", tc.args)
+			if isErr {
+				t.Fatalf("unexpected structured error: %s", text)
+			}
+			if !strings.Contains(text, "Error adding weight measurement:") || !strings.Contains(text, tc.want) {
+				t.Fatalf("text = %q", text)
+			}
+			if calls := f.callsMatching("POST", weightAddPath); len(calls) != 0 {
+				t.Fatalf("post calls = %d", len(calls))
+			}
+		})
+	}
+}
+
+func TestAddWeighInWithTimestampsRejectsInvalidTimestampBeforeWrite(t *testing.T) {
+	f := newFakeGarmin(t)
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "add_weigh_in_with_timestamps", map[string]any{
+		"weight": 70.5, "date_timestamp": "not-a-time",
+	})
+	if isErr {
+		t.Fatalf("unexpected structured error: %s", text)
+	}
+	if !strings.Contains(text, "Error adding weight measurement with timestamps:") ||
+		!strings.Contains(text, "invalid timestamp format") {
+		t.Fatalf("text = %q", text)
+	}
+	if calls := f.callsMatching("POST", weightAddPath); len(calls) != 0 {
+		t.Fatalf("post calls = %d", len(calls))
+	}
+}
+
+func TestAddWeighInWriteFailureReportsNotCommitted(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("POST "+weightAddPath, status(400, map[string]any{"message": "bad weight"}))
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "add_weigh_in", map[string]any{"weight": 70.5})
+	if !isErr {
+		t.Fatalf("expected write failure, got %q", text)
+	}
+	var payload map[string]any
+	decodeJSON(t, text, &payload)
+	if payload["write_committed"] != false {
+		t.Fatalf("write_committed = %v", payload["write_committed"])
+	}
+	if payload["stage"] != "garmin_request" {
+		t.Fatalf("stage = %v", payload["stage"])
+	}
+}
+
+func TestDeleteWeighInsConfirmPreReadFailureDoesNotDelete(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("GET "+weightDayviewPath, status(500, nil))
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "delete_weigh_ins", map[string]any{
+		"date": "2024-01-15", "confirm": true,
+	})
+	if !isErr || !strings.Contains(text, "Error deleting weight measurements") {
+		t.Fatalf("text = %q, isErr = %v", text, isErr)
+	}
+	if strings.Contains(text, "write_committed") || strings.Contains(text, "may have reached Garmin") {
+		t.Fatalf("pre-read failure reported as a write: %q", text)
+	}
+	for _, call := range f.recorded() {
+		if call.Method == "DELETE" {
+			t.Fatalf("unexpected delete %s", call.Path)
+		}
+	}
+}
+
+func TestDeleteWeighInsWriteFailureReportsNotCommitted(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("GET "+weightDayviewPath, map[string]any{"dateWeightList": []any{
+		map[string]any{"samplePk": 1705276800000.0, "weight": 70000.0},
+	}})
+	f.on("DELETE "+weightDeletePrefix+"1705276800000", status(400, map[string]any{"message": "no"}))
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "delete_weigh_ins", map[string]any{
+		"date": "2024-01-15", "confirm": true,
+	})
+	if !isErr {
+		t.Fatalf("expected write failure, got %q", text)
+	}
+	var payload map[string]any
+	decodeJSON(t, text, &payload)
+	if payload["write_committed"] != false {
+		t.Fatalf("write_committed = %v", payload["write_committed"])
+	}
+}

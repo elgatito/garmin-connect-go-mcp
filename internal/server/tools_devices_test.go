@@ -167,7 +167,7 @@ func TestGetDeviceSolarDataNonSolarDevice(t *testing.T) {
 	cs := newSession(t, f, nil)
 
 	text, _ := callTool(t, cs, "get_device_solar_data", map[string]any{
-		"device_id": "123456789",
+		"device_id": 123456789,
 		"date":      "2024-01-15",
 	})
 	if !strings.Contains(text, "may not have solar capabilities") {
@@ -175,6 +175,9 @@ func TestGetDeviceSolarDataNonSolarDevice(t *testing.T) {
 	}
 	if strings.HasPrefix(text, "Error") {
 		t.Fatalf("text = %q", text)
+	}
+	if !strings.Contains(text, "device ID 123456789 on 2024-01-15") || strings.Contains(text, "e+") {
+		t.Fatalf("device ID not rendered as a plain integer: %q", text)
 	}
 }
 
@@ -222,6 +225,9 @@ func TestPushWorkoutToDeviceExplicitDevice(t *testing.T) {
 	decodeJSON(t, text, &data)
 	if data["status"] != "success" || data["device_id"] != 3456789012.0 || data["workout_name"] != "Upper Body A" {
 		t.Fatalf("data = %v", data)
+	}
+	if !strings.Contains(data["message"].(string), "device 3456789012") || strings.Contains(data["message"].(string), "e+") {
+		t.Fatalf("message = %v", data["message"])
 	}
 	if calls := f.callsMatching("GET", deviceLastUsedPath); len(calls) != 0 {
 		t.Fatalf("last used called %d times", len(calls))

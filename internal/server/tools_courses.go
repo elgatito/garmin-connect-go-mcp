@@ -519,7 +519,7 @@ func uploadCourse(ctx context.Context, s *Session, in uploadCourseInput) (any, e
 		"elevation_gain_m": saved["elevationGainMeter"],
 		"elevation_loss_m": saved["elevationLossMeter"],
 		"activity_type_id": saved["activityTypePk"],
-		"url":              fmt.Sprintf("https://connect.%s/modern/course/%v", s.Client.Domain(), saved["courseId"]),
+		"url":              fmt.Sprintf("https://connect.%s/modern/course/%s", s.Client.Domain(), numToStr(saved["courseId"])),
 	}, nil
 }
 

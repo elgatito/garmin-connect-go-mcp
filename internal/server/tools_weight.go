@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/elgatito/garmin-connect-go-mcp/internal/garmin"
 )
 
 const (
@@ -216,15 +218,14 @@ func deleteWeighIns(ctx context.Context, s *Session, in deleteWeighInsInput) (an
 		}, nil
 	}
 
-	tracker := newWriteTracker("delete_weigh_ins", s.logWriter()).
-		withPrefix("Error deleting weight measurements")
-	tracker.Sent()
-	count, deleted, err := s.Client.DeleteWeighIns(ctx, in.Date, deleteAll)
+	// Read the day view before creating the tracker so a failed read is not
+	// reported as a possibly-committed write.
+	dataValue, err := s.Client.GetDailyWeighIns(ctx, in.Date)
 	if err != nil {
-		return nil, tracker.Fail(err)
+		return nil, fmt.Errorf("Error deleting weight measurements: %w", err)
 	}
-	tracker.Committed()
-	if !deleted {
+	measurements := asList(asMap(dataValue)["dateWeightList"])
+	if len(measurements) == 0 || (len(measurements) > 1 && !deleteAll) {
 		message := fmt.Sprintf("Nothing was deleted for %s: the day has either no weight measurements or more than one, and deleting more than one requires delete_all=true", in.Date)
 		if deleteAll {
 			message = fmt.Sprintf("No weight measurements found for %s; nothing was deleted", in.Date)
@@ -236,10 +237,20 @@ func deleteWeighIns(ctx context.Context, s *Session, in deleteWeighInsInput) (an
 			"message":       message,
 		}, nil
 	}
+
+	tracker := newWriteTracker("delete_weigh_ins", s.logWriter()).
+		withPrefix("Error deleting weight measurements")
+	tracker.Sent()
+	for _, raw := range measurements {
+		if _, err := s.Client.DeleteWeighIn(ctx, in.Date, asMap(raw)["samplePk"]); err != nil {
+			return nil, tracker.Fail(err)
+		}
+	}
+	tracker.Committed()
 	return map[string]any{
 		"status":        "success",
 		"date":          in.Date,
-		"deleted_count": count,
+		"deleted_count": len(measurements),
 		"message":       fmt.Sprintf("Weight measurements deleted for %s", in.Date),
 	}, nil
 }
@@ -257,6 +268,12 @@ func normalizedWeightUnit(unitKey string) string {
 
 func addWeighIn(ctx context.Context, s *Session, in addWeighInInput) (any, error) {
 	unitKey := normalizedWeightUnit(in.UnitKey)
+	if err := garmin.ValidateWeight(in.Weight); err != nil {
+		return fmt.Sprintf("Error adding weight measurement: %v", err), nil
+	}
+	if err := garmin.ValidateWeightUnit(unitKey); err != nil {
+		return fmt.Sprintf("Error adding weight measurement: %v", err), nil
+	}
 	tracker := newWriteTracker("add_weigh_in", s.logWriter()).
 		withPrefix("Error adding weight measurement")
 	tracker.Sent()
@@ -287,6 +304,15 @@ func addWeighInWithTimestamps(ctx context.Context, s *Session, in addWeighInWith
 		outputGMT = gmtTimestamp
 	} else if dateTimestamp == "" {
 		return "date_timestamp is required when gmt_timestamp is given: the local timestamp sets the day the weigh-in is recorded on.", nil
+	}
+	if err := garmin.ValidateWeightUnit(unitKey); err != nil {
+		return fmt.Sprintf("Error adding weight measurement with timestamps: %v", err), nil
+	}
+	if err := garmin.ValidateWeighInTimestamps(dateTimestamp, gmtTimestamp); err != nil {
+		return fmt.Sprintf("Error adding weight measurement with timestamps: %v", err), nil
+	}
+	if err := garmin.ValidateWeight(in.Weight); err != nil {
+		return fmt.Sprintf("Error adding weight measurement with timestamps: %v", err), nil
 	}
 
 	tracker := newWriteTracker("add_weigh_in_with_timestamps", s.logWriter()).

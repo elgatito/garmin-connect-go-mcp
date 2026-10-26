@@ -783,3 +783,37 @@ func TestPreviewWithNoCourseDataKeepsOnlyID(t *testing.T) {
 	preview := asMap(data["course"])
 	sameJSON(t, preview, map[string]any{"course_id": 99.0})
 }
+
+func TestUploadCourseFormatsLargeCourseIDInURL(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("POST "+coursesImportPath, map[string]any{
+		"courseName": "Long Course",
+		"geoPoints": []any{
+			map[string]any{"latitude": 40.0, "longitude": -105.0, "elevation": 1600.0},
+			map[string]any{"latitude": 40.01, "longitude": -105.01, "elevation": 1610.0},
+		},
+	})
+	f.on("POST "+coursesListPath, map[string]any{
+		"courseId": 38474628.0, "courseName": "Long Course", "activityTypePk": 1.0,
+	})
+	cs := newSession(t, f, nil)
+	gpxFile := filepath.Join(t.TempDir(), "long.gpx")
+	if err := os.WriteFile(gpxFile, []byte("<gpx><trk><trkseg></trkseg></trk></gpx>"), 0o644); err != nil {
+		t.Fatal(err)
+	}
+
+	text, _ := callTool(t, cs, "upload_course", map[string]any{"gpx_path": gpxFile})
+	var data map[string]any
+	decodeJSON(t, text, &data)
+	if data["course_id"] != 38474628.0 {
+		t.Fatalf("course_id = %v", data["course_id"])
+	}
+	url, _ := data["url"].(string)
+	if !strings.HasSuffix(url, "/modern/course/38474628") {
+		t.Fatalf("url = %q", url)
+	}
+	idPart := url[strings.LastIndex(url, "/")+1:]
+	if idPart != "38474628" {
+		t.Fatalf("url id uses non-integer formatting: %q", url)
+	}
+}
