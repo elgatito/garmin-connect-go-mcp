@@ -9,7 +9,6 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"sort"
 	"strings"
 
@@ -192,10 +191,6 @@ func writeFileAtomic(path string, data []byte) (err error) {
 	}
 	if err = f.Close(); err != nil {
 		return err
-	}
-	// os.Rename cannot replace an existing file on Windows.
-	if runtime.GOOS == "windows" {
-		os.Remove(path)
 	}
 	if err = os.Rename(tmp, path); err != nil {
 		return err

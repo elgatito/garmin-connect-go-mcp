@@ -72,6 +72,22 @@ func TestTokensRoundTripAndPerms(t *testing.T) {
 	if len(leftovers) != 0 {
 		t.Errorf("temp files left behind: %v", leftovers)
 	}
+
+	// A second save replaces the existing file.
+	want = garmin.Tokens{DIToken: "tok2", DIRefreshToken: "ref2", DIClientID: "cid2"}
+	if err := s.SaveTokens("bob@example.com", want); err != nil {
+		t.Fatalf("re-save: %v", err)
+	}
+	got, err = s.LoadTokens("bob@example.com")
+	if err != nil {
+		t.Fatalf("re-load: %v", err)
+	}
+	if got != want {
+		t.Errorf("after overwrite got %+v, want %+v", got, want)
+	}
+	if leftovers, err := filepath.Glob(filepath.Join(dir, ".tmp-*")); err != nil || len(leftovers) != 0 {
+		t.Errorf("temp files left behind after overwrite: %v %v", leftovers, err)
+	}
 }
 
 func TestLoadTokensMissingIsErrNoAccount(t *testing.T) {
