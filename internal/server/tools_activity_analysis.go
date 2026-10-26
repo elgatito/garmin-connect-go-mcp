@@ -85,6 +85,7 @@ func registerActivityAnalysisTools(r *registry) {
 	addTool(r, "get_activity_fit_messages", getActivityFitMessagesDesc, getActivityFitMessages)
 	addTool(r, "download_activity_file", downloadActivityFileDesc, downloadActivityFile)
 	addTool(r, "set_fit_download_dir", setFitDownloadDirDesc, setFitDownloadDir)
+	addTool(r, "get_activity_fit_data", getActivityFitDataDesc, getActivityFitData)
 }
 
 func first16Hex(b []byte) string { return hex.EncodeToString(b[:min(16, len(b))]) }
@@ -126,6 +127,22 @@ func getActivityFitMessages(ctx context.Context, s *Session, in fitMessagesIn) (
 		Source     string `json:"source"`
 		*fitMessagesResult
 	}{id, "garmin_original_fit", parsed}, nil
+}
+
+// fitBytesFailure is the {error, debug} payload for downloaded bytes that are not a readable FIT file.
+type fitBytesFailure struct {
+	Error string `json:"error"`
+	Debug struct {
+		TotalBytes      int    `json:"total_bytes"`
+		First16BytesHex string `json:"first_16_bytes_hex"`
+		Hint            string `json:"hint"`
+	} `json:"debug"`
+}
+
+func newFitBytesFailure(err error, raw []byte) fitBytesFailure {
+	out := fitBytesFailure{Error: err.Error()}
+	out.Debug.TotalBytes, out.Debug.First16BytesHex, out.Debug.Hint = len(raw), first16Hex(raw), fitDebugHint
+	return out
 }
 
 // fitDownloadFormats maps download_activity_file formats to Garmin.ActivityDownloadFormat, in Python's order.
@@ -198,16 +215,7 @@ func downloadActivityFile(ctx context.Context, s *Session, in downloadActivityFi
 	payload := raw
 	if name == "fit" {
 		if payload, err = extractFitBytes(raw); err != nil {
-			out := struct {
-				Error string `json:"error"`
-				Debug struct {
-					TotalBytes      int    `json:"total_bytes"`
-					First16BytesHex string `json:"first_16_bytes_hex"`
-					Hint            string `json:"hint"`
-				} `json:"debug"`
-			}{Error: err.Error()}
-			out.Debug.TotalBytes, out.Debug.First16BytesHex, out.Debug.Hint = len(raw), first16Hex(raw), fitDebugHint
-			return out, nil
+			return newFitBytesFailure(err, raw), nil
 		}
 	}
 	// Ported as-is from Python: any directory the caller names is written to, and an existing file is replaced.
