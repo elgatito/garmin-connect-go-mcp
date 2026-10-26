@@ -359,3 +359,25 @@ func TestAuthUnreadableSettingsAborts(t *testing.T) {
 		t.Fatalf("stderr = %q", r.errb.String())
 	}
 }
+
+func TestInterruptDuringAuthRestoresTerminalAndExits130(t *testing.T) {
+	sigs := make(chan os.Signal, 1)
+	var errb bytes.Buffer
+	var restored, cancelled bool
+	code := -1
+	sigs <- os.Interrupt
+	watchInterrupt(sigs, false, func() { cancelled = true }, func() { restored = true }, &errb, func(c int) { code = c })
+	if !restored || cancelled || code != 130 || errb.String() != "\nInterrupted.\n" {
+		t.Fatalf("restored=%v cancelled=%v code=%d stderr=%q", restored, cancelled, code, errb.String())
+	}
+}
+
+func TestInterruptDuringServeCancelsContext(t *testing.T) {
+	sigs := make(chan os.Signal, 1)
+	var restored, cancelled, exited bool
+	sigs <- os.Interrupt
+	watchInterrupt(sigs, true, func() { cancelled = true }, func() { restored = true }, io.Discard, func(int) { exited = true })
+	if !cancelled || restored || exited {
+		t.Fatalf("cancelled=%v restored=%v exited=%v", cancelled, restored, exited)
+	}
+}

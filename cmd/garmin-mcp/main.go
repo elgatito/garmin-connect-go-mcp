@@ -45,11 +45,37 @@ func defaultEnv() env {
 	}
 }
 
+// watchInterrupt blocks until the first signal. The server (graceful) cancels its context;
+// every other command restores the terminal (a password prompt leaves echo off) and exits 130.
+func watchInterrupt(sigs <-chan os.Signal, graceful bool, cancel func(), restore func(), stderr io.Writer, exit func(int)) {
+	<-sigs
+	if graceful {
+		cancel()
+		return
+	}
+	restore()
+	fmt.Fprint(stderr, "\nInterrupted.\n")
+	exit(130)
+}
+
 func main() {
-	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
-	code := run(ctx, os.Args[1:], defaultEnv())
-	stop()
-	os.Exit(code)
+	e := defaultEnv()
+	ctx, cancel := context.WithCancel(context.Background())
+	sigs := make(chan os.Signal, 1)
+	signal.Notify(sigs, os.Interrupt, syscall.SIGTERM)
+	restore := func() {}
+	if fd := int(os.Stdin.Fd()); term.IsTerminal(fd) {
+		if old, err := term.GetState(fd); err == nil {
+			restore = func() { term.Restore(fd, old) }
+		}
+	}
+	cmd := ""
+	if len(os.Args) > 1 {
+		cmd = os.Args[1]
+	}
+	graceful := cmd == "serve" || (cmd == "" && !e.IsTerminal())
+	go watchInterrupt(sigs, graceful, cancel, restore, os.Stderr, os.Exit)
+	os.Exit(run(ctx, os.Args[1:], e))
 }
 
 const usage = `usage: garmin-mcp <command>
