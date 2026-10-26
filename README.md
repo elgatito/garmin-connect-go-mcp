@@ -28,7 +28,9 @@ garmin-mcp auth [--email E] [--cn] [--force]
 ```
 
 - `--email E` skips the email prompt.
-- `--cn` logs in to Garmin Connect China (`garmin.cn`).
+- `--cn` logs in to Garmin Connect China (`garmin.cn`). An existing account keeps its saved region, so `--force`
+  without `--cn` stays on `garmin.cn` for a China account. To switch region, `garmin-mcp remove <email>` and run
+  `auth` again.
 - `--force` logs in again even if the saved session is still valid. An expired or soon-to-expire session is replaced
   without it; the server's "session expired" message suggests `--force`, which is harmless in that case.
 

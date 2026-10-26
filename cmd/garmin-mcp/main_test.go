@@ -305,3 +305,32 @@ func TestRemove(t *testing.T) {
 		t.Fatalf("unknown: code=%d stderr=%q", code, r.errb.String())
 	}
 }
+
+func TestAuthKeepsStoredChinaDomain(t *testing.T) {
+	r := newRig(t, "", true)
+	if err := r.store().SaveSettings("me@x.com", accounts.Settings{Domain: "garmin.cn"}); err != nil {
+		t.Fatal(err)
+	}
+	r.save("me@x.com", time.Now().Add(-time.Hour))
+	if code := r.run("auth", "--email", "me@x.com", "--force"); code != 0 {
+		t.Fatalf("code=%d stderr=%q", code, r.errb.String())
+	}
+	st, _ := r.store().LoadSettings("me@x.com")
+	if st.Domain != "garmin.cn" || r.domains[0] != "garmin.cn" {
+		t.Fatalf("settings=%+v domains=%v", st, r.domains)
+	}
+	if !strings.Contains(r.out.String(), "Using Garmin Connect China (garmin.cn)") {
+		t.Fatalf("stdout = %q", r.out.String())
+	}
+}
+
+func TestAuthNewAccountDefaultsToCom(t *testing.T) {
+	r := newRig(t, "", true)
+	if code := r.run("auth", "--email", "new@x.com"); code != 0 {
+		t.Fatalf("code=%d stderr=%q", code, r.errb.String())
+	}
+	st, _ := r.store().LoadSettings("new@x.com")
+	if st.Domain != "garmin.com" || r.domains[0] != "garmin.com" || !strings.Contains(r.out.String(), "Using Garmin Connect (garmin.com)") {
+		t.Fatalf("settings=%+v domains=%v out=%q", st, r.domains, r.out.String())
+	}
+}

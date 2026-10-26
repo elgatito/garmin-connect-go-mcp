@@ -75,9 +75,16 @@ func cmdAuth(ctx context.Context, args []string, e env, st accounts.Store) int {
 		return 1
 	}
 
-	domain := "garmin.com"
+	// An existing account keeps its stored region; --cn forces China.
+	prior, _ := st.LoadSettings(addr)
+	domain := prior.Domain
 	if *cn {
 		domain = "garmin.cn"
+	}
+	if domain == "garmin.cn" {
+		fmt.Fprintln(e.Stdout, "Using Garmin Connect China (garmin.cn)")
+	} else {
+		fmt.Fprintln(e.Stdout, "Using Garmin Connect (garmin.com)")
 	}
 	ep := e.Endpoints(domain)
 	mfa := func(context.Context) (string, error) {
