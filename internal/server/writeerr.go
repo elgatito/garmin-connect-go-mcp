@@ -20,6 +20,7 @@ import (
 const maxBodyChars = 500
 
 // writeFailure is a structured write-tool error; the registry renders payload as JSON with IsError.
+// It must not unwrap to the cause: addTool would turn an ErrSessionExpired cause into the plain expired-session copy.
 type writeFailure struct{ payload map[string]any }
 
 func (w *writeFailure) Error() string { return fmt.Sprint(w.payload["message"]) }

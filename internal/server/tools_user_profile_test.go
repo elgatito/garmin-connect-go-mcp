@@ -2,6 +2,7 @@ package server
 
 import (
 	"maps"
+	"net/http"
 	"reflect"
 	"strings"
 	"testing"
@@ -197,5 +198,81 @@ func TestSetHeartRateZonesRequiresAnUpdate(t *testing.T) {
 	}
 	if n := len(f.requests("")); n != 0 {
 		t.Errorf("%d calls", n)
+	}
+}
+
+func TestHeartRateZoneUpdateReportsCommittedWhenConfirmationFails(t *testing.T) {
+	for name, readback := range map[string]any{
+		"rate limited":        status(429, map[string]any{"message": "rate limited"}),
+		"unexpected response": map[string]any{"not": "a list"},
+		"empty list":          []any{},
+	} {
+		t.Run(name, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			f.on("GET "+hrZonesRoute, sequence(heartRateZones(), readback))
+			f.on("PUT "+hrZonesRoute, status(204, rawBody(nil)))
+			data := decode(t, callOK(t, newSession(t, f, nil), "set_heart_rate_zones", map[string]any{"sport": "cycling", "max_hr": 204})).(map[string]any)
+			sub, _ := data["submitted_configuration"].(map[string]any)
+			if data["status"] != "success" || data["write_committed"] != true || data["confirmation_error"] == "" || data["confirmation_error"] == nil ||
+				sub["sport"] != "CYCLING" || sub["maxHeartRateUsed"] != 204.0 {
+				t.Fatalf("got %v", data)
+			}
+			if n := len(f.requests("PUT " + hrZonesRoute)); n != 1 {
+				t.Errorf("%d PUTs", n)
+			}
+		})
+	}
+}
+
+func TestHeartRateZoneUpdateTracksFailedWrite(t *testing.T) {
+	cases := []struct {
+		name      string
+		put       any
+		env       map[string]string
+		committed any
+		errType   string
+		inMessage string
+	}{
+		{"503", status(503, map[string]any{"message": "gateway failed"}), nil, "unknown", "GarminConnectConnectionError", "API Error 503 - gateway failed"},
+		{"read timeout", func(w http.ResponseWriter, r *http.Request) { <-r.Context().Done() }, map[string]string{"GARMIN_MCP_CALL_TIMEOUT": "0.3"}, "unknown", "ReadTimeout", "deadline exceeded"},
+		{"400", status(400, map[string]any{"message": "invalid profile"}), nil, false, "GarminConnectConnectionError", "API Error 400 - invalid profile"},
+	}
+	for _, c := range cases {
+		t.Run(c.name, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			f.on("GET "+hrZonesRoute, heartRateZones())
+			f.on("PUT "+hrZonesRoute, c.put)
+			text, isErr := callTool(t, newSession(t, f, c.env), "set_heart_rate_zones", map[string]any{"sport": "cycling", "max_hr": 204})
+			if !isErr {
+				t.Fatalf("not an error: %s", text)
+			}
+			data := decode(t, text).(map[string]any)
+			msg, _ := data["message"].(string)
+			if data["write_committed"] != c.committed || data["stage"] != "garmin_request" || data["error_type"] != c.errType ||
+				!strings.HasPrefix(msg, "Error updating heart-rate zones: ") || !strings.Contains(msg, c.inMessage) || data["correlation_id"] == nil {
+				t.Fatalf("got %v", data)
+			}
+			if n := len(f.requests("GET " + hrZonesRoute)); n != 1 {
+				t.Errorf("%d GETs", n)
+			}
+		})
+	}
+}
+
+// Also pins that a writeFailure caused by an expired session keeps its payload instead of becoming the expired-session copy.
+func TestHeartRateZoneUpdateLookupFailureReportsNoWrite(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("GET "+hrZonesRoute, status(401, map[string]any{"message": "expired token"}))
+	f.on("POST /di-oauth2-service/oauth/token", status(400, map[string]any{"error": "invalid_grant"}))
+	text, isErr := callTool(t, newSession(t, f, nil), "set_heart_rate_zones", map[string]any{"sport": "cycling", "max_hr": 204})
+	if !isErr || strings.HasPrefix(text, "The Garmin session") {
+		t.Fatalf("got %v %q", isErr, text)
+	}
+	data := decode(t, text).(map[string]any)
+	if data["write_committed"] != false || data["stage"] != "auth_refresh" {
+		t.Fatalf("got %v", data)
+	}
+	if n := len(f.requests("PUT " + hrZonesRoute)); n != 0 {
+		t.Errorf("%d PUTs", n)
 	}
 }
