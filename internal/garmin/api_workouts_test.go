@@ -64,8 +64,6 @@ func TestWorkoutValidationNeverReachesGarmin(t *testing.T) {
 		"id":        {func() error { _, err := c.GetWorkoutByID(ctx, 0); return err }, "workout_id must be a positive integer, got: 0"},
 		"delete":    {func() error { _, err := c.DeleteWorkout(ctx, -1); return err }, "workout_id must be a positive integer, got: -1"},
 		"download":  {func() error { _, err := c.DownloadWorkout(ctx, 0); return err }, "workout_id must be a positive integer, got: 0"},
-		"schedule":  {func() error { _, err := c.ScheduleWorkout(ctx, 0, "2024-01-15"); return err }, "workout_id must be a positive integer, got: 0"},
-		"date":      {func() error { _, err := c.ScheduleWorkout(ctx, 1, "nope"); return err }, "date_str must be in format 'YYYY-MM-DD', got: nope"},
 		"scheduled": {func() error { _, err := c.GetScheduledWorkoutByID(ctx, 0); return err }, "scheduled_workout_id must be a positive integer, got: 0"},
 		"unsched":   {func() error { _, err := c.UnscheduleWorkout(ctx, -3); return err }, "scheduled_workout_id must be a positive integer, got: -3"},
 		"year":      {func() error { _, err := c.GetScheduledWorkouts(ctx, 1999, 5); return err }, "year must be 2000 or later, got: 1999"},

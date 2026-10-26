@@ -75,16 +75,10 @@ func (c *Client) UploadWorkout(ctx context.Context, payload any) (any, error) {
 	return c.DoJSON(ctx, Req{Method: http.MethodPost, Path: workoutsPath + "/workout", JSON: payload})
 }
 
+// ScheduleWorkout is the tools' direct POST of {"date": ...} to the calendar (the schedule endpoint is not
+// idempotent: a second POST adds a second entry, so callers check first).
 func (c *Client) ScheduleWorkout(ctx context.Context, workoutID int64, date string) (any, error) {
-	s, err := positiveID(workoutID, "workout_id")
-	if err != nil {
-		return nil, err
-	}
-	d, err := ValidateDate(date, "date_str")
-	if err != nil {
-		return nil, err
-	}
-	return c.DoJSON(ctx, Req{Method: http.MethodPost, Path: workoutScheduledPath + "/" + s, JSON: map[string]any{"date": d}})
+	return c.DoJSON(ctx, Req{Method: http.MethodPost, Path: workoutScheduledPath + "/" + strconv.FormatInt(workoutID, 10), JSON: map[string]any{"date": date}})
 }
 
 func (c *Client) GetScheduledWorkoutByID(ctx context.Context, id int64) (any, error) {
