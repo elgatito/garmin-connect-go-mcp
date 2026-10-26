@@ -10,8 +10,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/muktihari/fit/cmd/fitprint/printer"
 	"github.com/muktihari/fit/decoder"
 	"github.com/muktihari/fit/profile"
+	"github.com/muktihari/fit/profile/basetype"
 	"github.com/muktihari/fit/profile/typedef"
 	"github.com/muktihari/fit/proto"
 )
@@ -93,15 +95,7 @@ func decodeFIT(raw []byte) ([]fitMessage, error) {
 			decoded.Fields = append(decoded.Fields, decodeFitField(&message.Fields[j], message))
 		}
 		for j := range message.DeveloperFields {
-			dev := &message.DeveloperFields[j]
-			decoded.Fields = append(decoded.Fields, fitField{
-				Name:             fmt.Sprintf("unknown_dev_%d_%d", dev.DeveloperDataIndex, dev.Num),
-				Value:            jsonSafeFitValue(dev.Value.Any()),
-				FieldType:        "devfield",
-				RawValue:         jsonSafeFitValue(dev.Value.Any()),
-				HasRawValue:      true,
-				DefinitionNumber: fitIntPtr(int(dev.Num)),
-			})
+			decoded.Fields = append(decoded.Fields, decodeDeveloperFitField(&message.DeveloperFields[j]))
 		}
 		out = append(out, decoded)
 	}
@@ -139,33 +133,62 @@ func decodeFitField(field *proto.Field, message *proto.Message) fitField {
 	}
 
 	raw := field.Value.Any()
-	rawCopy := copyFitValue(raw)
-	value := rawCopy
+	rawValue, value, isArray, valid := normalizeFitValue(raw, field.BaseType)
 	var valueName *string
 	var valueNames []any
 
-	dateTime := fieldType == profile.DateTime || fieldType == profile.LocalDateTime
-	switch {
-	case dateTime:
-		if seconds, ok := fitUint64(raw); ok {
-			value = fitTimeISO(seconds)
-		}
-	case !isFitSlice(raw):
-		if label, ok := fitEnumLabel(fieldType, raw); ok {
-			value = label
-			valueName = &label
-		} else {
-			value = applyFitScaleOffset(value, scale, offset)
-		}
-	default:
-		if labels, ok := fitEnumLabels(fieldType, raw); ok {
-			valueNames = labels
-		} else {
-			value = applyFitScaleOffset(value, scale, offset)
+	if valid {
+		dateTime := fieldType == profile.DateTime || fieldType == profile.LocalDateTime
+		switch {
+		case dateTime:
+			if isArray {
+				items := fitSliceToAny(value)
+				converted := make([]any, len(items))
+				for i, item := range items {
+					if item == nil {
+						continue
+					}
+					seconds, ok := fitUint64(item)
+					if !ok {
+						converted[i] = item
+						continue
+					}
+					converted[i] = fitTimeISO(seconds)
+				}
+				value = converted
+			} else if seconds, ok := fitUint64(value); ok {
+				value = fitTimeISO(seconds)
+			}
+		case isArray:
+			if labels, ok := fitEnumLabels(fieldType, value); ok {
+				valueNames = labels
+			} else {
+				value = applyFitScaleOffset(value, scale, offset)
+			}
+			if len(valueNames) == 0 {
+				if names, list, ok := contextualFitValueNames(field, message, name); ok {
+					valueNames = names
+					if !list {
+						valueName = fitStringPtr(fmt.Sprint(names[0]))
+						valueNames = nil
+					}
+				}
+			}
+		default:
+			if label, ok := fitEnumLabel(fieldType, value); ok {
+				value = label
+				valueName = &label
+			} else if names, _, ok := contextualFitValueNames(field, message, name); ok {
+				if len(names) > 0 && names[0] != nil {
+					valueName = fitStringPtr(fmt.Sprint(names[0]))
+				}
+			} else {
+				value = applyFitScaleOffset(value, scale, offset)
+			}
 		}
 	}
 
-	decoded := fitField{
+	return fitField{
 		Name:             name,
 		Value:            value,
 		Units:            units,
@@ -175,11 +198,107 @@ func decodeFitField(field *proto.Field, message *proto.Message) fitField {
 		FieldType:        fieldKind,
 		ValueName:        valueName,
 		ValueNames:       valueNames,
-		RawValue:         rawCopy,
+		RawValue:         rawValue,
 		HasRawValue:      true,
 	}
-	return decoded
 }
+
+// normalizeFitValue applies fitparse's invalid-base-type rule before any
+// scaling or ISO conversion. Invalid values become nil (JSON null), including
+// each invalid element of an array. Single-element non-byte arrays collapse to
+// a scalar exactly as fitparse flattens them.
+func normalizeFitValue(raw any, baseType basetype.BaseType) (rawValue, value any, isArray, valid bool) {
+	if !isFitSlice(raw) {
+		valid = proto.Any(raw).Valid(baseType)
+		if valid {
+			return copyFitValue(raw), raw, false, true
+		}
+		return nil, nil, false, false
+	}
+
+	if baseType == basetype.Byte {
+		items, _ := raw.([]byte)
+		for _, item := range items {
+			if item != 0xFF {
+				return copyFitValue(raw), copyFitValue(raw), true, true
+			}
+		}
+		return nil, nil, true, false
+	}
+
+	items, anyValid := normalizeFitArray(raw, baseType)
+	if !anyValid {
+		return nil, nil, true, false
+	}
+	if len(items) == 1 {
+		if items[0] == nil {
+			return nil, nil, false, false
+		}
+		return items[0], items[0], false, true
+	}
+	return items, items, true, true
+}
+
+func normalizeFitArray(raw any, baseType basetype.BaseType) ([]any, bool) {
+	items := fitSliceToAny(raw)
+	anyValid := false
+	for i, item := range items {
+		if !proto.Any(item).Valid(baseType) {
+			items[i] = nil
+			continue
+		}
+		anyValid = true
+	}
+	if !anyValid {
+		return nil, false
+	}
+	return items, true
+}
+
+func decodeDeveloperFitField(dev *proto.DeveloperField) fitField {
+	baseType := fitValueBaseType(dev.Value)
+	rawValue, value, _, _ := normalizeFitValue(dev.Value.Any(), baseType)
+	return fitField{
+		Name:             fmt.Sprintf("unknown_dev_%d_%d", dev.DeveloperDataIndex, dev.Num),
+		Value:            value,
+		FieldType:        "devfield",
+		RawValue:         rawValue,
+		HasRawValue:      true,
+		DefinitionNumber: fitIntPtr(int(dev.Num)),
+	}
+}
+
+func fitValueBaseType(value proto.Value) basetype.BaseType {
+	switch value.Type() {
+	case proto.TypeBool, proto.TypeSliceBool:
+		return basetype.Enum
+	case proto.TypeInt8, proto.TypeSliceInt8:
+		return basetype.Sint8
+	case proto.TypeUint8, proto.TypeSliceUint8:
+		return basetype.Uint8
+	case proto.TypeInt16, proto.TypeSliceInt16:
+		return basetype.Sint16
+	case proto.TypeUint16, proto.TypeSliceUint16:
+		return basetype.Uint16
+	case proto.TypeInt32, proto.TypeSliceInt32:
+		return basetype.Sint32
+	case proto.TypeUint32, proto.TypeSliceUint32:
+		return basetype.Uint32
+	case proto.TypeInt64, proto.TypeSliceInt64:
+		return basetype.Sint64
+	case proto.TypeUint64, proto.TypeSliceUint64:
+		return basetype.Uint64
+	case proto.TypeFloat32, proto.TypeSliceFloat32:
+		return basetype.Float32
+	case proto.TypeFloat64, proto.TypeSliceFloat64:
+		return basetype.Float64
+	case proto.TypeString, proto.TypeSliceString:
+		return basetype.String
+	}
+	return basetype.Uint8
+}
+
+func fitStringPtr(value string) *string { return &value }
 
 func copyFitValue(value any) any {
 	switch v := value.(type) {
@@ -347,59 +466,118 @@ func fitUint64(value any) (uint64, bool) {
 	return 0, false
 }
 
-// fitEnumLabel maps a scalar profile enum to fitparse's decoded label.
+// fitEnumLabel resolves a profile enum through the fit module's generated
+// typedef table, matching fitparse's decoded labels for every profile type.
 func fitEnumLabel(fieldType profile.ProfileType, raw any) (string, bool) {
 	n, ok := fitUint64(raw)
 	if !ok {
 		return "", false
 	}
-	var label string
-	switch fieldType {
-	case profile.Sport:
-		label = typedef.Sport(n).String()
-	case profile.SubSport:
-		label = typedef.SubSport(n).String()
-	case profile.Event:
-		label = typedef.Event(n).String()
-	case profile.EventType:
-		label = typedef.EventType(n).String()
-	case profile.Manufacturer:
-		label = typedef.Manufacturer(n).String()
-	case profile.Activity:
-		label = typedef.Activity(n).String()
-	case profile.ActivityType:
-		label = typedef.ActivityType(n).String()
-	case profile.File:
-		label = typedef.File(n).String()
-	case profile.Gender:
-		label = typedef.Gender(n).String()
-	case profile.SetType:
-		label = typedef.SetType(n).String()
-	case profile.ExerciseCategory:
-		label = typedef.ExerciseCategory(n).String()
-	case profile.Intensity:
-		label = typedef.Intensity(n).String()
-	case profile.SessionTrigger:
-		label = typedef.SessionTrigger(n).String()
-	case profile.LapTrigger:
-		label = typedef.LapTrigger(n).String()
-	case profile.SwimStroke:
-		label = typedef.SwimStroke(n).String()
-	case profile.BatteryStatus:
-		label = typedef.BatteryStatus(n).String()
-	case profile.BodyLocation:
-		label = typedef.BodyLocation(n).String()
-	case profile.SourceType:
-		label = typedef.SourceType(n).String()
-	case profile.Weight:
-		label = typedef.Weight(n).String()
-	default:
+	value, ok := fitProtoValue(fieldType, n)
+	if !ok {
 		return "", false
 	}
-	if strings.Contains(label, "Invalid(") {
+	label := printer.TypedefString(fieldType, value)
+	if label == "" || strings.Contains(label, "Invalid(") {
 		return "", false
 	}
 	return label, true
+}
+
+func fitProtoValue(fieldType profile.ProfileType, n uint64) (proto.Value, bool) {
+	switch fieldType.BaseType() {
+	case basetype.Enum, basetype.Byte, basetype.Uint8, basetype.Uint8z:
+		return proto.Uint8(uint8(n)), true
+	case basetype.Sint8:
+		return proto.Int8(int8(n)), true
+	case basetype.Uint16, basetype.Uint16z:
+		return proto.Uint16(uint16(n)), true
+	case basetype.Sint16:
+		return proto.Int16(int16(n)), true
+	case basetype.Uint32, basetype.Uint32z:
+		return proto.Uint32(uint32(n)), true
+	case basetype.Sint32:
+		return proto.Int32(int32(n)), true
+	case basetype.Uint64, basetype.Uint64z:
+		return proto.Uint64(n), true
+	case basetype.Sint64:
+		return proto.Int64(int64(n)), true
+	case basetype.Float32:
+		return proto.Float32(float32(n)), true
+	case basetype.Float64:
+		return proto.Float64(float64(n)), true
+	}
+	return proto.Value{}, false
+}
+
+// contextualFitValueNames ports _contextual_fit_value_names for the two FIT
+// dynamic fields whose enum type depends on a sibling field.
+func contextualFitValueNames(field *proto.Field, message *proto.Message, fieldName string) ([]any, bool, bool) {
+	var selectorName string
+	switch {
+	case message.Num == typedef.MesgNumSet && fieldName == "category_subtype":
+		selectorName = "category"
+	case message.Num == typedef.MesgNumExerciseTitle && fieldName == "exercise_name":
+		selectorName = "exercise_category"
+	default:
+		return nil, false, false
+	}
+	selector := findProtoField(message, selectorName)
+	if selector == nil {
+		return nil, false, false
+	}
+
+	selectorValue := selector.Value.Any()
+	subtypeValue := field.Value.Any()
+	selectorIsArray := isFitSlice(selectorValue)
+	subtypeIsArray := isFitSlice(subtypeValue)
+	selectorItems := fitSliceToAny(selectorValue)
+	var subtypeItems []any
+	if subtypeIsArray {
+		subtypeItems = fitSliceToAny(subtypeValue)
+	} else {
+		subtypeItems = []any{subtypeValue}
+	}
+
+	names := make([]any, len(subtypeItems))
+	anyName := false
+	for i, subtype := range subtypeItems {
+		selectorRaw := selectorValue
+		if selectorIsArray {
+			if i >= len(selectorItems) {
+				continue
+			}
+			selectorRaw = selectorItems[i]
+		}
+		selectorLabel, ok := fitEnumLabel(profile.ExerciseCategory, selectorRaw)
+		if !ok {
+			continue
+		}
+		exerciseType := profile.ProfileTypeFromString(selectorLabel + "_exercise_name")
+		if exerciseType == profile.Invalid {
+			continue
+		}
+		if label, ok := fitEnumLabel(exerciseType, subtype); ok {
+			names[i] = label
+			anyName = true
+		}
+	}
+	if !anyName {
+		return nil, false, false
+	}
+	if !subtypeIsArray {
+		return names[:1], false, true
+	}
+	return names, true, true
+}
+
+func findProtoField(message *proto.Message, name string) *proto.Field {
+	for i := range message.Fields {
+		if message.Fields[i].Name == name {
+			return &message.Fields[i]
+		}
+	}
+	return nil
 }
 
 func fitEnumLabels(fieldType profile.ProfileType, raw any) ([]any, bool) {

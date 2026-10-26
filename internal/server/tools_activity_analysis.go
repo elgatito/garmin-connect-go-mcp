@@ -403,8 +403,7 @@ func getActivityFitData(ctx context.Context, s *Session, in getActivityFitDataIn
 			if normalized, ok := fitNumber(session["normalized_power_w"]); ok && normalized != 0 {
 				session["normalized_w_per_kg"] = roundTo(normalized/weightKg, 2)
 			}
-			for _, item := range asList(parsed["climbs"]) {
-				climb := asMap(item)
+			for _, climb := range fitMapList(parsed["climbs"]) {
 				if climbPower, ok := fitNumber(climb["avg_power_w"]); ok && climbPower != 0 {
 					climb["avg_w_per_kg"] = roundTo(climbPower/weightKg, 2)
 				}
@@ -412,6 +411,23 @@ func getActivityFitData(ctx context.Context, s *Session, in getActivityFitDataIn
 		}
 	}
 	return parsed, nil
+}
+
+// fitMapList accepts either the internal typed slices or JSON-decoded lists.
+func fitMapList(value any) []map[string]any {
+	switch items := value.(type) {
+	case []map[string]any:
+		return items
+	case []any:
+		out := make([]map[string]any, 0, len(items))
+		for _, item := range items {
+			if mapped, ok := item.(map[string]any); ok {
+				out = append(out, mapped)
+			}
+		}
+		return out
+	}
+	return nil
 }
 
 func getRiderWeightKg(ctx context.Context, client interface {

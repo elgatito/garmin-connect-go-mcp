@@ -186,8 +186,7 @@ func TestGetActivityFitMessagesPreservesAllMessageTypesAndFields(t *testing.T) {
 		t.Fatalf("set_type = %v", setType)
 	}
 	unknown := aaFieldByName(t, set, "unknown_99")
-	hexValue := aaMap(t, unknown["value"], "unknown value")
-	if hexValue["encoding"] != "hex" || hexValue["value"] != "0102" {
+	if got := aaList(t, unknown["value"], "unknown value"); fmt.Sprint(got) != "[1 2]" {
 		t.Fatalf("unknown = %v", unknown)
 	}
 }
@@ -349,6 +348,170 @@ func TestFitMessageNamesMatchFitparse(t *testing.T) {
 	}
 	if counts["record"] < 1000 {
 		t.Fatalf("record count = %d", counts["record"])
+	}
+}
+
+func TestFitInvalidSentinelValuesAreNull(t *testing.T) {
+	raw := aaFIT(t,
+		aaMsg{num: mesgnum.Record, fields: []aaField{
+			{fieldnum.RecordPower, uint16(0xFFFF)},
+			{fieldnum.RecordHeartRate, uint8(140)},
+		}},
+	)
+	messages, err := decodeFIT(raw)
+	if err != nil {
+		t.Fatalf("decodeFIT: %v", err)
+	}
+	power := aaFieldByName(t, map[string]any{"fields": func() []any {
+		fields := []any{}
+		for _, field := range messages[0].Fields {
+			fields = append(fields, fitFieldMap(field))
+		}
+		return fields
+	}()}, "power")
+	if power["value"] != nil {
+		t.Fatalf("power value = %v, want null", power["value"])
+	}
+	if power["raw_value"] != nil {
+		t.Fatalf("power raw_value = %v, want null", power["raw_value"])
+	}
+	parsed, err := parseFIT(raw, true)
+	if err != nil {
+		t.Fatalf("parseFIT: %v", err)
+	}
+	records := fitMapList(parsed["records"])
+	if len(records) != 1 {
+		t.Fatalf("records = %v", records)
+	}
+	record := records[0]
+	if _, ok := record["power_w"]; ok {
+		t.Fatalf("invalid power leaked into curation: %v", record)
+	}
+
+	invalidRaw := aaFIT(t, aaMsg{num: mesgnum.FileId, fields: []aaField{
+		{fieldnum.FileIdManufacturer, uint16(0xFFFF)},
+	}})
+	invalidMessages, err := decodeFIT(invalidRaw)
+	if err != nil {
+		t.Fatalf("decode invalid file_id: %v", err)
+	}
+	if got := fitFieldValue(invalidMessages[0], "manufacturer"); got != nil {
+		t.Fatalf("invalid manufacturer = %v, want null", got)
+	}
+
+	// Activity.fit's manufacturer is 255 (development), a valid value, so it
+	// must still decode as a label rather than being treated as a sentinel.
+	activityRaw, err := os.ReadFile(filepath.Join("testdata", "Activity.fit"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	activityMessages, err := decodeFIT(activityRaw)
+	if err != nil {
+		t.Fatalf("decode Activity.fit: %v", err)
+	}
+	found := false
+	for _, message := range activityMessages {
+		if message.Name != "file_id" {
+			continue
+		}
+		for _, field := range message.Fields {
+			if field.Name != "manufacturer" {
+				continue
+			}
+			found = true
+			if field.Value != "development" {
+				t.Fatalf("file_id.manufacturer = %v, want development", field.Value)
+			}
+		}
+	}
+	if !found {
+		t.Fatal("file_id.manufacturer not found")
+	}
+}
+
+func TestFitProfileEnumCoverageIncludesGarminProduct(t *testing.T) {
+	raw := aaFIT(t, aaMsg{num: mesgnum.FileId, fields: []aaField{
+		{fieldnum.FileIdType, typedef.FileActivity.Byte()},
+		{fieldnum.FileIdManufacturer, typedef.ManufacturerGarmin.Uint16()},
+		{fieldnum.FileIdProduct, typedef.GarminProductFr255.Uint16()},
+	}})
+	messages, err := decodeFIT(raw)
+	if err != nil {
+		t.Fatalf("decodeFIT: %v", err)
+	}
+	var product *fitField
+	for i := range messages[0].Fields {
+		if messages[0].Fields[i].Name == "garmin_product" {
+			product = &messages[0].Fields[i]
+			break
+		}
+	}
+	if product == nil {
+		t.Fatalf("garmin_product not found: %v", messages[0].Fields)
+	}
+	if product.Value != "fr255" {
+		t.Fatalf("product = %v, want fr255", product.Value)
+	}
+}
+
+func TestFitInvalidArrayElementBecomesNull(t *testing.T) {
+	raw := aaFIT(t, aaMsg{num: mesgnum.Record, fields: []aaField{
+		{fieldnum.RecordLeftPowerPhase, []uint8{240, 0xFF}},
+	}})
+	messages, err := decodeFIT(raw)
+	if err != nil {
+		t.Fatalf("decodeFIT: %v", err)
+	}
+	var phase *fitField
+	for i := range messages[0].Fields {
+		if messages[0].Fields[i].Name == "left_power_phase" {
+			phase = &messages[0].Fields[i]
+			break
+		}
+	}
+	if phase == nil {
+		t.Fatal("left_power_phase not found")
+	}
+	values := aaList(t, jsonSafeFitValue(phase.Value), "phase value")
+	if len(values) != 2 || math.Abs(aaNum(t, values[0])-337.5) > 0.001 || values[1] != nil {
+		t.Fatalf("phase = %v", values)
+	}
+}
+
+func TestGetActivityFitMessagesResolvesStandardContextualEnums(t *testing.T) {
+	f := newFakeGarmin(t)
+	raw := aaFIT(t,
+		aaMsg{num: mesgnum.Set, fields: []aaField{
+			{fieldnum.SetCategory, []uint16{uint16(typedef.ExerciseCategorySquat)}},
+			{fieldnum.SetCategorySubtype, []uint16{uint16(typedef.SquatExerciseNameBarbellBackSquat)}},
+		}},
+		aaMsg{num: mesgnum.ExerciseTitle, fields: []aaField{
+			{fieldnum.ExerciseTitleExerciseCategory, uint16(typedef.ExerciseCategorySquat)},
+			{fieldnum.ExerciseTitleExerciseName, uint16(typedef.SquatExerciseNameBarbellBackSquat)},
+		}},
+	)
+	aaServeFIT(t, f, aaActivityID, raw)
+	cs := newSession(t, f, nil)
+
+	data := aaDownloaded(t, mustCallTool(t, cs, "get_activity_fit_messages", map[string]any{"activity_id": aaActivityID}))
+	messages := aaList(t, data["messages"], "messages")
+	if len(messages) != 2 {
+		t.Fatalf("messages = %v", messages)
+	}
+	set := aaMap(t, messages[0], "set")
+	title := aaMap(t, messages[1], "exercise_title")
+	if got := aaFieldByName(t, set, "category")["value_name"]; got != "squat" {
+		t.Fatalf("category = %v", got)
+	}
+	if got := aaFieldByName(t, set, "category_subtype")["value_name"]; got != "barbell_back_squat" {
+		t.Fatalf("category_subtype = %v", got)
+	}
+	exerciseName := aaFieldByName(t, title, "exercise_name")
+	if exerciseName["value_name"] != "barbell_back_squat" {
+		t.Fatalf("exercise_name = %v", exerciseName)
+	}
+	if aaNum(t, exerciseName["raw_value"]) != float64(typedef.SquatExerciseNameBarbellBackSquat) {
+		t.Fatalf("raw_value = %v", exerciseName["raw_value"])
 	}
 }
 
@@ -1848,6 +2011,11 @@ func aaRideFIT(t *testing.T, gradeField, altitude, distance bool) []byte {
 			}})
 		}
 	}
+	msgs = append(msgs, aaMsg{num: mesgnum.Session, fields: []aaField{
+		{fieldnum.SessionSport, typedef.SportCycling.Byte()},
+		{fieldnum.SessionStartTime, aaFITTime(t, start)},
+		{fieldnum.SessionTotalElapsedTime, uint32(520 * 1000)},
+	}})
 	return aaFIT(t, msgs...)
 }
 
@@ -2007,6 +2175,26 @@ func TestGetActivityFitDataWithoutWeighInsOmitsWPerKg(t *testing.T) {
 	}
 	if _, ok := aaMap(t, data["session"], "session")["avg_w_per_kg"]; ok {
 		t.Fatalf("session = %v", data["session"])
+	}
+}
+
+func TestGetActivityFitDataAddsClimbWPerKg(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("GET /weight-service/weight/dateRange", map[string]any{
+		"dateWeightList": []any{
+			map[string]any{"calendarDate": "2024-02-27", "weight": 70000},
+		},
+	})
+	aaServeFIT(t, f, aaActivityID, aaRideFIT(t, false, true, true))
+	cs := newSession(t, f, nil)
+	data := aaDownloaded(t, mustCallTool(t, cs, "get_activity_fit_data", map[string]any{"activity_id": aaActivityID}))
+	climbs := aaList(t, data["climbs"], "climbs")
+	if len(climbs) == 0 {
+		t.Fatal("no climbs")
+	}
+	climb := aaMap(t, climbs[0], "climb")
+	if aaNum(t, climb["avg_power_w"]) != 280 || aaNum(t, climb["avg_w_per_kg"]) != 4 {
+		t.Fatalf("climb = %v", climb)
 	}
 }
 
