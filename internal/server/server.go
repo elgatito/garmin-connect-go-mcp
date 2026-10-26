@@ -66,6 +66,7 @@ func New(opt Options) (*mcp.Server, error) {
 	registerGearTools(r)
 	registerTrainingTools(r)
 	registerWorkoutTools(r)
+	registerCalendarTools(r)
 	addWorkoutResources(srv)
 
 	if unknown := filter.unknownNames(); len(unknown) > 0 {
