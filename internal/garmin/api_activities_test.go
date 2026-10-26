@@ -3,6 +3,7 @@ package garmin
 import (
 	"context"
 	"net/http"
+	"reflect"
 	"strings"
 	"testing"
 )
@@ -100,5 +101,25 @@ func TestDownloadActivityFormatsAndErrors(t *testing.T) {
 	}
 	if _, err := c.DownloadActivity(ctx, 7, "PDF"); err == nil || err.Error() != "unexpected value PDF for dl_fmt" {
 		t.Errorf("PDF: %v", err)
+	}
+}
+
+// garth's download returns resp.content, which is b"" for a 204 (not the "{}" JSON calls get).
+func TestDownloadReturnsEmptyBytesOn204(t *testing.T) {
+	c, _ := fixture(t, freshTokens("c1"), func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusNoContent)
+	}, nil)
+	ctx := context.Background()
+	if b, err := c.Download(ctx, "/download-service/files/activity/7", nil); err != nil || b == nil || len(b) != 0 {
+		t.Errorf("Download: %q %v", b, err)
+	}
+	if b, err := c.DownloadActivity(ctx, 7, "ORIGINAL"); err != nil || len(b) != 0 {
+		t.Errorf("DownloadActivity: %q %v", b, err)
+	}
+	if b, err := c.DownloadWorkout(ctx, 7); err != nil || len(b) != 0 {
+		t.Errorf("DownloadWorkout: %q %v", b, err)
+	}
+	if v, err := c.GetJSON(ctx, "/x", nil); err != nil || !reflect.DeepEqual(v, map[string]any{}) {
+		t.Errorf("GetJSON 204 = %v %v (JSON calls keep {})", v, err)
 	}
 }

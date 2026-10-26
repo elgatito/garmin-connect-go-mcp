@@ -138,10 +138,10 @@ func TestGetActivityFitDataEmptyResponse(t *testing.T) {
 	}
 }
 
-// Python's mocked None download is an empty body here (the client reports a 204 as "{}").
+// Python's mocked None download is a 204 here, which downloads as b"" in Python.
 func TestGetActivityFitDataNoneResponse(t *testing.T) {
 	f := newFakeGarmin(t)
-	f.on(fitOriginalRoute, rawBody(nil))
+	f.on(fitOriginalRoute, status(http.StatusNoContent, rawBody{}))
 	text, _ := callTool(t, newSession(t, f, nil), "get_activity_fit_data", map[string]any{"activity_id": fitActivityID})
 	if !strings.Contains(text, "No FIT data") && !strings.Contains(text, "Error") {
 		t.Errorf("text = %q", text)
@@ -1002,5 +1002,57 @@ func TestGetPowerDurationCurveSkipsFailedDownloads(t *testing.T) {
 	}
 	if keys := len(obj(data["season_bests"])); keys != 2 {
 		t.Errorf("season_bests = %v", data["season_bests"])
+	}
+}
+
+// A 204 download is b"" in Python (garth returns resp.content), so every download tool takes its empty branch.
+func TestDownloadToolsTreat204AsEmpty(t *testing.T) {
+	noContent := status(http.StatusNoContent, rawBody{})
+	for _, tc := range []struct {
+		tool, route string
+		args        map[string]any
+		want        string
+	}{
+		{"get_activity_fit_data", fitOriginalRoute, map[string]any{"activity_id": fitActivityID},
+			"No FIT data returned for activity 22041393449"},
+		{"get_activity_fit_messages", fitOriginalRoute, map[string]any{"activity_id": fitActivityID},
+			"No FIT data returned for activity 22041393449"},
+		{"download_activity_file", fitOriginalRoute, map[string]any{"activity_id": fitActivityID, "output_dir": "<tmp>"},
+			"No fit data returned for activity 22041393449"},
+		{"download_activity_file", "GET /download-service/export/gpx/activity/22041393449",
+			map[string]any{"activity_id": fitActivityID, "format": "gpx", "output_dir": "<tmp>"},
+			"No gpx data returned for activity 22041393449"},
+		{"download_workout", "GET /workout-service/workout/FIT/42", map[string]any{"workout_id": 42},
+			"No workout data found for workout with ID 42."},
+	} {
+		t.Run(tc.tool+" "+tc.route, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			f.on(tc.route, noContent)
+			if tc.args["output_dir"] == "<tmp>" {
+				tc.args["output_dir"] = t.TempDir()
+			}
+			text, isErr := callTool(t, newSession(t, f, nil), tc.tool, tc.args)
+			if text != tc.want || isErr {
+				t.Errorf("got %q (isErr %v)", text, isErr)
+			}
+			if n := len(f.requests(tc.route)); n != 1 {
+				t.Errorf("requests = %d", n)
+			}
+		})
+	}
+}
+
+// Python skips an activity whose download is empty without counting it as skipped.
+func TestPowerDurationCurveSkips204DownloadSilently(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on(activitiesRoute, []any{
+		map[string]any{"activityId": 1, "activityType": map[string]any{"typeKey": "road_biking"}},
+		map[string]any{"activityId": 2, "activityType": map[string]any{"typeKey": "road_biking"}},
+	})
+	f.on(downloadRoute(1), status(http.StatusNoContent, rawBody{}))
+	f.on(downloadRoute(2), rawBody(powerFit(t, 400, 30)))
+	data, _ := decode(t, callOK(t, newSession(t, f, nil), "get_power_duration_curve", nil)).(map[string]any)
+	if data["activities_analyzed"] != 1.0 || data["activities_skipped"] != 0.0 {
+		t.Errorf("data = %v", data)
 	}
 }

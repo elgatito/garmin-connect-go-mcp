@@ -359,8 +359,13 @@ func (c *Client) GetJSON(ctx context.Context, path string, q url.Values) (any, e
 	return c.DoJSON(ctx, Req{Method: http.MethodGet, Path: path, Query: q})
 }
 
+// Download returns the raw body; a 204 is empty bytes (garth's download returns resp.content, b""), not "{}".
 func (c *Client) Download(ctx context.Context, path string, q url.Values) ([]byte, error) {
-	return c.Do(ctx, Req{Method: http.MethodGet, Path: path, Query: q, Header: http.Header{"Accept": {"*/*"}}})
+	status, b, err := c.DoStatus(ctx, Req{Method: http.MethodGet, Path: path, Query: q, Header: http.Header{"Accept": {"*/*"}}})
+	if err == nil && status == http.StatusNoContent {
+		return []byte{}, nil
+	}
+	return b, err
 }
 
 func (c *Client) Upload(ctx context.Context, path, field, filename string, data []byte) (any, error) {
