@@ -381,3 +381,16 @@ func TestInterruptDuringServeCancelsContext(t *testing.T) {
 		t.Fatalf("cancelled=%v restored=%v exited=%v", cancelled, restored, exited)
 	}
 }
+
+func TestAuthAnnouncesLoginAndDefaultEnvLogsToStderr(t *testing.T) {
+	r := newRig(t, "", true)
+	if code := r.run("auth", "--email", "new@x.com"); code != 0 {
+		t.Fatalf("code=%d stderr=%q", code, r.errb.String())
+	}
+	if !strings.Contains(r.out.String(), "Logging in... this can take a minute if Garmin is rate limiting") {
+		t.Fatalf("stdout = %q", r.out.String())
+	}
+	if l := defaultEnv().Login; l == nil || l.Log != os.Stderr {
+		t.Fatalf("defaultEnv().Login = %+v", l)
+	}
+}

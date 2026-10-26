@@ -311,3 +311,30 @@ func Test429InJSONBodyMovesOn(t *testing.T) {
 		t.Errorf("log = %q", log.String())
 	}
 }
+
+func TestLoginLogNamesStrategiesAndNeverLeaksSecrets(t *testing.T) {
+	const pw = "S3cret-Pw!9"
+	f := newFakeSSO(t, false, []string{"mobile+plain", "mobile+plain"}, map[string]http.HandlerFunc{
+		"/mobile/api/login": status(500),
+	})
+	var log strings.Builder
+	f.opt.Log = &log
+	if _, err := Login(context.Background(), f.ep, "a@b.c", pw, noPrompt, f.opt); err == nil {
+		t.Fatal("want error")
+	}
+	f2 := newFakeSSO(t, false, []string{"mobile+plain"}, map[string]http.HandlerFunc{
+		"/mobile/api/login": respond("SUCCESSFUL"),
+	})
+	f2.opt.Log = &log
+	tok, err := Login(context.Background(), f2.ep, "a@b.c", pw, noPrompt, f2.opt)
+	checkTokens(t, tok, err)
+	got := log.String()
+	if !strings.Contains(got, "trying mobile+plain") || !strings.Contains(got, "mobile+plain failed") {
+		t.Errorf("log = %q", got)
+	}
+	for _, secret := range []string{pw, tok.DIToken, tok.DIRefreshToken, "ST-"} {
+		if secret != "" && strings.Contains(got, secret) {
+			t.Errorf("log leaks %q: %q", secret, got)
+		}
+	}
+}

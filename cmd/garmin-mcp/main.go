@@ -37,6 +37,7 @@ func defaultEnv() env {
 		Stderr:     os.Stderr,
 		Getenv:     os.Getenv,
 		Endpoints:  garmin.DefaultEndpoints,
+		Login:      &garmin.LoginOptions{Log: os.Stderr}, // strategy names and statuses only, never secrets
 		IsTerminal: func() bool { return term.IsTerminal(in) && term.IsTerminal(out) },
 		ReadPassword: func() (string, error) {
 			b, err := term.ReadPassword(in)

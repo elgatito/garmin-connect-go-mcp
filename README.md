@@ -150,8 +150,8 @@ a GitHub Release. Do the checklist below first.
 
 Manual live checks (no live Garmin calls run in CI); record the results in the PR description.
 
-1. `garmin-mcp auth` with a real non-MFA account prints `Logged in as ...`.
-2. `garmin-mcp auth` with an MFA account asks for the code and succeeds.
+1. `garmin-mcp auth` with a real non-MFA account prints `Logged in as ...`; note which login strategy succeeded in the stderr log.
+2. `garmin-mcp auth` with an MFA account asks for the code and succeeds; note which login strategy succeeded in the stderr log.
 3. `garmin-mcp accounts` lists both as `ok`.
 4. In Claude Desktop: `list_accounts`, `get_stats` for each account on today's date, `get_activities` with limit 3,
    and `download_activity_file` (a file appears).

@@ -95,6 +95,7 @@ func cmdAuth(ctx context.Context, args []string, e env, st accounts.Store) int {
 		fmt.Fprint(e.Stdout, "Enter the MFA code Garmin sent you: ")
 		return readLine(in)
 	}
+	fmt.Fprintln(e.Stdout, "Logging in... this can take a minute if Garmin is rate limiting")
 	tok, err := garmin.Login(ctx, ep, addr, pw, mfa, e.Login)
 	if err != nil {
 		fmt.Fprintf(e.Stderr, "Login failed: %v\n", err)
