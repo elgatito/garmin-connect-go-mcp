@@ -130,10 +130,10 @@ func serve(ctx context.Context, e env, st accounts.Store) int {
 	// IOTransport rather than StdioTransport so a piped request is handled
 	// before the EOF that follows it closes the session.
 	transport := &mcp.IOTransport{
-		Reader: io.NopCloser(eofGraceReader{os.Stdin}),
-		Writer: nopWriteCloser{os.Stdout},
+		Reader: io.NopCloser(eofGraceReader{e.Stdin}),
+		Writer: nopWriteCloser{e.Stdout},
 	}
-	if err := srv.Run(ctx, transport); err != nil {
+	if err := srv.Run(ctx, transport); err != nil && !errors.Is(err, context.Canceled) {
 		fmt.Fprintf(e.Stderr, "garmin-mcp: %v\n", err)
 		return 1
 	}

@@ -139,13 +139,9 @@ func addTool[In interface{ account() string }](r *registry, name, description st
 			defer cancel()
 		}
 		v, err := h(callCtx, s, in)
-		if callCtx.Err() == context.DeadlineExceeded {
-			return nil, nil, errors.New(timeoutMessage(name, r.callTimeout))
-		}
 		if err != nil {
-			if errors.Is(err, garmin.ErrSessionExpired) {
-				return nil, nil, expiredSessionError(email)
-			}
+			// A write failure wins over the bare deadline message: it carries
+			// write_committed, which a retry decision needs.
 			var wf *writeFailure
 			if errors.As(err, &wf) {
 				text, rerr := render(wf.payload)
@@ -156,6 +152,14 @@ func addTool[In interface{ account() string }](r *registry, name, description st
 					Content: []mcp.Content{&mcp.TextContent{Text: text}},
 					IsError: true,
 				}, nil, nil
+			}
+		}
+		if callCtx.Err() == context.DeadlineExceeded {
+			return nil, nil, errors.New(timeoutMessage(name, r.callTimeout))
+		}
+		if err != nil {
+			if errors.Is(err, garmin.ErrSessionExpired) {
+				return nil, nil, expiredSessionError(email)
 			}
 			return nil, nil, err
 		}

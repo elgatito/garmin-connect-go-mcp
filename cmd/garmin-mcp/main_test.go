@@ -321,13 +321,13 @@ func TestNoArgsWithAccountsPrintsList(t *testing.T) {
 func TestNoArgsNotTerminalServes(t *testing.T) {
 	c := newCLI(t)
 	c.env.IsTerminal = func() bool { return false }
-	c.env.Stdin = errorReader{}
+	c.env.Stdin = strings.NewReader(`{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-06-18","capabilities":{},"clientInfo":{"name":"t","version":"0"}}}` + "\n")
 
 	if code := run(context.Background(), nil, c.env); code != 0 {
 		t.Fatalf("code=%d stderr=%s", code, c.err)
 	}
-	if c.out.Len() != 0 || c.err.Len() != 0 {
-		t.Errorf("unexpected output: stdout=%q stderr=%q", c.out, c.err)
+	if !strings.Contains(c.out.String(), `"name":"garmin-mcp"`) {
+		t.Errorf("output missing server name: %q", c.out)
 	}
 }
 

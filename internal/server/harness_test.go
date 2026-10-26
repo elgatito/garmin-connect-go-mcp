@@ -29,6 +29,11 @@ type respStatus struct {
 	body any
 }
 
+// status returns a fake route response with an explicit HTTP status.
+func status(code int, body any) respStatus {
+	return respStatus{code: code, body: body}
+}
+
 // sequence returns one body per request, in order.
 type sequence []any
 

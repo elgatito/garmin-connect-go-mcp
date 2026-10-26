@@ -588,23 +588,23 @@ type workoutResource struct {
 }
 
 var workoutResources = []workoutResource{
-	{"workout://templates/simple-run", "Simple Run", `Simple run workout template (warmup, run, cooldown)
+	{"workout://templates/simple-run", "get_simple_run_template", `Simple run workout template (warmup, run, cooldown)
 
 A basic running workout structure suitable for easy runs.
 Modify the endConditionValue to adjust durations.`, simpleRunBody},
-	{"workout://templates/interval-running", "Interval Running", `Interval running workout template with repeat groups
+	{"workout://templates/interval-running", "get_interval_template", `Interval running workout template with repeat groups
 
 Demonstrates RepeatGroupDTO for interval training.
 Includes 6x400m intervals with 2min recovery.`, intervalRunningBody},
-	{"workout://templates/tempo-run", "Tempo Run", `Tempo run workout template with heart rate zone target
+	{"workout://templates/tempo-run", "get_tempo_template", `Tempo run workout template with heart rate zone target
 
 Demonstrates targeting a specific heart rate zone.
 20min tempo block at HR zone 4.`, tempoRunBody},
-	{"workout://templates/strength-circuit", "Strength Circuit", `Strength training circuit template
+	{"workout://templates/strength-circuit", "get_strength_template", `Strength training circuit template
 
 Warmup, 3 sets of bench press (10 reps) and 3 sets of pull-ups (8 reps),
 with 2 min rest after each set, then cooldown.`, strengthCircuitBody},
-	{"workout://reference/structure", "Workout Structure Reference", `Reference guide for workout JSON structure
+	{"workout://reference/structure", "get_structure_reference", `Reference guide for workout JSON structure
 
 Documents valid values for step types, conditions, targets, and sports.
 Use this to understand what values are valid in workout definitions.`, workoutStructureReferenceBody},

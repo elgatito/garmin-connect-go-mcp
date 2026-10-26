@@ -3,6 +3,7 @@ package server
 import (
 	"strings"
 	"testing"
+	"time"
 )
 
 var heartRateZones = []any{
@@ -459,5 +460,37 @@ func TestHeartRateZoneUpdateLookupFailureReportsNoWrite(t *testing.T) {
 	}
 	if puts := f.callsMatching("PUT", zonesPath); len(puts) != 0 {
 		t.Fatalf("PUT calls = %d, want 0", len(puts))
+	}
+}
+
+func TestHeartRateZoneUpdateTimeoutTracksUnknownWrite(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("GET "+zonesPath, heartRateZones)
+	f.on("PUT "+zonesPath, delay{wait: 400 * time.Millisecond, body: status(204, nil)})
+	cs := newSession(t, f, map[string]string{"GARMIN_MCP_CALL_TIMEOUT": "0.2"})
+
+	text, isErr := callTool(t, cs, "set_heart_rate_zones", map[string]any{
+		"sport":  "cycling",
+		"max_hr": 204,
+	})
+	if !isErr {
+		t.Fatalf("expected tool error, got %q", text)
+	}
+	var got map[string]any
+	decodeJSON(t, text, &got)
+	if got["write_committed"] != "unknown" {
+		t.Fatalf("write_committed = %v", got["write_committed"])
+	}
+	if got["stage"] != "garmin_request" {
+		t.Fatalf("stage = %v", got["stage"])
+	}
+	if hint, _ := got["hint"].(string); !strings.Contains(hint, "duplicate") {
+		t.Fatalf("hint = %v", got["hint"])
+	}
+	if cid, _ := got["correlation_id"].(string); cid == "" {
+		t.Fatalf("correlation_id = %v", got["correlation_id"])
+	}
+	if puts := f.callsMatching("PUT", zonesPath); len(puts) != 1 {
+		t.Fatalf("PUT calls = %d, want 1", len(puts))
 	}
 }
