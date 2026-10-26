@@ -218,3 +218,30 @@ func (c *Client) AddGearToActivity(ctx context.Context, gearUUID string, id int6
 func (c *Client) RemoveGearFromActivity(ctx context.Context, gearUUID string, id int64) (any, error) {
 	return c.linkGear(ctx, "unlink", "from", gearUUID, id)
 }
+
+// activityDownloadPaths maps Garmin.ActivityDownloadFormat names to their download endpoints.
+var activityDownloadPaths = map[string]string{
+	"ORIGINAL": "/download-service/files/activity",
+	"TCX":      "/download-service/export/tcx/activity",
+	"GPX":      "/download-service/export/gpx/activity",
+	"KML":      "/download-service/export/kml/activity",
+	"CSV":      "/download-service/export/csv/activity",
+}
+
+// DownloadActivity is download_activity: the raw bytes in format ORIGINAL (a ZIP holding the .fit), TCX, GPX,
+// KML or CSV. Errors read like the library's download wrapper.
+func (c *Client) DownloadActivity(ctx context.Context, id int64, format string) ([]byte, error) {
+	p, ok := activityDownloadPaths[format]
+	if !ok {
+		return nil, fmt.Errorf("unexpected value %s for dl_fmt", format)
+	}
+	b, err := c.Download(ctx, p+"/"+strconv.FormatInt(id, 10), nil)
+	var apiErr *APIError
+	if errors.As(err, &apiErr) && apiErr.Status >= 400 && apiErr.Status < 500 && apiErr.Status != 401 && apiErr.Status != 429 {
+		return nil, fmt.Errorf("Download client error (%d): %w", apiErr.Status, err)
+	}
+	if err != nil {
+		return nil, fmt.Errorf("Download error: %w", err)
+	}
+	return b, nil
+}

@@ -66,3 +66,39 @@ func TestPathSegEscapesDotSegments(t *testing.T) {
 		}
 	}
 }
+
+func TestDownloadActivityFormatsAndErrors(t *testing.T) {
+	var paths []string
+	c, _ := fixture(t, freshTokens("c1"), func(w http.ResponseWriter, r *http.Request) {
+		paths = append(paths, r.URL.Path)
+		switch {
+		case strings.HasSuffix(r.URL.Path, "/404"):
+			w.WriteHeader(404)
+			w.Write([]byte(`{"message":"gone"}`))
+		case strings.HasSuffix(r.URL.Path, "/500"):
+			w.WriteHeader(500)
+		default:
+			w.Write([]byte("bytes"))
+		}
+	}, nil)
+	ctx := context.Background()
+	for _, f := range []string{"ORIGINAL", "TCX", "GPX", "KML", "CSV"} {
+		if b, err := c.DownloadActivity(ctx, 7, f); err != nil || string(b) != "bytes" {
+			t.Errorf("%s: %q %v", f, b, err)
+		}
+	}
+	want := []string{"/download-service/files/activity/7", "/download-service/export/tcx/activity/7",
+		"/download-service/export/gpx/activity/7", "/download-service/export/kml/activity/7", "/download-service/export/csv/activity/7"}
+	if strings.Join(paths, " ") != strings.Join(want, " ") {
+		t.Errorf("paths = %v", paths)
+	}
+	if _, err := c.DownloadActivity(ctx, 404, "ORIGINAL"); err == nil || err.Error() != "Download client error (404): API Error 404 - gone" {
+		t.Errorf("404: %v", err)
+	}
+	if _, err := c.DownloadActivity(ctx, 500, "ORIGINAL"); err == nil || err.Error() != "Download error: API Error 500" {
+		t.Errorf("500: %v", err)
+	}
+	if _, err := c.DownloadActivity(ctx, 7, "PDF"); err == nil || err.Error() != "unexpected value PDF for dl_fmt" {
+		t.Errorf("PDF: %v", err)
+	}
+}
