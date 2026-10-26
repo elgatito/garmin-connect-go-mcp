@@ -1,0 +1,44 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Build and package
+        run: |
+          set -euo pipefail
+          for t in windows/amd64 windows/arm64 linux/amd64 linux/arm64 darwin/amd64 darwin/arm64; do
+            os=${t%/*}
+            arch=${t#*/}
+            rm -rf dist/stage
+            mkdir -p dist/stage
+            if [ "$os" = windows ]; then
+              ext=.exe
+            else
+              ext=
+            fi
+            CGO_ENABLED=0 go build -trimpath -ldflags "-s -w -X main.version=${GITHUB_REF_NAME}" -o "dist/stage/garmin-mcp${ext}" ./cmd/garmin-mcp
+            cp README.md LICENSE dist/stage/
+            if [ "$os" = windows ]; then
+              (cd dist/stage && zip -j "../garmin-mcp_${GITHUB_REF_NAME}_${os}_${arch}.zip" "garmin-mcp${ext}" README.md LICENSE)
+            else
+              (cd dist/stage && tar -czf "../garmin-mcp_${GITHUB_REF_NAME}_${os}_${arch}.tar.gz" "garmin-mcp${ext}" README.md LICENSE)
+            fi
+          done
+          rm -rf dist/stage
+          cd dist && sha256sum *.tar.gz *.zip > checksums.txt
+      - name: Publish release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" dist/*.tar.gz dist/*.zip dist/checksums.txt --generate-notes
