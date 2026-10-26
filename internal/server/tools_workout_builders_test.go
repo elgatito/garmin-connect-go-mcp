@@ -1053,3 +1053,37 @@ func listToolObjects(t *testing.T, cs *mcp.ClientSession) []*mcp.Tool {
 	}
 	return res.Tools
 }
+
+func TestBuildersRejectNonNumericStrengthFields(t *testing.T) {
+	cases := []struct {
+		name  string
+		field string
+		value any
+	}{
+		{"sets non-numeric", "sets", "three"},
+		{"sets null", "sets", nil},
+		{"reps non-numeric", "reps", "three"},
+		{"rest non-numeric", "rest_seconds", "soon"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			cs := newSession(t, f, nil)
+			exercise := map[string]any{"name": "Squat", "reps": 5}
+			if tc.field == "reps" {
+				delete(exercise, "reps")
+			}
+			exercise[tc.field] = tc.value
+			text, _ := callTool(t, cs, "create_strength_workout", map[string]any{
+				"name": "Bad strength", "exercises": []any{exercise},
+			})
+			if !strings.Contains(text, "Error creating strength workout") ||
+				!strings.Contains(text, tc.field) || !strings.Contains(text, "must be an integer") {
+				t.Fatalf("text = %q", text)
+			}
+			if calls := f.callsMatching("POST", "/workout-service/workout"); len(calls) != 0 {
+				t.Fatalf("upload calls = %d", len(calls))
+			}
+		})
+	}
+}

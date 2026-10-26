@@ -2679,3 +2679,26 @@ func TestGetAllWorkoutsPagesALargeLibraryWithoutGapsOrDuplicates(t *testing.T) {
 		}
 	}
 }
+
+func TestUploadRejectsUnbackfillableRepeatGroup(t *testing.T) {
+	group := map[string]any{
+		"type":              "RepeatGroupDTO",
+		"endCondition":      map[string]any{"conditionTypeId": 7, "conditionTypeKey": "iterations"},
+		"endConditionValue": "soon",
+		"workoutSteps":      []any{},
+	}
+	f := newFakeGarmin(t)
+	cs := newSession(t, f, nil)
+	text, isErr := callTool(t, cs, "upload_workout", map[string]any{
+		"workout_data": runningWorkoutWithSteps([]any{group}, "Bad repeat group"),
+	})
+	if isErr {
+		t.Fatalf("unexpected error: %q", text)
+	}
+	if !strings.Contains(text, "Error uploading workout") || !strings.Contains(text, "numberOfIterations") {
+		t.Fatalf("text = %q", text)
+	}
+	if calls := f.callsMatching("POST", workoutPath); len(calls) != 0 {
+		t.Fatalf("upload calls = %d", len(calls))
+	}
+}

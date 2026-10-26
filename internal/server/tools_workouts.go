@@ -966,6 +966,34 @@ func fixHRZoneStep(step map[string]any) {
 	}
 }
 
+// pythonInt mirrors Python's int(): strings must be integer literals, floats
+// truncate toward zero, bools become 0/1, and null/unconvertible values fail.
+func pythonInt(v any) (int, error) {
+	switch x := v.(type) {
+	case bool:
+		if x {
+			return 1, nil
+		}
+		return 0, nil
+	case int:
+		return x, nil
+	case int64:
+		return int(x), nil
+	case float64:
+		if math.IsNaN(x) || math.IsInf(x, 0) {
+			return 0, errors.New("not an integer")
+		}
+		return int(x), nil
+	case string:
+		n, err := strconv.Atoi(strings.TrimSpace(x))
+		if err != nil {
+			return 0, errors.New("not an integer")
+		}
+		return n, nil
+	}
+	return 0, errors.New("not an integer")
+}
+
 func fixRepeatGroupStep(step map[string]any) error {
 	if step["type"] != "RepeatGroupDTO" {
 		for _, nested := range asList(step["workoutSteps"]) {
@@ -984,9 +1012,11 @@ func fixRepeatGroupStep(step map[string]any) error {
 	}
 	if step["numberOfIterations"] == nil {
 		if value := step["endConditionValue"]; value != nil {
-			if f, ok := numberValue(value); ok {
-				step["numberOfIterations"] = int(f)
+			iterations, err := pythonInt(value)
+			if err != nil {
+				return fmt.Errorf("numberOfIterations is missing and endConditionValue=%s is not an integer", pythonRepr(value))
 			}
+			step["numberOfIterations"] = iterations
 		}
 	}
 	for _, nested := range asList(step["workoutSteps"]) {

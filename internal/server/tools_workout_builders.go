@@ -434,6 +434,20 @@ func buildZ2WalkJSON(name string, durationMin, hrMin, hrMax int) (map[string]any
 	}, nil
 }
 
+// strengthIntField distinguishes a missing key (Python's default) from a
+// present-but-unconvertible value, which Python's int(...) rejects.
+func strengthIntField(exercise map[string]any, key string, defaultValue int) (int, error) {
+	value, exists := exercise[key]
+	if !exists {
+		return defaultValue, nil
+	}
+	n, err := pythonInt(value)
+	if err != nil {
+		return 0, fmt.Errorf("%s must be an integer", key)
+	}
+	return n, nil
+}
+
 func strengthRestStep(order, restSeconds int) map[string]any {
 	return map[string]any{
 		"type": "ExecutableStepDTO", "stepOrder": order,
@@ -454,23 +468,17 @@ func buildStrengthJSON(name string, exercises []map[string]any) (map[string]any,
 			exNameValue = "Exercise"
 		}
 		exName := fmt.Sprint(exNameValue)
-		sets := 1
-		reps := 1
-		restSeconds := 60
-		if v, ok := exercise["sets"]; ok {
-			if f, ok := numberValue(v); ok {
-				sets = int(f)
-			}
+		sets, err := strengthIntField(exercise, "sets", 1)
+		if err != nil {
+			return nil, fmt.Errorf("exercise %s: %w", pythonRepr(exName), err)
 		}
-		if v, ok := exercise["reps"]; ok {
-			if f, ok := numberValue(v); ok {
-				reps = int(f)
-			}
+		reps, err := strengthIntField(exercise, "reps", 1)
+		if err != nil {
+			return nil, fmt.Errorf("exercise %s: %w", pythonRepr(exName), err)
 		}
-		if v, ok := exercise["rest_seconds"]; ok {
-			if f, ok := numberValue(v); ok {
-				restSeconds = int(f)
-			}
+		restSeconds, err := strengthIntField(exercise, "rest_seconds", 60)
+		if err != nil {
+			return nil, fmt.Errorf("exercise %s: %w", pythonRepr(exName), err)
 		}
 		if err := requireMinimum(1, []string{"sets", "reps"}, []int{sets, reps}); err != nil {
 			return nil, fmt.Errorf("exercise %s: %w", pythonRepr(exName), err)
