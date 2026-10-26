@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net"
 	"os"
@@ -17,7 +18,10 @@ import (
 	"github.com/modelcontextprotocol/go-sdk/mcp"
 )
 
-const emailDescription = "Email of the Garmin Connect account to use. Call list_accounts to see configured accounts."
+const (
+	emailDescription   = "Email of the Garmin Connect account to use. Call list_accounts to see configured accounts."
+	expiredSessionText = `The Garmin session for "me@x.com" has expired. Ask the user to run "garmin-mcp auth --email me@x.com --force" in a terminal.`
+)
 
 func TestEveryToolRequiresEmail(t *testing.T) {
 	cs := newSession(t, newFakeGarmin(t), nil)
@@ -502,6 +506,35 @@ func TestCallTimeout(t *testing.T) {
 		decodeJSON(t, text, &got)
 		if got["full_name"] != "slow but fine" {
 			t.Fatalf("full_name = %v", got["full_name"])
+		}
+	})
+
+	t.Run("partial batch result survives deadline", func(t *testing.T) {
+		f := newFakeGarmin(t)
+		for _, id := range []int{111, 222} {
+			f.on(fmt.Sprintf("GET /workout-service/workout/%d", id), map[string]any{"workoutId": id})
+		}
+		f.on("DELETE /workout-service/workout/111", map[string]any{})
+		f.on("DELETE /workout-service/workout/222", delay{wait: time.Second, body: map[string]any{}})
+		cs := newSession(t, f, map[string]string{"GARMIN_MCP_CALL_TIMEOUT": "0.2"})
+
+		text, isErr := callTool(t, cs, "delete_workouts", map[string]any{
+			"workout_ids": []any{111, 222}, "confirm": true,
+		})
+		if isErr {
+			t.Fatalf("summary replaced by error: %q", text)
+		}
+		if strings.Contains(text, "did not return within") {
+			t.Fatalf("summary replaced by timeout text: %q", text)
+		}
+		var got map[string]any
+		decodeJSON(t, text, &got)
+		if got["total"] != 2.0 || got["succeeded"] != 1.0 || got["failed"] != 1.0 {
+			t.Fatalf("summary = %v", got)
+		}
+		results := asList(got["results"])
+		if len(results) != 2 || asMap(results[0])["status"] != "success" || asMap(results[1])["status"] != "error" {
+			t.Fatalf("results = %v", results)
 		}
 	})
 }

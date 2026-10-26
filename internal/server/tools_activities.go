@@ -159,10 +159,7 @@ activities appear as "uncategorized" rather than "training".`
 
 The type_key must match a Garmin activity type. Use get_activity_types to see
 the full list. Common values: yoga, strength_training, meditation, indoor_cycling,
-pilates, bouldering, fitness_equipment.
-
-If a write fails with write_committed="unknown", check whether the
-activity exists before retrying to avoid creating a duplicate.`
+pilates, bouldering, fitness_equipment.`
 
 	deleteActivityDescription = `Permanently delete an activity from Garmin Connect.
 

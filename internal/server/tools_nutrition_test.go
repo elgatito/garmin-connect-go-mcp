@@ -2557,6 +2557,26 @@ func TestSetNutritionDailySettingsNoCurrentData(t *testing.T) {
 	}
 }
 
+func TestSetNutritionDailySettingsNonObjectCurrentData(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("GET "+nutritionSettingsPath, []any{map[string]any{"calorieGoal": 2000.0}})
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "set_nutrition_daily_settings", map[string]any{
+		"date":         nutritionMealDate,
+		"calorie_goal": 1800,
+	})
+	if isErr {
+		t.Fatalf("unexpected error: %q", text)
+	}
+	if !strings.Contains(text, "Could not read current nutrition settings") {
+		t.Fatalf("text = %q", text)
+	}
+	if calls := f.callsMatching("PUT", nutritionSettingsPath); len(calls) != 0 {
+		t.Fatalf("PUT calls = %d, want 0", len(calls))
+	}
+}
+
 func TestSetNutritionDailySettingsAPIError(t *testing.T) {
 	f := newFakeGarmin(t)
 	f.on("GET "+nutritionSettingsPath, nutritionSettings())

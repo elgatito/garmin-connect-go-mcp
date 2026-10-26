@@ -207,6 +207,21 @@ func TestToolParity(t *testing.T) {
 	}
 }
 
+func TestListAccountsIsLocalReadOnly(t *testing.T) {
+	cs := newSession(t, newFakeGarmin(t), nil)
+	for _, tool := range listToolObjects(t, cs) {
+		if tool.Name != "list_accounts" {
+			continue
+		}
+		a := tool.Annotations
+		if a == nil || a.ReadOnlyHint != true || a.OpenWorldHint == nil || *a.OpenWorldHint {
+			t.Fatalf("annotations = %+v", a)
+		}
+		return
+	}
+	t.Fatal("list_accounts missing")
+}
+
 // TestProfilesReferenceRealTools ports test_tool_profiles.py's membership
 // check: every name listed by a profile must be a registered tool.
 func TestProfilesReferenceRealTools(t *testing.T) {

@@ -76,7 +76,7 @@ coexist.
 One server process serves any number of accounts. Add another with:
 
 ```bash
-garmin-mcp auth --email bob@example.com
+garmin-mcp auth --email bob@example.com --cn
 ```
 
 List them and their token status at any time:
@@ -87,7 +87,7 @@ garmin-mcp accounts
 
 ```text
 ada@example.com  garmin.com  ok
-bob@example.com  garmin.cn   ok
+bob@example.com  garmin.cn  ok
 ```
 
 The status is `ok`, `expired` (the token is expired or about to expire and will

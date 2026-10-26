@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"math"
 	"os"
@@ -9,34 +10,13 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"github.com/elgatito/garmin-connect-go-mcp/internal/garmin"
 )
 
 // --- tool descriptions (ported from the Python docstrings) ------------------
 
-const getActivityFitMessagesDescription = `Retrieve and generically parse an activity's original FIT file.
-
-This is the source-of-truth endpoint for original device activity data.
-It returns every message and every field emitted by the FIT decoder
-without applying sport-specific curation. Messages remain in file order,
-and each field includes its decoded value plus units and definition
-number when available. Unknown and duplicate fields are retained.
-
-Garmin Connect edits made after upload may be stored only in Garmin's
-service and are not necessarily written back into the original FIT file.
-This tool intentionally does not merge those service-side edits.
-
-High-frequency record messages are counted but omitted by default.
-Other message types occurring more than 100 times are also inventoried
-but omitted from an unfiltered default response. Request those types
-explicitly with message_types. All returned messages are bounded by
-message_offset/message_limit (maximum 5000 per call); follow
-pagination.next_offset until absent to retrieve the full selected stream.
-
-Use message_types to return only particular FIT message types while
-message_counts still inventories the complete file. For example, a
-strength workout can usually be inspected efficiently with
-["session", "lap", "set", "exercise_title"]. Message type names are
-case-insensitive and should use FIT/fitparse snake_case names.`
+const getActivityFitMessagesDescription = "Retrieve and generically parse an activity's original FIT file.\n\nThis is the source-of-truth endpoint for original device activity data.\nIt returns every message and every field emitted by the FIT decoder\nwithout applying sport-specific curation. Messages remain in file order,\nand each field includes its decoded value plus units and definition\nnumber when available. Unknown and duplicate fields are retained.\n\nGarmin Connect edits made after upload may be stored only in Garmin's\nservice and are not necessarily written back into the original FIT file.\nThis tool intentionally does not merge those service-side edits.\n\nHigh-frequency ``record`` messages are counted but omitted by default.\nOther message types occurring more than 100 times are also inventoried\nbut omitted from an unfiltered default response. Request those types\nexplicitly with message_types. All returned messages are bounded by\nmessage_offset/message_limit (maximum 5000 per call); follow\npagination.next_offset until absent to retrieve the full selected stream.\n\nUse message_types to return only particular FIT message types while\nmessage_counts still inventories the complete file. For example, a\nstrength workout can usually be inspected efficiently with\n[\"session\", \"lap\", \"set\", \"exercise_title\"]. Message type names are\ncase-insensitive and should use FIT/fitparse snake_case names."
 
 const getActivityFitDataDescription = `Download and parse FIT file for an activity to expose advanced cycling data.
 
@@ -53,7 +33,7 @@ Returns data not available through the standard REST API, including:
 - Grade comes from the device's per-record grade field when present; otherwise
   it is derived from altitude and distance (~100 m window). grade_source
   ("device" | "derived") says which
-- HR drift / cardiac drift coefficient (aerobic decoupling for rides >=60 min)
+- HR drift / cardiac drift coefficient (aerobic decoupling for rides ≥60 min)
 - Temperature correlation: avg HR/power in hottest vs. coolest portions of ride
 - Power Duration Curve: best mean maximal power at 5s, 30s, 1min, 5min, 10min, 20min, 60min
 - Optional full per-second time series when include_records=True
@@ -104,7 +84,8 @@ Files are named "{activity_id}.{ext}" and overwrite any existing file.`
 
 const setFitDownloadDirDescription = `Set and persist the default directory for downloaded activity files.
 
-Stores the absolute path in the account's settings.json so
+Stores the absolute path in a small JSON config file
+(~/.garminconnect_fit_config.json, overridable via GARMIN_FIT_CONFIG) so
 download_activity_file can save files without asking again.`
 
 // --- inputs ----------------------------------------------------------------
@@ -167,6 +148,9 @@ func getActivityFitMessages(ctx context.Context, s *Session, in getActivityFitMe
 
 	raw, err := s.Client.DownloadActivity(ctx, id, "fit")
 	if err != nil {
+		if errors.Is(err, garmin.ErrSessionExpired) {
+			return nil, err
+		}
 		return fmt.Sprintf("Error downloading FIT data for activity %d: %v", id, err), nil
 	}
 	if len(raw) == 0 {
@@ -372,6 +356,9 @@ func getActivityFitData(ctx context.Context, s *Session, in getActivityFitDataIn
 	}
 	raw, err := s.Client.DownloadActivity(ctx, id, "fit")
 	if err != nil {
+		if errors.Is(err, garmin.ErrSessionExpired) {
+			return nil, err
+		}
 		return fmt.Sprintf("Error downloading FIT data for activity %d: %v", id, err), nil
 	}
 	if len(raw) == 0 {
@@ -482,6 +469,9 @@ func getPowerDurationCurve(ctx context.Context, s *Session, in getPowerDurationC
 
 	activities, err := s.Client.GetActivitiesByType(ctx, 0, numActivities, requestedType)
 	if err != nil {
+		if errors.Is(err, garmin.ErrSessionExpired) {
+			return nil, err
+		}
 		return fmt.Sprintf("Error computing power duration curve: %v", err), nil
 	}
 	if !truthy(activities) {
@@ -606,9 +596,11 @@ func resolveFITDownloadDir(s *Session, outputDir string) (string, bool) {
 			return abs, true
 		}
 	}
-	if settings, err := s.Settings(); err == nil && settings.FitDownloadDir != "" {
-		if abs, err := filepath.Abs(expandHomePath(settings.FitDownloadDir)); err == nil {
-			return abs, true
+	if s != nil {
+		if settings, err := s.Settings(); err == nil && settings.FitDownloadDir != "" {
+			if abs, err := filepath.Abs(expandHomePath(settings.FitDownloadDir)); err == nil {
+				return abs, true
+			}
 		}
 	}
 	return "", false

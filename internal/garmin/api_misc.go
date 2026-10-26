@@ -179,6 +179,10 @@ func (c *Client) GetRacePredictions(ctx context.Context) (any, error) {
 
 // --- devices ---
 
+// ValidateDeviceID checks that a device identifier can be used in a request and
+// returns its normalized form.
+func ValidateDeviceID(v any) (string, error) { return deviceIDString(v) }
+
 // deviceIDString normalizes a device ID for a URL path. Garmin sometimes uses
 // non-numeric application keys, so non-numeric values pass through unchanged.
 func deviceIDString(v any) (string, error) {
@@ -336,10 +340,24 @@ func (c *Client) DeleteWeighIn(ctx context.Context, date string, samplePk any) (
 	if err != nil {
 		return nil, err
 	}
+	id, err := ValidateWeighInSamplePk(samplePk)
+	if err != nil {
+		return nil, err
+	}
 	return c.DoJSON(ctx, Req{
 		Method: http.MethodDelete,
-		Path:   weightPath + "/weight/" + d + "/byversion/" + numericIDString(samplePk),
+		Path:   weightPath + "/weight/" + d + "/byversion/" + id,
 	})
+}
+
+// ValidateWeighInSamplePk returns a weigh-in samplePk as a path segment,
+// rejecting values that would build a malformed delete URL.
+func ValidateWeighInSamplePk(v any) (string, error) {
+	id := strings.TrimSpace(numericIDString(v))
+	if v == nil || id == "" || id == "<nil>" {
+		return "", fmt.Errorf("weight measurement is missing samplePk: %v", v)
+	}
+	return id, nil
 }
 
 func numericIDString(v any) string {

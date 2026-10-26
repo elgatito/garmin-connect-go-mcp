@@ -176,6 +176,7 @@ var idempotentTools = map[string]bool{
 }
 
 var localOnlyTools = map[string]bool{
+	"list_accounts":        true,
 	"set_fit_download_dir": true,
 }
 

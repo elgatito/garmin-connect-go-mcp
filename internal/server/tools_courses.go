@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
@@ -174,36 +173,15 @@ func expandHome(path string) string {
 	return path
 }
 
-func resolveDownloadDir() string {
-	if dir := os.Getenv("GARMIN_FIT_DOWNLOAD_DIR"); dir != "" {
-		abs, err := filepath.Abs(expandHome(dir))
-		if err == nil {
-			return abs
-		}
+func resolveDownloadDir(s *Session) string {
+	dir, ok := resolveFITDownloadDir(s, "")
+	if !ok {
+		return ""
 	}
-	configPath := os.Getenv("GARMIN_FIT_CONFIG")
-	if configPath == "" {
-		home, err := os.UserHomeDir()
-		if err == nil {
-			configPath = filepath.Join(home, ".garminconnect_fit_config.json")
-		}
-	}
-	raw, err := os.ReadFile(expandHome(configPath))
-	if err == nil {
-		var config map[string]any
-		if json.Unmarshal(raw, &config) == nil {
-			if dir, ok := config["download_dir"].(string); ok && dir != "" {
-				abs, err := filepath.Abs(expandHome(dir))
-				if err == nil {
-					return abs
-				}
-			}
-		}
-	}
-	return ""
+	return dir
 }
 
-func resolveGPXOutputPath(courseID int64, outputPath string) (string, error) {
+func resolveGPXOutputPath(courseID int64, outputPath string, s *Session) (string, error) {
 	if outputPath != "" {
 		expanded := expandHome(outputPath)
 		path, err := filepath.Abs(expanded)
@@ -222,7 +200,7 @@ func resolveGPXOutputPath(courseID int64, outputPath string) (string, error) {
 		}
 		return path, nil
 	}
-	base := resolveDownloadDir()
+	base := resolveDownloadDir(s)
 	if base == "" {
 		abs, err := filepath.Abs("./courses")
 		if err != nil {
@@ -257,7 +235,7 @@ func escapeXML(s string) string {
 }
 
 func downloadCourseGpx(ctx context.Context, s *Session, in downloadCourseGpxInput) (any, error) {
-	targetPath, err := resolveGPXOutputPath(in.CourseID, in.OutputPath)
+	targetPath, err := resolveGPXOutputPath(in.CourseID, in.OutputPath, s)
 	if err != nil {
 		return fmt.Sprintf("Error downloading course GPX: %v", err), nil
 	}
@@ -375,6 +353,9 @@ func buildCoursePayload(parsed map[string]any, courseName string, activityTypeID
 	lons := make([]float64, 0, len(geoPoints))
 	for _, item := range geoPoints {
 		point := asMap(item)
+		if point == nil {
+			return nil, errors.New("GPX parsed skeleton contains a non-object geoPoints item")
+		}
 		if point["elevation"] == nil {
 			point["elevation"] = 0.0
 		}

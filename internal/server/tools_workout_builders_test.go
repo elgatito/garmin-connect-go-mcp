@@ -1002,9 +1002,20 @@ func TestWorkoutUploadToolsDocumentPaceUnits(t *testing.T) {
 	for _, tool := range listToolObjects(t, cs) {
 		descriptions[tool.Name] = tool.Description
 	}
-	for _, name := range []string{"upload_workout", "upload_workouts", "schedule_workouts"} {
+	for _, name := range []string{"upload_workout", "upload_workouts"} {
 		if !strings.Contains(descriptions[name], "3.333 m/s") {
 			t.Errorf("%s description missing pace units", name)
+		}
+	}
+	for _, tool := range listToolObjects(t, cs) {
+		if tool.Name != "schedule_workouts" {
+			continue
+		}
+		schema, _ := tool.InputSchema.(map[string]any)
+		props, _ := schema["properties"].(map[string]any)
+		schedules, _ := props["schedules"].(map[string]any)
+		if !strings.Contains(fmt.Sprint(schedules["description"]), "3.333 m/s") {
+			t.Errorf("schedule_workouts schedules schema missing pace units")
 		}
 	}
 }

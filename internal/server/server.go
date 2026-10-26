@@ -169,6 +169,17 @@ func addTool[In interface{ account() string }](r *registry, name, description st
 				}, nil, nil
 			}
 		}
+		// A handler that produced a result (such as a batch write summary)
+		// keeps it even if the call deadline fired while it was finishing;
+		// replacing it with the generic timeout text would hide which writes
+		// committed.
+		if v != nil {
+			text, rerr := render(v)
+			if rerr != nil {
+				return nil, nil, rerr
+			}
+			return &mcp.CallToolResult{Content: []mcp.Content{&mcp.TextContent{Text: text}}}, nil, nil
+		}
 		if callCtx.Err() == context.DeadlineExceeded {
 			return nil, nil, errors.New(timeoutMessage(name, r.callTimeout))
 		}

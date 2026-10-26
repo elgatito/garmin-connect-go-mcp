@@ -1,12 +1,13 @@
 package server
 
 import (
-	"encoding/json"
 	"encoding/xml"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"github.com/elgatito/garmin-connect-go-mcp/internal/accounts"
 )
 
 const (
@@ -451,17 +452,16 @@ func TestDownloadCourseGpxAcceptsGpxOutputFile(t *testing.T) {
 func TestDownloadCourseGpxDefaultsToConfiguredDownloadDir(t *testing.T) {
 	f := newFakeGarmin(t)
 	f.on("GET /course-service/course/893", copyTrackOnlyCourse())
-	cs := newSession(t, f, nil)
+	st := newTestStore(t)
+	seedAccount(t, st, "me@x.com", testJWT(nil))
 
 	root := t.TempDir()
 	downloadDir := filepath.Join(root, "downloads")
-	configPath := filepath.Join(root, "fit_config.json")
-	raw, _ := json.Marshal(map[string]any{"download_dir": downloadDir})
-	if err := os.WriteFile(configPath, raw, 0o644); err != nil {
+	if err := st.SaveSettings("me@x.com", accounts.Settings{Domain: "garmin.com", FitDownloadDir: downloadDir}); err != nil {
 		t.Fatal(err)
 	}
-	t.Setenv("GARMIN_FIT_CONFIG", configPath)
 	t.Setenv("GARMIN_FIT_DOWNLOAD_DIR", "")
+	cs := newSessionWithStore(t, f, nil, st)
 	cwd := filepath.Join(root, "cwd")
 	if err := os.MkdirAll(cwd, 0o755); err != nil {
 		t.Fatal(err)
@@ -716,14 +716,23 @@ func TestBuildCoursePayloadRejectsTooFewPoints(t *testing.T) {
 	}
 }
 
+func TestBuildCoursePayloadRejectsNonObjectGeoPoint(t *testing.T) {
+	_, err := buildCoursePayload(map[string]any{
+		"geoPoints": []any{map[string]any{"latitude": 40.0, "longitude": -105.0}, "not-a-point"},
+	}, "X", 1, nil)
+	if err == nil || !strings.Contains(err.Error(), "non-object geoPoints") {
+		t.Fatalf("err = %v", err)
+	}
+}
+
 func TestResolveGpxOutputPath(t *testing.T) {
-	if got, err := resolveGPXOutputPath(123, "/tmp/custom.gpx"); err != nil || got != "/tmp/custom.gpx" {
+	if got, err := resolveGPXOutputPath(123, "/tmp/custom.gpx", nil); err != nil || got != "/tmp/custom.gpx" {
 		t.Fatalf("custom file = %q, %v", got, err)
 	}
-	if got, err := resolveGPXOutputPath(123, "/tmp/dir/"); err != nil || got != "/tmp/dir/123.gpx" {
+	if got, err := resolveGPXOutputPath(123, "/tmp/dir/", nil); err != nil || got != "/tmp/dir/123.gpx" {
 		t.Fatalf("custom dir = %q, %v", got, err)
 	}
-	if got, err := resolveGPXOutputPath(123, ""); err != nil || !strings.HasSuffix(got, "courses/123.gpx") {
+	if got, err := resolveGPXOutputPath(123, "", nil); err != nil || !strings.HasSuffix(got, "courses/123.gpx") {
 		t.Fatalf("default = %q, %v", got, err)
 	}
 }

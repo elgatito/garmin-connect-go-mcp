@@ -179,6 +179,33 @@ func TestDeleteWeighInsPreviewsBeforeDeleting(t *testing.T) {
 	}
 }
 
+func TestDeleteWeighInsMissingSamplePkNeverDeletes(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("GET "+weightDayviewPath, map[string]any{"dateWeightList": []any{
+		map[string]any{"samplePk": 1705276800000.0, "weight": 70000.0},
+		map[string]any{"weight": 70100.0},
+	}})
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "delete_weigh_ins", map[string]any{
+		"date": "2024-01-15", "confirm": true,
+	})
+	if isErr {
+		t.Fatalf("unexpected error: %q", text)
+	}
+	if !strings.Contains(text, "samplePk") {
+		t.Fatalf("text = %q", text)
+	}
+	if strings.Contains(text, "write_committed") {
+		t.Fatalf("validation failure reported a write: %q", text)
+	}
+	for _, call := range f.recorded() {
+		if call.Method == "DELETE" {
+			t.Fatalf("unexpected delete %s", call.Path)
+		}
+	}
+}
+
 func TestDeleteWeighInsPreviewEmptyDayDoesNotDelete(t *testing.T) {
 	for _, weightList := range []any{nil, []any{}} {
 		f := newFakeGarmin(t)

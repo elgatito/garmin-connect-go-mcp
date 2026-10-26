@@ -2703,6 +2703,33 @@ func TestGetTrainingLoadTrendReportsPrimaryTrackerLoads(t *testing.T) {
 	}
 }
 
+func TestGetTrainingLoadTrendMapsExpiredSession(t *testing.T) {
+	cases := []struct {
+		name    string
+		devices any
+	}{
+		{"device list", status(401, map[string]any{"message": "unauthorized"})},
+		{"daily status", []any{}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			f.on("GET "+trDevicesPath, tc.devices)
+			if tc.name == "daily status" {
+				f.on("GET "+trTrainingStatusPath+"/2026-10-08", status(401, map[string]any{"message": "unauthorized"}))
+			}
+			cs := newSession(t, f, nil)
+
+			text, isErr := callTool(t, cs, "get_training_load_trend", map[string]any{
+				"start_date": "2026-10-08", "end_date": "2026-10-08",
+			})
+			if !isErr || text != expiredSessionText {
+				t.Fatalf("text = %q isErr = %v", text, isErr)
+			}
+		})
+	}
+}
+
 func TestGetTrainingLoadTrendDescriptionUsesGarminLoadScale(t *testing.T) {
 	cs := newSession(t, newFakeGarmin(t), nil)
 	res, err := cs.ListTools(context.Background(), nil)

@@ -1148,6 +1148,9 @@ func setNutritionDailySettings(ctx context.Context, s *Session, in setNutritionS
 		return fmt.Sprintf("Could not read current nutrition settings for %s — cannot apply update.", in.Date), nil
 	}
 	current := asMap(currentData)
+	if current == nil {
+		return fmt.Sprintf("Could not read current nutrition settings for %s — cannot apply update.", in.Date), nil
+	}
 
 	newTarget, targetError := resolveWeightGoalTargetDate(current["targetDate"], in.Date, in.TargetDate)
 	if targetError != "" {

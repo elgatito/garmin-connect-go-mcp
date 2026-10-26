@@ -37,8 +37,11 @@ exact bpm range, so the watch alerts as soon as the effort drifts off target.
 
 Recovery steps carry no target unless recovery_hr_min/max are given -- a capped
 recovery alerts constantly right after a hard rep, since heart rate lags effort.
-Recovery HR bounds require recovery_seconds > 0.`
+Recovery HR bounds require recovery_seconds > 0.
 
+Example -- 3 x 6 min at HR 172-180 with 3 min jogs, 12m warmup, 8m cooldown:
+    repeats=3, rep_seconds=360, recovery_seconds=180,
+    hr_min=172, hr_max=180, warmup_min=12, cooldown_min=8`
 	createZ2WalkWorkoutDescription = `Create a steady Z2 walking workout and upload it to Garmin Connect.`
 
 	createStrengthWorkoutDescription = `Create a strength workout and upload it to Garmin Connect.

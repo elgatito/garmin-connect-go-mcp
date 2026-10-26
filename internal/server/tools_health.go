@@ -16,39 +16,221 @@ import (
 const (
 	dateLayout = "2006-01-02"
 
-	getStatsDescription                    = "Get daily activity stats with curated essential metrics"
-	getStatsRangeDescription               = "Get lightweight per-day calorie and step totals for a date range."
-	getEnergyBalanceDescription            = "Estimate a composition-derived TDEE from logged intake, Garmin's claimed expenditure, and body-composition change over a date range."
-	getUserSummaryDescription              = "Get user summary data (compatible with garminconnect-ha)"
-	getBodyCompositionDescription          = "Get body composition data for a single date or date range"
-	getStatsAndBodyDescription             = "Get stats and body composition data"
-	getStepsDataDescription                = "Get detailed steps data with 15-minute intervals"
-	getDailyStepsDescription               = "Get steps data for a date range"
-	getTrainingReadinessDescription        = "Get training readiness data with curated metrics"
-	getBodyBatteryDescription              = "Get body battery data with events"
-	getBodyBatteryEventsDescription        = "Get body battery events data"
-	getBloodPressureDescription            = "Get blood pressure data"
-	getFloorsDescription                   = "Get floors climbed data"
-	getRHRDayDescription                   = "Get resting heart rate data"
-	getHeartRatesDescription               = "Get full heart rate time-series data"
-	getHeartRatesSummaryDescription        = "Get heart rate summary with essential metrics (lightweight version)"
-	getHydrationDataDescription            = "Get hydration data"
-	getSleepDataDescription                = "Get full sleep data with all details"
-	getSleepSummaryDescription             = "Get sleep summary with only essential metrics (lightweight version)"
-	getSleepSummaryRangeDescription        = "Get lightweight sleep summaries for every night in a date range."
-	getStressDataDescription               = "Get full stress time-series data"
-	getStressSummaryDescription            = "Get stress summary with essential metrics (lightweight version)"
-	getRespirationDataDescription          = "Get full respiration time-series data"
-	getRespirationSummaryDescription       = "Get respiration summary with essential metrics (lightweight version)"
-	getSpo2DataDescription                 = "Get SpO2 (blood oxygen) data"
-	getAllDayStressDescription             = "Get all-day stress data"
-	getAllDayEventsDescription             = "Get daily wellness events data"
-	getLifestyleLoggingDataDescription     = "Get lifestyle logging data for a specific date"
-	getWeeklyStepsDescription              = "Get weekly step data aggregates"
-	getWeeklyStressDescription             = "Get weekly stress data aggregates"
-	getWeeklyIntensityMinutesDescription   = "Get weekly intensity minutes data aggregates"
-	getMorningTrainingReadinessDescription = "Get morning training readiness score"
-	getRecoveryTimeRemainingDescription    = "Get remaining recovery time in hours for a day."
+	getStatsDescription = `Get daily activity stats with curated essential metrics
+
+Returns a summary of daily health and activity data including steps,
+calories, heart rate, stress, body battery, and sleep metrics.
+
+Note: bmr_calories is Garmin's bmrKilocalories field -- per Garmin's
+own documentation this is RMR (BMR plus sedentary-to-light movement),
+not true basal metabolic rate. For the current date, all calorie and
+duration fields are a partial-day accumulator (elapsed hours so far),
+not a full-day total.`
+	getStatsRangeDescription = `Get lightweight per-day calorie and step totals for a date range.
+
+Returns total/active/resting calories and steps for each day between
+start_date and end_date, inclusive, instead of the full get_stats
+payload per day. Use this for multi-day analysis (e.g. comparing
+measured intake/expenditure against Garmin's calorie model) instead
+of calling get_stats once per day.
+
+resting_calories is Garmin's bmrKilocalories field -- per Garmin's
+own documentation this is RMR (BMR plus sedentary-to-light movement),
+not true basal metabolic rate.
+
+is_partial is true for the current date, whose accumulator only
+covers elapsed hours so far -- treating it as a full day will
+overstate a mean. Days with no device data (e.g. before the account
+existed, or future dates within the range) return has_data: false
+and null values rather than zeros, so a missing day never silently
+enters an average as zero.
+
+Maximum range: 28 days per call (Garmin's own limit for this endpoint).`
+	getEnergyBalanceDescription = `Estimate a composition-derived TDEE from logged intake, Garmin's
+claimed expenditure, and body-composition change over a date range.
+
+Combines three signals Garmin exposes separately -- mean logged intake
+(nutrition log), mean claimed expenditure (Garmin's total_calories from
+daily stats), and a body-composition trend (weight and body-fat % from
+smart-scale readings) -- into composition_derived_tdee, an estimate
+independent of Garmin's calorie model:
+composition_derived_tdee = mean_intake + implied_deficit, where
+implied_deficit comes from the fitted rate of fat and fat-free mass
+change, using the standard energy-density approximations
+7700 kcal/kg fat and 1800 kcal/kg fat-free mass. These are body
+composition literature estimates, not Garmin-provided or measured
+values -- treat the result as a rough estimate, not a lab measurement.
+difference_kcal_per_day (Garmin's claim minus this estimate) has at
+least two explanations -- Garmin overestimating expenditure, or
+under-logged intake, which is common -- and this tool cannot
+distinguish between them.
+
+The body-composition trend is fit by least-squares regression across
+every qualifying scale reading in range, not just the first and last --
+an endpoint-to-endpoint difference is fully determined by two
+individual measurements and inherits all of their noise (a 0.5%
+body-fat wobble, well within normal scale repeatability, can swing a
+two-point estimate by over a hundred kcal/day). weight_change_kg,
+fat_mass_change_kg, and lean_mass_change_kg in body_composition are
+all fitted values (the fitted line's value at the last reading's day
+offset minus its value at the first), not raw differences between the
+observed_first_*/observed_last_* fields, which are the actual
+readings for reference/sanity-checking, not what the change figures
+are computed from -- fitted_first_weight_kg/fitted_last_weight_kg are
+also included so fitted_last_weight_kg - fitted_first_weight_kg can be
+checked against weight_change_kg directly.
+
+implied_deficit_kcal_per_day is the slope of a single regression: for
+each reading, compute -(fat_kg * 7700 + lean_kg * 1800) where
+lean_kg = weight_kg - fat_kg, then fit that value against day offset.
+This is mathematically identical to combining separately-fit fat and
+lean slopes, but its standard error -- implied_deficit_uncertainty_kcal_per_day,
+returned whenever more than 2 readings are used -- is that single
+fit's own residual standard error, which is well-defined and
+reproducible from the raw readings alone (fat_kg and lean_kg are both
+derived from the same weight/body-fat pair per reading, so treating
+their separately-fit slopes' errors as independent and combining them
+after the fact, instead of fitting the combined series directly,
+would not be reproducible from outside without also knowing that
+assumption). Treat a deficit within roughly one standard error of
+zero as indistinguishable from no change.
+
+Below a minimum span, or when most of the fit's statistical leverage
+sits in one tight cluster of readings taken within about 48 hours of
+each other, the fitted trend is not reliable even with 3+ readings --
+a close, low-noise pair inside that cluster makes the fit look
+precise while the slope is still mostly an extrapolation from that
+cluster to wherever the other reading(s) fall. When this gate fails,
+body_composition is still returned (it's just the fitted line, always
+checkable against the observed readings) but derived is omitted and
+gate_note explains which condition failed. Prefer windows of 3+ weeks
+with several readings spread across them, not clustered at one end.
+
+Short windows are also dominated by water/glycogen shifts (which
+carry little caloric weight, unlike true lean tissue), which biases
+the fat-free-mass term; see assumptions.note.
+
+Exclusions applied automatically, matching get_nutrition_summary_between_dates
+and get_stats_range:
+- Intake: days with no logged food (item_count 0) are excluded from
+  the mean, not counted as zero. Days with a low but nonzero
+  item_count remain included (excluding them requires judgment this
+  tool doesn't make unilaterally) but are called out in
+  low_item_count_dates so low-confidence days are visible rather than
+  silently blended into the mean. A window with many such days (or
+  many item_count-0 days) biases composition_derived_tdee downward --
+  check days_excluded_unlogged and low_item_count_dates before
+  comparing two windows against each other.
+- Expenditure: days with no device data, and the current (partial)
+  day, are excluded from the mean.
+- Body composition: only scale readings with both weight and body-fat
+  percentage are used (skips weight-only manual entries).
+
+Needs at least 2 qualifying body-composition readings to derive a
+trend, and to pass the span/leverage gate above to derive a TDEE from
+it. With 0 or 1 readings, returns the intake/expenditure means and
+whatever body composition data exists, but omits the derived TDEE.
+
+Maximum range: 61 days per call.`
+	getUserSummaryDescription     = "Get user summary data (compatible with garminconnect-ha)"
+	getBodyCompositionDescription = "Get body composition data for a single date or date range"
+	getStatsAndBodyDescription    = "Get stats and body composition data"
+	getStepsDataDescription       = `Get detailed steps data with 15-minute intervals
+
+Note: This returns full interval data (~14KB). For a compact summary,
+use get_stats() which includes total_steps.`
+	getDailyStepsDescription        = "Get steps data for a date range"
+	getTrainingReadinessDescription = `Get training readiness data with curated metrics
+
+Returns training readiness score and contributing factors.`
+	getBodyBatteryDescription       = "Get body battery data with events"
+	getBodyBatteryEventsDescription = "Get body battery events data"
+	getBloodPressureDescription     = "Get blood pressure data"
+	getFloorsDescription            = "Get floors climbed data"
+	getRHRDayDescription            = "Get resting heart rate data"
+	getHeartRatesDescription        = `Get full heart rate time-series data
+
+Note: This returns detailed 2-minute interval data (~25KB).
+For a compact summary, use get_heart_rates_summary().`
+	getHeartRatesSummaryDescription = `Get heart rate summary with essential metrics (lightweight version)
+
+Returns a compact summary (~500 bytes) instead of full time-series data (~25KB).
+Ideal for daily health checkups and LLM integrations.`
+	getHydrationDataDescription = "Get hydration data"
+	getSleepDataDescription     = `Get full sleep data with all details
+
+Note: This returns detailed sleep data (~50KB).
+For a compact summary, use get_sleep_summary().`
+	getSleepSummaryDescription = `Get sleep summary with only essential metrics (lightweight version)
+
+This endpoint returns a compact summary of sleep data (~350 bytes) instead of
+the full granular data (~50KB). Ideal for daily health checkups and LLM integrations
+where the full time-series data would overwhelm the context window.`
+	getSleepSummaryRangeDescription = `Get lightweight sleep summaries for every night in a date range.
+
+Returns the same curated metrics as get_sleep_summary (sleep score, duration,
+sleep stages, HRV, resting HR, etc.) for each night between start_date and
+end_date, inclusive. Use this instead of calling get_sleep_summary once per
+night when analyzing sleep trends over weeks or months.
+
+Note: Garmin Connect does not expose a native range endpoint for sleep, so
+this makes one request per night internally. Recommended range: up to a
+few weeks for quick checks. Maximum: 90 nights per call.
+Empty nights are skipped; a failed request stops the range and returns
+an error identifying the failed date.`
+	getStressDataDescription = `Get full stress time-series data
+
+Note: This returns detailed interval data (~35KB) including body battery.
+For a compact summary, use get_stress_summary().`
+	getStressSummaryDescription = `Get stress summary with essential metrics (lightweight version)
+
+Returns a compact summary (~400 bytes) instead of full time-series data (~35KB).
+Ideal for daily health checkups and LLM integrations.`
+	getRespirationDataDescription = `Get full respiration time-series data
+
+Note: This returns detailed interval data (~20KB).
+For a compact summary, use get_respiration_summary().`
+	getRespirationSummaryDescription = `Get respiration summary with essential metrics (lightweight version)
+
+Returns a compact summary (~300 bytes) instead of full time-series data (~20KB).`
+	getSpo2DataDescription             = "Get SpO2 (blood oxygen) data"
+	getAllDayStressDescription         = "Get all-day stress data"
+	getAllDayEventsDescription         = "Get daily wellness events data"
+	getLifestyleLoggingDataDescription = `Get lifestyle logging data for a specific date
+
+Returns lifestyle logging data which allows users to track behaviors
+and their impact on health metrics.`
+	getWeeklyStepsDescription = `Get weekly step data aggregates
+
+Returns weekly step totals for the specified number of weeks ending at end_date.`
+	getWeeklyStressDescription = `Get weekly stress data aggregates
+
+Returns weekly stress values for the specified number of weeks ending at end_date.`
+	getWeeklyIntensityMinutesDescription = `Get weekly intensity minutes data aggregates
+
+Returns weekly intensity minutes (moderate and vigorous) for the specified
+number of weeks ending at end_date. total_minutes counts each vigorous
+minute twice (moderate + 2 x vigorous), as Garmin does, so it is the
+figure to compare against weekly_goal; moderate_minutes and
+vigorous_minutes are the raw, unweighted minutes.`
+	getMorningTrainingReadinessDescription = `Get morning training readiness score
+
+Returns the morning training readiness assessment, which evaluates
+recovery status and readiness to train based on overnight metrics.
+Fields match one get_training_readiness entry (the snapshot taken
+right after waking).`
+	getRecoveryTimeRemainingDescription = `Get remaining recovery time in hours for a day.
+
+This is the Firstbeat recovery clock shown on-device, distinct from
+Training Readiness score (missing on some devices such as Forerunner 255)
+and from Training Status ACWR. Training Readiness values are snapshots:
+remaining_hours and state describe the snapshot at as_of (Garmin's local
+timestamp when available), not a live countdown. remaining_hours_at_snapshot
+retains the same value explicitly. For today only, when snapshots are
+absent, the tool estimates remaining recovery by decaying recent activity
+assignments and reports the estimate's as_of time. Today uses the server's
+local date. Request failures are reported as errors, or source_errors when
+another source supplies usable data.`
 )
 
 type healthDateInput struct {

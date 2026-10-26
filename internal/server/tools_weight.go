@@ -238,6 +238,12 @@ func deleteWeighIns(ctx context.Context, s *Session, in deleteWeighInsInput) (an
 		}, nil
 	}
 
+	for _, raw := range measurements {
+		if _, err := garmin.ValidateWeighInSamplePk(asMap(raw)["samplePk"]); err != nil {
+			return fmt.Sprintf("Error deleting weight measurements: %v; nothing was deleted.", err), nil
+		}
+	}
+
 	tracker := newWriteTracker("delete_weigh_ins", s.logWriter()).
 		withPrefix("Error deleting weight measurements")
 	tracker.Sent()

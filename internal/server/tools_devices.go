@@ -385,6 +385,10 @@ func pushWorkoutToDevice(ctx context.Context, s *Session, in pushWorkoutToDevice
 		}
 	}
 
+	if _, err := garmin.ValidateDeviceID(deviceID); err != nil {
+		return failedWorkoutPush(in.WorkoutID, deviceID, fmt.Sprintf("Failed to push workout: %v", err)), nil
+	}
+
 	workoutValue, err := s.Client.GetWorkoutByID(ctx, in.WorkoutID)
 	if err != nil {
 		return failedWorkoutPush(in.WorkoutID, deviceID, fmt.Sprintf("Failed to push workout: %v", err)), nil

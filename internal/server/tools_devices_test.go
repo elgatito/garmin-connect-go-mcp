@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"strings"
 	"testing"
 )
@@ -284,6 +285,57 @@ func TestPushWorkoutToDeviceNoDefaultDevice(t *testing.T) {
 	}
 	if calls := f.callsMatching("POST", deviceMessageQueuePath); len(calls) != 0 {
 		t.Fatalf("post calls = %d", len(calls))
+	}
+}
+
+func TestPushWorkoutToDeviceInvalidDeviceIDIsNotAWrite(t *testing.T) {
+	for _, deviceID := range []any{"", "  ", 0.0, -5.0} {
+		t.Run(fmt.Sprintf("%v", deviceID), func(t *testing.T) {
+			f := newFakeGarmin(t)
+			cs := newSession(t, f, nil)
+
+			text, isErr := callTool(t, cs, "push_workout_to_device", map[string]any{
+				"workout_id": 123456,
+				"device_id":  deviceID,
+			})
+			if isErr {
+				t.Fatalf("unexpected tool error: %q", text)
+			}
+			var data map[string]any
+			decodeJSON(t, text, &data)
+			if data["status"] != "failed" || !strings.Contains(data["message"].(string), "device_id") {
+				t.Fatalf("data = %v", data)
+			}
+			if strings.Contains(text, `"write_committed"`) {
+				t.Fatalf("invalid input reported a write: %q", text)
+			}
+			if calls := f.callsMatching("POST", deviceMessageQueuePath); len(calls) != 0 {
+				t.Fatalf("post calls = %d", len(calls))
+			}
+			if calls := f.recorded(); len(calls) != 0 {
+				t.Fatalf("unexpected Garmin calls: %v", calls)
+			}
+		})
+	}
+}
+
+func TestPushWorkoutToDevicePostSendFailureKeepsStructuredPayload(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("GET "+deviceWorkoutLookupPath, map[string]any{"workoutName": "Easy Run"})
+	f.on("POST "+deviceMessageQueuePath, rawBody("not json"))
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "push_workout_to_device", map[string]any{
+		"workout_id": 123456,
+		"device_id":  3456789012,
+	})
+	if !isErr {
+		t.Fatalf("expected structured error, got %q", text)
+	}
+	var data map[string]any
+	decodeJSON(t, text, &data)
+	if data["tool"] != "push_workout_to_device" || data["write_committed"] != true {
+		t.Fatalf("data = %v", data)
 	}
 }
 

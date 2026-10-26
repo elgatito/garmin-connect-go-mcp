@@ -255,15 +255,7 @@ is a no-op that reports success without creating a duplicate entry.`
 
 This adds workouts to your Garmin Connect calendar in a single call.
 Each item can either reference an existing workout by ID, or provide
-inline workout_data to upload-and-schedule in one step.
-
-Each schedule item accepts:
-- calendar_date (str): Date to schedule the workout in YYYY-MM-DD format (required)
-- workout_id (int): ID of an existing workout to schedule (required unless workout_data is provided)
-- workout_data (dict): Inline workout JSON to upload first, then schedule (optional).
-  When provided, workout_id is not required. Uses the same structure and
-  target-value rules as upload_workout; pace targets are in m/s, not
-  min/km (5:00/km = 3.333 m/s).`
+inline workout_data to upload-and-schedule in one step.`
 
 	rescheduleWorkoutDescription = `Move a scheduled workout to another date on the Garmin Connect calendar
 
@@ -374,7 +366,7 @@ type scheduleWorkoutInput struct {
 
 type scheduleWorkoutsInput struct {
 	Account
-	Schedules []map[string]any `json:"schedules" jsonschema:"List of workout schedules, each with calendar_date (required), workout_id (required unless workout_data is provided), and optional workout_data to upload-and-schedule."`
+	Schedules []map[string]any `json:"schedules" jsonschema:"List of workout schedules, each with calendar_date (required), workout_id (required unless workout_data is provided), and optional workout_data to upload-and-schedule. workout_data uses the same structure and target-value rules as upload_workout; pace targets are in m/s, not min/km (5:00/km = 3.333 m/s)."`
 }
 
 type rescheduleWorkoutInput struct {

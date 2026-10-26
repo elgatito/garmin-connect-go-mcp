@@ -1796,6 +1796,31 @@ func TestSetFitDownloadDirPersists(t *testing.T) {
 	}
 }
 
+func TestActivityAnalysisToolsMapExpiredSession(t *testing.T) {
+	cases := []struct {
+		name   string
+		tool   string
+		args   map[string]any
+		method string
+		path   string
+	}{
+		{"fit messages", "get_activity_fit_messages", map[string]any{"activity_id": 1}, "GET", "/download-service/files/activity/1"},
+		{"power curve", "get_power_duration_curve", map[string]any{}, "GET", "/activitylist-service/activities/search/activities"},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			f.on(tc.method+" "+tc.path, status(401, map[string]any{"message": "unauthorized"}))
+			cs := newSession(t, f, nil)
+
+			text, isErr := callTool(t, cs, tc.tool, tc.args)
+			if !isErr || text != expiredSessionText {
+				t.Fatalf("text = %q isErr = %v", text, isErr)
+			}
+		})
+	}
+}
+
 func TestDownloadActivityFileUsesSavedSettings(t *testing.T) {
 	f := newFakeGarmin(t)
 	st := newTestStore(t)
