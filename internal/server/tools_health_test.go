@@ -1388,6 +1388,38 @@ func TestGetStressSummaryTool(t *testing.T) {
 	}
 }
 
+func TestGetStressSummaryAllGapSeries(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on("GET "+stressPath, map[string]any{
+		"calendarDate":   "2024-01-15",
+		"maxStressLevel": 60,
+		"avgStressLevel": 25,
+		"stressValuesArray": []any{
+			[]any{1705276800000, -1},
+			[]any{1705280400000, -2},
+			[]any{1705284000000, 0},
+		},
+	})
+	cs := newSession(t, f, nil)
+
+	text, isErr := callTool(t, cs, "get_stress_summary", map[string]any{"date": "2024-01-15"})
+	if isErr {
+		t.Fatalf("unexpected error: %q", text)
+	}
+	var data map[string]any
+	decodeJSON(t, text, &data)
+	for _, key := range []string{
+		"rest_percent", "low_stress_percent", "medium_stress_percent", "high_stress_percent",
+	} {
+		if v, ok := data[key]; !ok || v != 0.0 {
+			t.Fatalf("%s = %v (present %v), want 0.0", key, v, ok)
+		}
+	}
+	if data["data_points_count"] != 0.0 {
+		t.Fatalf("data_points_count = %v, want 0", data["data_points_count"])
+	}
+}
+
 // --- respiration ---
 
 func TestGetRespirationDataTool(t *testing.T) {

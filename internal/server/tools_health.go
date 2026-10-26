@@ -1086,7 +1086,8 @@ func getStressSummary(ctx context.Context, s *Session, in healthDateInput) (any,
 	}
 
 	var valid []float64
-	for _, pair := range asList(m["stressValuesArray"]) {
+	stressValues := asList(m["stressValuesArray"])
+	for _, pair := range stressValues {
 		values := asList(pair)
 		if len(values) < 2 {
 			continue
@@ -1095,7 +1096,7 @@ func getStressSummary(ctx context.Context, s *Session, in healthDateInput) (any,
 			valid = append(valid, v)
 		}
 	}
-	if len(valid) > 0 {
+	if len(stressValues) > 0 {
 		var rest, low, medium, high int
 		for _, v := range valid {
 			switch {
@@ -1109,7 +1110,10 @@ func getStressSummary(ctx context.Context, s *Session, in healthDateInput) (any,
 				high++
 			}
 		}
-		total := float64(len(valid))
+		total := 1.0
+		if len(valid) > 0 {
+			total = float64(len(valid))
+		}
 		summary["rest_percent"] = roundTo(float64(rest)/total*100, 1)
 		summary["low_stress_percent"] = roundTo(float64(low)/total*100, 1)
 		summary["medium_stress_percent"] = roundTo(float64(medium)/total*100, 1)
