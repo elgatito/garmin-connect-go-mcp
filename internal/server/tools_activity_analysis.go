@@ -86,6 +86,7 @@ func registerActivityAnalysisTools(r *registry) {
 	addTool(r, "download_activity_file", downloadActivityFileDesc, downloadActivityFile)
 	addTool(r, "set_fit_download_dir", setFitDownloadDirDesc, setFitDownloadDir)
 	addTool(r, "get_activity_fit_data", getActivityFitDataDesc, getActivityFitData)
+	addTool(r, "get_power_duration_curve", getPowerDurationCurveDesc, getPowerDurationCurve)
 }
 
 func first16Hex(b []byte) string { return hex.EncodeToString(b[:min(16, len(b))]) }

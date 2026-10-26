@@ -1,11 +1,12 @@
 package server
 
-// Port of activity_analysis.py: get_activity_fit_data.
+// Port of activity_analysis.py: get_activity_fit_data and get_power_duration_curve.
 
 import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 	"time"
 )
 
@@ -45,10 +46,28 @@ Shift quality:
 Note: DI2 data requires Shimano Di2 / SRAM eTap. Cycling dynamics require a
 compatible power meter (e.g., Garmin Rally, Favero Assioma, PowerTap P1 pedals).`
 
+const getPowerDurationCurveDesc = `Get season-best Power Duration Curve across recent activities.
+
+Downloads FIT files for recent activities of the requested type and computes best mean maximal
+power at each standard duration. Returns season bests with which activity and date
+each best came from.
+
+Durations: 5s (sprint), 30s, 1min, 5min (VO2 max proxy), 10min, 20min (FTP proxy), 60min
+
+Use the 20-minute best × 0.95 as a strong FTP estimate without a formal test.
+
+Warning: downloads multiple FIT files — may take 30-60 seconds for 20 activities.`
+
 type fitDataIn struct {
 	Account
 	ActivityID     any  `json:"activity_id" jsonschema:"Garmin activity ID"`
 	IncludeRecords bool `json:"include_records,omitempty" jsonschema:"Include full per-second time series (default False). Warning: adds significant data volume for long rides."`
+}
+
+type powerDurationCurveIn struct {
+	Account
+	NumActivities *int    `json:"num_activities,omitempty" jsonschema:"Number of recent activities matching activity_type to request (default 20, max 50)"`
+	ActivityType  *string `json:"activity_type,omitempty" jsonschema:"Activity type to filter (default \"cycling\")"`
 }
 
 func getActivityFitData(ctx context.Context, s *Session, in fitDataIn) (any, error) {
@@ -146,4 +165,148 @@ func riderWeightKg(ctx context.Context, s *Session, activityDate string) (float6
 		return 0, "", false
 	}
 	return round(bestWeight/1000.0, 2), bestDay, true
+}
+
+type seasonBest struct {
+	Watts      float64 `json:"watts"`
+	ActivityID any     `json:"activity_id"`
+	Date       string  `json:"date"`
+}
+
+// isRequestedActivity is get_power_duration_curve's local sport guard. Cycling's parent type includes
+// virtual_ride, cyclocross and e-bike types without either substring.
+func isRequestedActivity(a any, requested string) (bool, error) {
+	m, ok := a.(map[string]any)
+	if !ok {
+		return false, fmt.Errorf("'%s' object has no attribute 'get'", pyTypeName(a))
+	}
+	at := firstTruthy(m["activityType"], map[string]any{})
+	atMap, ok := at.(map[string]any)
+	if !ok {
+		return false, fmt.Errorf("'%s' object has no attribute 'get'", pyTypeName(at))
+	}
+	typeKey := strings.ToLower(pyStrValue(getDefault(atMap, "typeKey", "")))
+	parent := pyStrValue(getDefault(atMap, "parentTypeId", ""))
+	return strings.Contains(typeKey, requested) || requested == parent ||
+		(requested == "cycling" && (parent == "2" || strings.Contains(typeKey, "biking"))), nil
+}
+
+func getPowerDurationCurve(ctx context.Context, s *Session, in powerDurationCurveIn) (any, error) {
+	const maxActivities = 50
+	num := 20
+	if in.NumActivities != nil {
+		num = *in.NumActivities
+	}
+	num = min(num, maxActivities)
+	activityType := "cycling"
+	if in.ActivityType != nil {
+		activityType = *in.ActivityType
+	}
+	fail := func(err error) (any, error) { return nil, fmt.Errorf("Error computing power duration curve: %w", err) }
+
+	// Filter before applying the count so other sports do not consume the requested window.
+	requested := strings.ToLower(activityType)
+	v, err := s.Client.GetActivities(ctx, 0, num, requested)
+	if err != nil {
+		return fail(err)
+	}
+	if falsy(v) {
+		return "No activities found.", nil
+	}
+	activities, ok := v.([]any)
+	if !ok {
+		if _, isMap := v.(map[string]any); !isMap && pyTypeName(v) != "str" {
+			return fail(fmt.Errorf("'%s' object is not iterable", pyTypeName(v)))
+		}
+		return fail(errors.New("'str' object has no attribute 'get'")) // a dict or str iterates as str items
+	}
+	var matching []map[string]any
+	for _, a := range activities {
+		match, err := isRequestedActivity(a, requested)
+		if err != nil {
+			return fail(err)
+		}
+		if match {
+			matching = append(matching, asMap(a))
+		}
+	}
+	if len(matching) == 0 {
+		return fmt.Sprintf("No %s activities found in the last %d activities.", activityType, num), nil
+	}
+
+	bests := map[string]seasonBest{}
+	processed, skipped := 0, 0
+	for _, a := range matching {
+		actID := a["activityId"]
+		date := []rune(pyStrValue(getDefault(a, "startTimeLocal", "")))
+		actDate := string(date[:min(10, len(date))])
+		if falsy(actID) {
+			continue
+		}
+		pdc, done, err := activityPowerCurve(ctx, s, actID)
+		if err != nil {
+			skipped++
+			continue
+		}
+		if !done {
+			continue
+		}
+		if pdc != nil {
+			for _, label := range pdc.keys {
+				if best, seen := bests[label]; !seen || pdc.vals[label] > best.Watts {
+					bests[label] = seasonBest{pdc.vals[label], actID, actDate}
+				}
+			}
+		}
+		processed++
+	}
+	if len(bests) == 0 {
+		return fmt.Sprintf("No power data found across %d activities.", processed), nil
+	}
+	season := newOrdered[seasonBest]()
+	for _, label := range pdcLabels {
+		if b, ok := bests[label]; ok {
+			season.set(label, b)
+		}
+	}
+	var ftp any
+	if b, ok := bests["20min"]; ok {
+		ftp = roundInt(b.Watts * 0.95)
+	}
+	return struct {
+		ActivitiesAnalyzed int                  `json:"activities_analyzed"`
+		ActivitiesSkipped  int                  `json:"activities_skipped"`
+		FTPEstimateW       any                  `json:"ftp_estimate_w"`
+		FTPNote            string               `json:"ftp_note"`
+		SeasonBests        *ordered[seasonBest] `json:"season_bests"`
+	}{processed, skipped, ftp, "Estimated as 95% of 20-minute best power", season}, nil
+}
+
+// activityPowerCurve downloads one activity's original FIT file and computes its power curve from the record
+// power and timestamps. done is false for an empty download (neither processed nor skipped); an error counts
+// the activity as skipped.
+func activityPowerCurve(ctx context.Context, s *Session, actID any) (pdc *ordered[float64], done bool, err error) {
+	id, err := parseActivityID(actID) // Python puts str(activityId) in the URL; a non-integer id cannot download
+	if err != nil {
+		return nil, false, err
+	}
+	raw, err := s.Client.DownloadActivity(ctx, id, "ORIGINAL")
+	if err != nil || len(raw) == 0 {
+		return nil, false, err
+	}
+	fitBytes, err := extractFitBytes(raw)
+	if err != nil {
+		return nil, false, err
+	}
+	msgs, err := decodeFIT(fitBytes)
+	if err != nil {
+		return nil, false, err
+	}
+	var records []map[string]any
+	for _, m := range msgs {
+		if m.Name == "record" {
+			records = append(records, map[string]any{"power_w": getField(m, "power"), "timestamp": getField(m, "timestamp")})
+		}
+	}
+	return computePowerDurationCurve(records), true, nil
 }

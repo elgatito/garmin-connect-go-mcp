@@ -5,9 +5,11 @@ package server
 // field's raw units) and serve them from the fake Garmin, so the real decode path runs.
 
 import (
+	"fmt"
 	"math"
 	"net/http"
 	"reflect"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -770,5 +772,235 @@ func TestRiderWeightKg(t *testing.T) {
 				t.Errorf("got %v, want %v", got, tc.want)
 			}
 		})
+	}
+}
+
+// ── get_power_duration_curve ────────────────────────────────────────────────
+
+const activitiesRoute = "GET /activitylist-service/activities/search/activities"
+
+func downloadRoute(id int) string { return fmt.Sprintf("GET /download-service/files/activity/%d", id) }
+
+// powerFit is _mock_power_fitfile: count records all carrying the given power (no timestamps).
+func powerFit(t *testing.T, watts float64, count int) []byte {
+	msgs := []proto.Message{fileID()}
+	for i := 0; i < count; i++ {
+		msgs = append(msgs, record(fitP(mesgnum.Record, fieldnum.RecordPower, watts)))
+	}
+	return fitFile(t, msgs...)
+}
+
+func downloadedIDs(f *fakeGarmin) []string {
+	var ids []string
+	for _, c := range f.requests("") {
+		if id, ok := strings.CutPrefix(c.Path, "/download-service/files/activity/"); ok {
+			ids = append(ids, id)
+		}
+	}
+	return ids
+}
+
+func TestPowerDurationCurveFiltersByRequestedActivityType(t *testing.T) {
+	for _, tc := range []struct {
+		activityType string
+		watts, id    float64
+	}{{"running", 250, 1}, {"cycling", 900, 2}} {
+		t.Run(tc.activityType, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			f.on(activitiesRoute, []any{
+				map[string]any{"activityId": 1, "startTimeLocal": "2024-06-01 08:00:00", "activityType": map[string]any{"typeKey": "running", "parentTypeId": 17}},
+				map[string]any{"activityId": 2, "startTimeLocal": "2024-06-02 08:00:00", "activityType": map[string]any{"typeKey": "road_biking", "parentTypeId": 2}},
+			})
+			f.on(downloadRoute(1), rawBody(powerFit(t, 250, 60)))
+			f.on(downloadRoute(2), rawBody(powerFit(t, 900, 60)))
+			data, _ := decode(t, callOK(t, newSession(t, f, nil), "get_power_duration_curve", map[string]any{"activity_type": tc.activityType})).(map[string]any)
+			best := obj(obj(data["season_bests"])["5s"])
+			if data["activities_analyzed"] != 1.0 || best["watts"] != tc.watts || best["activity_id"] != tc.id {
+				t.Errorf("data = %v", data)
+			}
+			if q := f.requests(activitiesRoute)[0].Query; q.Get("activityType") != tc.activityType || q.Get("limit") != "20" || q.Get("start") != "0" {
+				t.Errorf("query = %v", q)
+			}
+		})
+	}
+}
+
+func TestPowerDurationCurveIncludesCyclingParentSubtypes(t *testing.T) {
+	f := newFakeGarmin(t)
+	var acts []any
+	for i, key := range []string{"virtual_ride", "cyclocross", "e_bike_fitness", "e_bike_mountain"} {
+		acts = append(acts, map[string]any{"activityId": i + 1, "activityType": map[string]any{"typeKey": key, "parentTypeId": 2}})
+		f.on(downloadRoute(i+1), rawBody(powerFit(t, 300, 60)))
+	}
+	f.on(activitiesRoute, acts)
+	data, _ := decode(t, callOK(t, newSession(t, f, nil), "get_power_duration_curve", map[string]any{})).(map[string]any)
+	if data["activities_analyzed"] != 4.0 || obj(obj(data["season_bests"])["5s"])["watts"] != 300.0 {
+		t.Errorf("data = %v", data)
+	}
+	if ids := downloadedIDs(f); !reflect.DeepEqual(ids, []string{"1", "2", "3", "4"}) {
+		t.Errorf("downloads = %v", ids)
+	}
+	if date := obj(obj(data["season_bests"])["5s"])["date"]; date != "" {
+		t.Errorf("date = %v", date)
+	}
+}
+
+func TestPowerDurationCurveRequestsMatchingActivitiesBeforeLimiting(t *testing.T) {
+	activities := []any{}
+	for _, a := range []struct {
+		id     int
+		key    string
+		parent int
+	}{{1, "running", 17}, {2, "road_biking", 2}, {3, "running", 17}, {4, "road_biking", 2}} {
+		activities = append(activities, map[string]any{"activityId": a.id, "activityType": map[string]any{"typeKey": a.key, "parentTypeId": a.parent}})
+	}
+	f := newFakeGarmin(t)
+	f.on(activitiesRoute, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		list := activities
+		if r.URL.Query().Get("activityType") == "cycling" {
+			list = nil
+			for _, a := range activities {
+				if obj(obj(a)["activityType"])["parentTypeId"] == 2 {
+					list = append(list, a)
+				}
+			}
+		}
+		start, _ := strconv.Atoi(r.URL.Query().Get("start"))
+		limit, _ := strconv.Atoi(r.URL.Query().Get("limit"))
+		writeBody(w, r, http.StatusOK, list[start:min(start+limit, len(list))])
+	}))
+	f.on(downloadRoute(2), rawBody(powerFit(t, 300, 60)))
+	f.on(downloadRoute(4), rawBody(powerFit(t, 300, 60)))
+	data, _ := decode(t, callOK(t, newSession(t, f, nil), "get_power_duration_curve",
+		map[string]any{"num_activities": 2, "activity_type": "CYCLING"})).(map[string]any)
+	if data["activities_analyzed"] != 2.0 {
+		t.Errorf("data = %v", data)
+	}
+	if ids := downloadedIDs(f); !reflect.DeepEqual(ids, []string{"2", "4"}) {
+		t.Errorf("downloads = %v", ids)
+	}
+	calls := f.requests(activitiesRoute)
+	if len(calls) != 1 || calls[0].Query.Encode() != "activityType=cycling&limit=2&start=0" {
+		t.Errorf("calls = %v", calls)
+	}
+}
+
+func TestPowerDurationCurveToolUsesRecordTimestamps(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on(activitiesRoute, []any{map[string]any{"activityId": 2, "startTimeLocal": "2024-06-01 10:00:00",
+		"activityType": map[string]any{"typeKey": "road_biking", "parentTypeId": 2}}})
+	msgs := []proto.Message{fileID()}
+	for i := 0; i < 1200; i++ {
+		w := 100.0
+		if i < 400 {
+			w = 300
+		}
+		msgs = append(msgs, record(fitP(mesgnum.Record, fieldnum.RecordPower, w),
+			fitTS(mesgnum.Record, rideStart.Add(time.Duration(3*i)*time.Second))))
+	}
+	f.on(downloadRoute(2), rawBody(fitFile(t, msgs...)))
+	text := callOK(t, newSession(t, f, nil), "get_power_duration_curve", map[string]any{})
+	want := `{
+  "activities_analyzed": 1,
+  "activities_skipped": 0,
+  "ftp_estimate_w": 285,
+  "ftp_note": "Estimated as 95% of 20-minute best power",
+  "season_bests": {
+    "5s": {
+      "watts": 300,
+      "activity_id": 2,
+      "date": "2024-06-01"
+    },
+    "30s": {
+      "watts": 300,
+      "activity_id": 2,
+      "date": "2024-06-01"
+    },
+    "1min": {
+      "watts": 300,
+      "activity_id": 2,
+      "date": "2024-06-01"
+    },
+    "5min": {
+      "watts": 300,
+      "activity_id": 2,
+      "date": "2024-06-01"
+    },
+    "10min": {
+      "watts": 300,
+      "activity_id": 2,
+      "date": "2024-06-01"
+    },
+    "20min": {
+      "watts": 300,
+      "activity_id": 2,
+      "date": "2024-06-01"
+    },
+    "60min": {
+      "watts": 167,
+      "activity_id": 2,
+      "date": "2024-06-01"
+    }
+  }
+}`
+	if text != want {
+		t.Errorf("text = %s", text)
+	}
+}
+
+func TestGetPowerDurationCurveMessages(t *testing.T) {
+	run := map[string]any{"activityId": 1, "activityType": map[string]any{"typeKey": "running", "parentTypeId": 17}}
+	ride := map[string]any{"activityId": 2, "activityType": map[string]any{"typeKey": "road_biking", "parentTypeId": 2}}
+	for _, tc := range []struct {
+		name   string
+		args   map[string]any
+		acts   any
+		dl     any
+		want   string
+		isErr  bool
+		limitQ string
+	}{
+		{"no activities", nil, []any{}, nil, "No activities found.", false, "20"},
+		{"none matching", map[string]any{"activity_type": "Swimming", "num_activities": 80}, []any{run, ride}, nil,
+			"No Swimming activities found in the last 50 activities.", false, "50"},
+		{"no power", nil, []any{ride}, rawBody(fitFile(t, fileID(), hrRecord(120))), "No power data found across 1 activities.", false, "20"},
+		{"broken file counts as skipped", nil, []any{ride}, rawBody("<html>"), "No power data found across 0 activities.", false, "20"},
+		{"empty download is not processed", nil, []any{ride}, rawBody{}, "No power data found across 0 activities.", false, "20"},
+		{"limit validation", map[string]any{"num_activities": 0}, nil, nil,
+			"Error computing power duration curve: limit must be a positive integer, got: 0", true, ""},
+		{"non-dict activity", nil, []any{"x"}, nil, "Error computing power duration curve: 'str' object has no attribute 'get'", true, "20"},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			f := newFakeGarmin(t)
+			f.on(activitiesRoute, tc.acts)
+			if tc.dl != nil {
+				f.on(downloadRoute(2), tc.dl)
+			}
+			text, isErr := callTool(t, newSession(t, f, nil), "get_power_duration_curve", tc.args)
+			if text != tc.want || isErr != tc.isErr {
+				t.Errorf("got %q (isErr %v)", text, isErr)
+			}
+			if calls := f.requests(activitiesRoute); tc.limitQ != "" && (len(calls) != 1 || calls[0].Query.Get("limit") != tc.limitQ) {
+				t.Errorf("calls = %v", calls)
+			}
+		})
+	}
+}
+
+func TestGetPowerDurationCurveSkipsFailedDownloads(t *testing.T) {
+	f := newFakeGarmin(t)
+	f.on(activitiesRoute, []any{
+		map[string]any{"activityId": 1, "startTimeLocal": "2024-06-01 08:00:00", "activityType": map[string]any{"typeKey": "road_biking"}},
+		map[string]any{"activityId": nil, "activityType": map[string]any{"typeKey": "road_biking"}},
+		map[string]any{"activityId": 2, "startTimeLocal": "2024-06-02 08:00:00", "activityType": map[string]any{"typeKey": "road_biking"}},
+	})
+	f.on(downloadRoute(1), status(http.StatusInternalServerError, "boom"))
+	f.on(downloadRoute(2), rawBody(powerFit(t, 400, 30)))
+	data, _ := decode(t, callOK(t, newSession(t, f, nil), "get_power_duration_curve", nil)).(map[string]any)
+	if data["activities_analyzed"] != 1.0 || data["activities_skipped"] != 1.0 || data["ftp_estimate_w"] != nil {
+		t.Errorf("data = %v", data)
+	}
+	if keys := len(obj(data["season_bests"])); keys != 2 {
+		t.Errorf("season_bests = %v", data["season_bests"])
 	}
 }
