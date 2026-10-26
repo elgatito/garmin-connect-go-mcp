@@ -1,0 +1,666 @@
+{
+  "fit_size_bytes": 94096,
+  "message_counts": {
+    "file_id": 1,
+    "device_info": 1,
+    "event": 2,
+    "developer_data_id": 1,
+    "field_description": 2,
+    "record": 3601,
+    "lap": 1,
+    "session": 1,
+    "activity": 1
+  },
+  "returned_message_counts": {
+    "record": 5
+  },
+  "record_stream": {
+    "included": true,
+    "total_count": 3601,
+    "returned_count": 5
+  },
+  "pagination": {
+    "total_eligible_count": 3601,
+    "returned_count": 5,
+    "offset": 1500,
+    "limit": 5,
+    "next_offset": 1505
+  },
+  "messages": [
+    {
+      "message_index": 1506,
+      "type_index": 1500,
+      "type": "record",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2021-07-20T21:36:20",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 995751380
+        },
+        {
+          "name": "distance",
+          "value": 1500.0,
+          "units": "m",
+          "definition_number": 5,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 150000
+        },
+        {
+          "name": "enhanced_speed",
+          "value": 1.0,
+          "units": "m/s",
+          "definition_number": 73,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 1.0
+        },
+        {
+          "name": "speed",
+          "value": 1.0,
+          "units": "m/s",
+          "definition_number": 6,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 1000
+        },
+        {
+          "name": "heart_rate",
+          "value": 127,
+          "units": "bpm",
+          "definition_number": 3,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 127
+        },
+        {
+          "name": "cadence",
+          "value": 225,
+          "units": "rpm",
+          "definition_number": 4,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 225
+        },
+        {
+          "name": "power",
+          "value": 250,
+          "units": "watts",
+          "definition_number": 7,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 250
+        },
+        {
+          "name": "enhanced_altitude",
+          "value": 98.0,
+          "units": "m",
+          "definition_number": 78,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 98.0
+        },
+        {
+          "name": "altitude",
+          "value": 98.0,
+          "units": "m",
+          "definition_number": 2,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 2990
+        },
+        {
+          "name": "position_lat",
+          "value": 0,
+          "units": "semicircles",
+          "definition_number": 0,
+          "base_type": "sint32",
+          "profile_type": "sint32",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "position_long",
+          "value": 160760,
+          "units": "semicircles",
+          "definition_number": 1,
+          "base_type": "sint32",
+          "profile_type": "sint32",
+          "field_type": "field",
+          "raw_value": 160760
+        },
+        {
+          "name": "Heart Rate",
+          "value": 127,
+          "units": "bpm",
+          "definition_number": 1,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "devfield",
+          "raw_value": 127
+        }
+      ],
+      "global_message_number": 20
+    },
+    {
+      "message_index": 1507,
+      "type_index": 1501,
+      "type": "record",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2021-07-20T21:36:21",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 995751381
+        },
+        {
+          "name": "distance",
+          "value": 1501.0,
+          "units": "m",
+          "definition_number": 5,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 150100
+        },
+        {
+          "name": "enhanced_speed",
+          "value": 1.0,
+          "units": "m/s",
+          "definition_number": 73,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 1.0
+        },
+        {
+          "name": "speed",
+          "value": 1.0,
+          "units": "m/s",
+          "definition_number": 6,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 1000
+        },
+        {
+          "name": "heart_rate",
+          "value": 134,
+          "units": "bpm",
+          "definition_number": 3,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 134
+        },
+        {
+          "name": "cadence",
+          "value": 226,
+          "units": "rpm",
+          "definition_number": 4,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 226
+        },
+        {
+          "name": "power",
+          "value": 250,
+          "units": "watts",
+          "definition_number": 7,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 250
+        },
+        {
+          "name": "enhanced_altitude",
+          "value": 99.0,
+          "units": "m",
+          "definition_number": 78,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 99.0
+        },
+        {
+          "name": "altitude",
+          "value": 99.0,
+          "units": "m",
+          "definition_number": 2,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 2995
+        },
+        {
+          "name": "position_lat",
+          "value": 0,
+          "units": "semicircles",
+          "definition_number": 0,
+          "base_type": "sint32",
+          "profile_type": "sint32",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "position_long",
+          "value": 160867,
+          "units": "semicircles",
+          "definition_number": 1,
+          "base_type": "sint32",
+          "profile_type": "sint32",
+          "field_type": "field",
+          "raw_value": 160867
+        },
+        {
+          "name": "Heart Rate",
+          "value": 134,
+          "units": "bpm",
+          "definition_number": 1,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "devfield",
+          "raw_value": 134
+        }
+      ],
+      "global_message_number": 20
+    },
+    {
+      "message_index": 1508,
+      "type_index": 1502,
+      "type": "record",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2021-07-20T21:36:22",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 995751382
+        },
+        {
+          "name": "distance",
+          "value": 1502.0,
+          "units": "m",
+          "definition_number": 5,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 150200
+        },
+        {
+          "name": "enhanced_speed",
+          "value": 1.0,
+          "units": "m/s",
+          "definition_number": 73,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 1.0
+        },
+        {
+          "name": "speed",
+          "value": 1.0,
+          "units": "m/s",
+          "definition_number": 6,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 1000
+        },
+        {
+          "name": "heart_rate",
+          "value": 142,
+          "units": "bpm",
+          "definition_number": 3,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 142
+        },
+        {
+          "name": "cadence",
+          "value": 227,
+          "units": "rpm",
+          "definition_number": 4,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 227
+        },
+        {
+          "name": "power",
+          "value": 250,
+          "units": "watts",
+          "definition_number": 7,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 250
+        },
+        {
+          "name": "enhanced_altitude",
+          "value": 100.0,
+          "units": "m",
+          "definition_number": 78,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 100.0
+        },
+        {
+          "name": "altitude",
+          "value": 100.0,
+          "units": "m",
+          "definition_number": 2,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 3000
+        },
+        {
+          "name": "position_lat",
+          "value": 0,
+          "units": "semicircles",
+          "definition_number": 0,
+          "base_type": "sint32",
+          "profile_type": "sint32",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "position_long",
+          "value": 160974,
+          "units": "semicircles",
+          "definition_number": 1,
+          "base_type": "sint32",
+          "profile_type": "sint32",
+          "field_type": "field",
+          "raw_value": 160974
+        },
+        {
+          "name": "Heart Rate",
+          "value": 142,
+          "units": "bpm",
+          "definition_number": 1,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "devfield",
+          "raw_value": 142
+        }
+      ],
+      "global_message_number": 20
+    },
+    {
+      "message_index": 1509,
+      "type_index": 1503,
+      "type": "record",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2021-07-20T21:36:23",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 995751383
+        },
+        {
+          "name": "distance",
+          "value": 1503.0,
+          "units": "m",
+          "definition_number": 5,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 150300
+        },
+        {
+          "name": "enhanced_speed",
+          "value": 1.0,
+          "units": "m/s",
+          "definition_number": 73,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 1.0
+        },
+        {
+          "name": "speed",
+          "value": 1.0,
+          "units": "m/s",
+          "definition_number": 6,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 1000
+        },
+        {
+          "name": "heart_rate",
+          "value": 150,
+          "units": "bpm",
+          "definition_number": 3,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 150
+        },
+        {
+          "name": "cadence",
+          "value": 228,
+          "units": "rpm",
+          "definition_number": 4,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 228
+        },
+        {
+          "name": "power",
+          "value": 250,
+          "units": "watts",
+          "definition_number": 7,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 250
+        },
+        {
+          "name": "enhanced_altitude",
+          "value": 101.0,
+          "units": "m",
+          "definition_number": 78,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 101.0
+        },
+        {
+          "name": "altitude",
+          "value": 101.0,
+          "units": "m",
+          "definition_number": 2,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 3005
+        },
+        {
+          "name": "position_lat",
+          "value": 0,
+          "units": "semicircles",
+          "definition_number": 0,
+          "base_type": "sint32",
+          "profile_type": "sint32",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "position_long",
+          "value": 161081,
+          "units": "semicircles",
+          "definition_number": 1,
+          "base_type": "sint32",
+          "profile_type": "sint32",
+          "field_type": "field",
+          "raw_value": 161081
+        },
+        {
+          "name": "Heart Rate",
+          "value": 150,
+          "units": "bpm",
+          "definition_number": 1,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "devfield",
+          "raw_value": 150
+        }
+      ],
+      "global_message_number": 20
+    },
+    {
+      "message_index": 1510,
+      "type_index": 1504,
+      "type": "record",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2021-07-20T21:36:24",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 995751384
+        },
+        {
+          "name": "distance",
+          "value": 1504.0,
+          "units": "m",
+          "definition_number": 5,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 150400
+        },
+        {
+          "name": "enhanced_speed",
+          "value": 1.0,
+          "units": "m/s",
+          "definition_number": 73,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 1.0
+        },
+        {
+          "name": "speed",
+          "value": 1.0,
+          "units": "m/s",
+          "definition_number": 6,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 1000
+        },
+        {
+          "name": "heart_rate",
+          "value": 158,
+          "units": "bpm",
+          "definition_number": 3,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 158
+        },
+        {
+          "name": "cadence",
+          "value": 229,
+          "units": "rpm",
+          "definition_number": 4,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 229
+        },
+        {
+          "name": "power",
+          "value": 250,
+          "units": "watts",
+          "definition_number": 7,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 250
+        },
+        {
+          "name": "enhanced_altitude",
+          "value": 102.0,
+          "units": "m",
+          "definition_number": 78,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 102.0
+        },
+        {
+          "name": "altitude",
+          "value": 102.0,
+          "units": "m",
+          "definition_number": 2,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 3010
+        },
+        {
+          "name": "position_lat",
+          "value": 0,
+          "units": "semicircles",
+          "definition_number": 0,
+          "base_type": "sint32",
+          "profile_type": "sint32",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "position_long",
+          "value": 161188,
+          "units": "semicircles",
+          "definition_number": 1,
+          "base_type": "sint32",
+          "profile_type": "sint32",
+          "field_type": "field",
+          "raw_value": 161188
+        },
+        {
+          "name": "Heart Rate",
+          "value": 158,
+          "units": "bpm",
+          "definition_number": 1,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "devfield",
+          "raw_value": 158
+        }
+      ],
+      "global_message_number": 20
+    }
+  ]
+}

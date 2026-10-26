@@ -1,0 +1,4944 @@
+{
+  "fit_size_bytes": 90970,
+  "message_counts": {
+    "file_id": 1,
+    "record": 1979,
+    "event": 74,
+    "activity": 1
+  },
+  "returned_message_counts": {
+    "file_id": 1,
+    "event": 74,
+    "activity": 1
+  },
+  "record_stream": {
+    "included": false,
+    "total_count": 1979,
+    "returned_count": 0,
+    "hint": "Set include_records=true and use message pagination to retrieve records."
+  },
+  "pagination": {
+    "total_eligible_count": 76,
+    "returned_count": 76,
+    "offset": 0,
+    "limit": 1000
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "type_index": 0,
+      "type": "file_id",
+      "fields": [
+        {
+          "name": "serial_number",
+          "value": 3390945015,
+          "definition_number": 3,
+          "base_type": "uint32z",
+          "profile_type": "uint32z",
+          "field_type": "field",
+          "raw_value": 3390945015
+        },
+        {
+          "name": "time_created",
+          "value": "2022-06-22T23:08:37",
+          "definition_number": 4,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873717
+        },
+        {
+          "name": "manufacturer",
+          "value": "garmin",
+          "definition_number": 1,
+          "base_type": "uint16",
+          "profile_type": "manufacturer",
+          "field_type": "field",
+          "value_name": "garmin",
+          "raw_value": 1
+        },
+        {
+          "name": "garmin_product",
+          "value": 3843,
+          "definition_number": 2,
+          "base_type": "uint16",
+          "profile_type": "garmin_product",
+          "field_type": "subfield",
+          "raw_value": 3843
+        },
+        {
+          "name": "type",
+          "value": "activity",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "file",
+          "field_type": "field",
+          "value_name": "activity",
+          "raw_value": 4
+        }
+      ],
+      "global_message_number": 0
+    },
+    {
+      "message_index": 1980,
+      "type_index": 0,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:08:37",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873717
+        },
+        {
+          "name": "timer_trigger",
+          "value": "manual",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "timer_trigger",
+          "field_type": "subfield",
+          "value_name": "manual",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "timer",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "timer",
+          "raw_value": 0
+        },
+        {
+          "name": "event_type",
+          "value": "start",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "start",
+          "raw_value": 0
+        },
+        {
+          "name": "event_group",
+          "value": 0,
+          "definition_number": 4,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 0
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1981,
+      "type_index": 1,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:08:37",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873717
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 5,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 5
+        },
+        {
+          "name": "rear_gear",
+          "value": 24,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 24
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 22,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 22
+        },
+        {
+          "name": "gear_change_data",
+          "value": 385816581,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 385816581
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        },
+        {
+          "name": "event_group",
+          "value": null,
+          "definition_number": 4,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": null
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1982,
+      "type_index": 2,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:09:01",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873741
+        },
+        {
+          "name": "rider_position",
+          "value": "seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "seated",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1983,
+      "type_index": 3,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:09:20",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873760
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 6,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 6
+        },
+        {
+          "name": "rear_gear",
+          "value": 21,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 21
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717062,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717062
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1984,
+      "type_index": 4,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:10:19",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873819
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 7,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 7
+        },
+        {
+          "name": "rear_gear",
+          "value": 19,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 19
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716551,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716551
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1985,
+      "type_index": 5,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:10:50",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873850
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 6,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 6
+        },
+        {
+          "name": "rear_gear",
+          "value": 21,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 21
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717062,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717062
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1986,
+      "type_index": 6,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:11:47",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873907
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_standing",
+          "raw_value": 3
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1987,
+      "type_index": 7,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:11:52",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873912
+        },
+        {
+          "name": "rider_position",
+          "value": "standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "standing",
+          "raw_value": 1
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1988,
+      "type_index": 8,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:12:04",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873924
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_seated",
+          "raw_value": 2
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1989,
+      "type_index": 9,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:12:09",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024873929
+        },
+        {
+          "name": "rider_position",
+          "value": "seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "seated",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1990,
+      "type_index": 10,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:13:24",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874004
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_standing",
+          "raw_value": 3
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1991,
+      "type_index": 11,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:13:30",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874010
+        },
+        {
+          "name": "rider_position",
+          "value": "standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "standing",
+          "raw_value": 1
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1992,
+      "type_index": 12,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:13:41",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874021
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_seated",
+          "raw_value": 2
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1993,
+      "type_index": 13,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:13:48",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874028
+        },
+        {
+          "name": "rider_position",
+          "value": "seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "seated",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1994,
+      "type_index": 14,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:17:35",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874255
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_standing",
+          "raw_value": 3
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1995,
+      "type_index": 15,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:17:41",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874261
+        },
+        {
+          "name": "rider_position",
+          "value": "standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "standing",
+          "raw_value": 1
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1996,
+      "type_index": 16,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:17:48",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874268
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_seated",
+          "raw_value": 2
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1997,
+      "type_index": 17,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:17:54",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874274
+        },
+        {
+          "name": "rider_position",
+          "value": "seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "seated",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1998,
+      "type_index": 18,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:18:37",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874317
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_standing",
+          "raw_value": 3
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 1999,
+      "type_index": 19,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:18:40",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874320
+        },
+        {
+          "name": "rider_position",
+          "value": "seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "seated",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2000,
+      "type_index": 20,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:21:57",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874517
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_standing",
+          "raw_value": 3
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2001,
+      "type_index": 21,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:22:04",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874524
+        },
+        {
+          "name": "rider_position",
+          "value": "standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "standing",
+          "raw_value": 1
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2002,
+      "type_index": 22,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:22:32",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874552
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_seated",
+          "raw_value": 2
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2003,
+      "type_index": 23,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:22:55",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874575
+        },
+        {
+          "name": "rider_position",
+          "value": "standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "standing",
+          "raw_value": 1
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2004,
+      "type_index": 24,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:23:00",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874580
+        },
+        {
+          "name": "rider_position",
+          "value": "seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "seated",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2005,
+      "type_index": 25,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:23:21",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874601
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 7,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 7
+        },
+        {
+          "name": "rear_gear",
+          "value": 19,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 19
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716551,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716551
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2006,
+      "type_index": 26,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:23:44",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874624
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 8,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 8
+        },
+        {
+          "name": "rear_gear",
+          "value": 17,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 17
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716040,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716040
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2007,
+      "type_index": 27,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:24:54",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874694
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 7,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 7
+        },
+        {
+          "name": "rear_gear",
+          "value": 19,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 19
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716551,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716551
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2008,
+      "type_index": 28,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:24:58",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874698
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 6,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 6
+        },
+        {
+          "name": "rear_gear",
+          "value": 21,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 21
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717062,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717062
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2009,
+      "type_index": 29,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:25:27",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874727
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 7,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 7
+        },
+        {
+          "name": "rear_gear",
+          "value": 19,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 19
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716551,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716551
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2010,
+      "type_index": 30,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:25:55",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874755
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 8,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 8
+        },
+        {
+          "name": "rear_gear",
+          "value": 17,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 17
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716040,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716040
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2011,
+      "type_index": 31,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:27:04",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874824
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 7,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 7
+        },
+        {
+          "name": "rear_gear",
+          "value": 19,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 19
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716551,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716551
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2012,
+      "type_index": 32,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:27:09",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874829
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 6,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 6
+        },
+        {
+          "name": "rear_gear",
+          "value": 21,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 21
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717062,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717062
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2013,
+      "type_index": 33,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:27:44",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874864
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 7,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 7
+        },
+        {
+          "name": "rear_gear",
+          "value": 19,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 19
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716551,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716551
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2014,
+      "type_index": 34,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:28:33",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874913
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 6,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 6
+        },
+        {
+          "name": "rear_gear",
+          "value": 21,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 21
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717062,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717062
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2015,
+      "type_index": 35,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:28:47",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024874927
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 4,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 4
+        },
+        {
+          "name": "rear_gear",
+          "value": 27,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 27
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16718596,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16718596
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2016,
+      "type_index": 36,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:31:37",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875097
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 5,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 5
+        },
+        {
+          "name": "rear_gear",
+          "value": 24,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 24
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717829,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717829
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2017,
+      "type_index": 37,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:31:37",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875097
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 6,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 6
+        },
+        {
+          "name": "rear_gear",
+          "value": 21,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 21
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717062,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717062
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2018,
+      "type_index": 38,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:31:40",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875100
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_standing",
+          "raw_value": 3
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2019,
+      "type_index": 39,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:31:44",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875104
+        },
+        {
+          "name": "rider_position",
+          "value": "standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "standing",
+          "raw_value": 1
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2020,
+      "type_index": 40,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:31:51",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875111
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 5,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 5
+        },
+        {
+          "name": "rear_gear",
+          "value": 24,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 24
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717829,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717829
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2021,
+      "type_index": 41,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:31:59",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875119
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_seated",
+          "raw_value": 2
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2022,
+      "type_index": 42,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:32:04",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875124
+        },
+        {
+          "name": "rider_position",
+          "value": "seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "seated",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2023,
+      "type_index": 43,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:32:06",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875126
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 4,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 4
+        },
+        {
+          "name": "rear_gear",
+          "value": 27,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 27
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16718596,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16718596
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2024,
+      "type_index": 44,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:32:42",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875162
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_standing",
+          "raw_value": 3
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2025,
+      "type_index": 45,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:32:45",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875165
+        },
+        {
+          "name": "rider_position",
+          "value": "standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "standing",
+          "raw_value": 1
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2026,
+      "type_index": 46,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:33:17",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875197
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_seated",
+          "raw_value": 2
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2027,
+      "type_index": 47,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:33:21",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875201
+        },
+        {
+          "name": "rider_position",
+          "value": "seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "seated",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2028,
+      "type_index": 48,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:33:22",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875202
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_standing",
+          "raw_value": 3
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2029,
+      "type_index": 49,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:33:27",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875207
+        },
+        {
+          "name": "rider_position",
+          "value": "standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "standing",
+          "raw_value": 1
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2030,
+      "type_index": 50,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:34:11",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875251
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 3,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 3
+        },
+        {
+          "name": "rear_gear",
+          "value": 31,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 31
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16719619,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16719619
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2031,
+      "type_index": 51,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:34:23",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875263
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_seated",
+          "raw_value": 2
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2032,
+      "type_index": 52,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:34:25",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875265
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 4,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 4
+        },
+        {
+          "name": "rear_gear",
+          "value": 27,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 27
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16718596,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16718596
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2033,
+      "type_index": 53,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:34:26",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875266
+        },
+        {
+          "name": "rider_position",
+          "value": "seated",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "seated",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2034,
+      "type_index": 54,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:34:31",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875271
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 5,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 5
+        },
+        {
+          "name": "rear_gear",
+          "value": 24,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 24
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717829,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717829
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2035,
+      "type_index": 55,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:34:51",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875291
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 6,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 6
+        },
+        {
+          "name": "rear_gear",
+          "value": 21,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 21
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717062,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717062
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2036,
+      "type_index": 56,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:36:04",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875364
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 7,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 7
+        },
+        {
+          "name": "rear_gear",
+          "value": 19,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 19
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716551,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716551
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2037,
+      "type_index": 57,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:36:28",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875388
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 8,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 8
+        },
+        {
+          "name": "rear_gear",
+          "value": 17,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 17
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716040,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716040
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2038,
+      "type_index": 58,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:37:03",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875423
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 9,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 9
+        },
+        {
+          "name": "rear_gear",
+          "value": 15,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 15
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16715529,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16715529
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2039,
+      "type_index": 59,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:38:35",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875515
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 8,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 8
+        },
+        {
+          "name": "rear_gear",
+          "value": 17,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 17
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716040,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716040
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2040,
+      "type_index": 60,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:39:49",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875589
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 7,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 7
+        },
+        {
+          "name": "rear_gear",
+          "value": 19,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 19
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716551,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716551
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2041,
+      "type_index": 61,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:40:15",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875615
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 8,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 8
+        },
+        {
+          "name": "rear_gear",
+          "value": 17,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 17
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716040,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716040
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2042,
+      "type_index": 62,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:40:16",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875616
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 9,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 9
+        },
+        {
+          "name": "rear_gear",
+          "value": 15,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 15
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16715529,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16715529
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2043,
+      "type_index": 63,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:40:21",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875621
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 10,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 10
+        },
+        {
+          "name": "rear_gear",
+          "value": 13,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 13
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16715018,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16715018
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2044,
+      "type_index": 64,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:40:22",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875622
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 11,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 11
+        },
+        {
+          "name": "rear_gear",
+          "value": 11,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 11
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16714507,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16714507
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2045,
+      "type_index": 65,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:40:51",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875651
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 9,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 9
+        },
+        {
+          "name": "rear_gear",
+          "value": 15,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 15
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16715529,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16715529
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2046,
+      "type_index": 66,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:40:58",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875658
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 8,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 8
+        },
+        {
+          "name": "rear_gear",
+          "value": 17,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 17
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716040,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716040
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2047,
+      "type_index": 67,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:40:58",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875658
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 7,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 7
+        },
+        {
+          "name": "rear_gear",
+          "value": 19,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 19
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16716551,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16716551
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2048,
+      "type_index": 68,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:41:05",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875665
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 6,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 6
+        },
+        {
+          "name": "rear_gear",
+          "value": 21,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 21
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 0,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "gear_change_data",
+          "value": 16717062,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 16717062
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2049,
+      "type_index": 69,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:41:26",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875686
+        },
+        {
+          "name": "rider_position",
+          "value": "transition_to_standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "transition_to_standing",
+          "raw_value": 3
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2050,
+      "type_index": 70,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:41:29",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875689
+        },
+        {
+          "name": "rider_position",
+          "value": "standing",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "rider_position_type",
+          "field_type": "subfield",
+          "value_name": "standing",
+          "raw_value": 1
+        },
+        {
+          "name": "event",
+          "value": "rider_position_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rider_position_change",
+          "raw_value": 44
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2051,
+      "type_index": 71,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:41:35",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875695
+        },
+        {
+          "name": "timer_trigger",
+          "value": "manual",
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "timer_trigger",
+          "field_type": "subfield",
+          "value_name": "manual",
+          "raw_value": 0
+        },
+        {
+          "name": "event",
+          "value": "timer",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "timer",
+          "raw_value": 0
+        },
+        {
+          "name": "event_type",
+          "value": "stop_all",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "stop_all",
+          "raw_value": 4
+        },
+        {
+          "name": "event_group",
+          "value": 0,
+          "definition_number": 4,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 0
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2052,
+      "type_index": 72,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:41:35",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875695
+        },
+        {
+          "name": "rear_gear_num",
+          "value": 6,
+          "definition_number": 11,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 6
+        },
+        {
+          "name": "rear_gear",
+          "value": 21,
+          "definition_number": 12,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 21
+        },
+        {
+          "name": "front_gear_num",
+          "value": 255,
+          "definition_number": 9,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 255
+        },
+        {
+          "name": "front_gear",
+          "value": 22,
+          "definition_number": 10,
+          "base_type": "uint8z",
+          "profile_type": "uint8z",
+          "field_type": "field",
+          "raw_value": 22
+        },
+        {
+          "name": "gear_change_data",
+          "value": 385815814,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "subfield",
+          "raw_value": 385815814
+        },
+        {
+          "name": "event",
+          "value": "rear_gear_change",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "rear_gear_change",
+          "raw_value": 43
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        },
+        {
+          "name": "event_group",
+          "value": null,
+          "definition_number": 4,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": null
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2053,
+      "type_index": 73,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:41:42",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875702
+        },
+        {
+          "name": "data",
+          "value": 243,
+          "definition_number": 3,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 243
+        },
+        {
+          "name": "event",
+          "value": 48,
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "raw_value": 48
+        },
+        {
+          "name": "event_type",
+          "value": "marker",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "marker",
+          "raw_value": 3
+        },
+        {
+          "name": "event_group",
+          "value": 1,
+          "definition_number": 4,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 1
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 2054,
+      "type_index": 0,
+      "type": "activity",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-06-22T23:41:35",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1024875695
+        },
+        {
+          "name": "num_sessions",
+          "value": 1,
+          "definition_number": 1,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 1
+        },
+        {
+          "name": "local_timestamp",
+          "value": "2022-06-22T17:41:35",
+          "definition_number": 5,
+          "base_type": "uint32",
+          "profile_type": "local_date_time",
+          "field_type": "field",
+          "raw_value": 1024854095
+        },
+        {
+          "name": "total_timer_time",
+          "value": 1978.0,
+          "units": "s",
+          "definition_number": 0,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 1978000
+        }
+      ],
+      "global_message_number": 34
+    }
+  ]
+}

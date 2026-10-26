@@ -4,6 +4,7 @@ go 1.27.3
 
 require (
 	github.com/modelcontextprotocol/go-sdk v1.8.0
+	github.com/muktihari/fit v0.28.5
 	github.com/refraction-networking/utls v1.8.2
 	golang.org/x/net v0.61.0
 	golang.org/x/term v0.47.0
