@@ -1,16 +1,53 @@
 name: CI
 on: [push, pull_request]
+permissions:
+  contents: read
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
-      - run: go vet ./...
-      - run: go test -race ./...
-      - run: |
-          for t in windows/amd64 windows/arm64 linux/amd64 linux/arm64 darwin/amd64 darwin/arm64; do
-            CGO_ENABLED=0 GOOS=${t%/*} GOARCH=${t#*/} go build -o /dev/null ./cmd/garmin-mcp || exit 1
-          done
+      - run: make lint
+
+  test:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: make test-race
+      - run: make cross-build
+
+  build:
+    needs: test
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - goos: windows
+            binary: garmin-mcp.exe
+          - goos: linux
+            binary: garmin-mcp
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - name: Build binary
+        env:
+          CGO_ENABLED: '0'
+          GOOS: ${{ matrix.goos }}
+          GOARCH: amd64
+        run: |
+          mkdir -p dist
+          go build -trimpath -o "dist/${{ matrix.binary }}" ./cmd/garmin-mcp
+      - uses: actions/upload-artifact@v4
+        with:
+          name: garmin-mcp-${{ matrix.goos }}-amd64
+          path: dist/${{ matrix.binary }}
+          if-no-files-found: error

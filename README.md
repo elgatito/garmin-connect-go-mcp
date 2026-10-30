@@ -87,12 +87,15 @@ Compared with the Python server, this version supports multiple accounts, requir
 
 ## Build and test
 
-Install the Go version specified in `go.mod`, then run:
+Install the Go version specified in `go.mod` and GNU Make, then run:
 
 ```sh
-go build -o garmin-mcp ./cmd/garmin-mcp
-go vet ./...
-go test -race ./...
+make build       # Build the executable in the project root
+make check       # Run lint, race tests, and the six release build checks
 ```
+
+Run `make help` to see the individual commands. For example, `make run ARGS="auth"` starts the login wizard, and `make clean` removes the executable built for the current platform.
+
+On pushes and pull requests, GitHub Actions runs lint and tests, then uploads Windows amd64 and Linux amd64 binaries as workflow artifacts.
 
 To release a new version after the manual live smoke checklist in the implementation plan, create and push a tag: `git tag vX.Y.Z && git push --tags`. The release workflow builds binaries for Linux, macOS, and Windows on amd64 and arm64.
