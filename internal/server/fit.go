@@ -103,9 +103,13 @@ func decodeFIT(raw []byte) ([]fitMessage, error) {
 	if err != nil {
 		return nil, err
 	}
+	rawDevelopers, err := rawDeveloperFields(data)
+	if err != nil {
+		return nil, err
+	}
 	out := make([]fitMessage, 0, len(decoded.Messages))
 	devFields := map[[2]int]map[string]any{}
-	for _, msg := range decoded.Messages {
+	for messageIndex, msg := range decoded.Messages {
 		name := msg.Num.String()
 		if strings.HasPrefix(name, "MesgNumInvalid(") {
 			name = fmt.Sprintf("unknown_%d", msg.Num)
@@ -127,7 +131,9 @@ func decodeFIT(raw []byte) ([]fitMessage, error) {
 			var valueNames any
 			if label, ok := fitEnumLabel(f.Type, decodedValue); ok {
 				valueNames = label
-				decodedValue = label
+				if _, sequence := decodedValue.([]any); !sequence {
+					decodedValue = label
+				}
 			}
 			entry.Fields = append(entry.Fields, fitField{Name: name, Num: int(f.Num), Value: decodedValue, Units: f.Units, Raw: value, BaseType: f.BaseType.String(), ProfileType: f.Type.String(), ValueNames: valueNames})
 		}
@@ -153,6 +159,20 @@ func decodeFIT(raw []byte) ([]fitMessage, error) {
 			offset, _ := fitNumber(info["offset"])
 			raw := f.Value.Any()
 			entry.Fields = append(entry.Fields, fitField{Name: name, Num: int(f.Num), Value: fitValue(raw, scale, offset, false), Raw: raw, Units: units, FieldType: "developer"})
+		}
+		if messageIndex < len(rawDevelopers) {
+			for _, raw := range rawDevelopers[messageIndex] {
+				found := false
+				for _, existing := range msg.DeveloperFields {
+					if int(existing.Num) == raw.number && int(existing.DeveloperDataIndex) == raw.index {
+						found = true
+						break
+					}
+				}
+				if !found {
+					entry.Fields = append(entry.Fields, fitField{Name: fmt.Sprintf("unknown_%d", raw.number), Num: raw.number, Value: raw.value, Raw: raw.value, FieldType: "developer"})
+				}
+			}
 		}
 		applyFITContextualEnums(&entry)
 		out = append(out, entry)
@@ -187,6 +207,9 @@ func applyFITContextualEnums(message *fitMessage) {
 	for _, field := range message.Fields {
 		if field.Name == selector {
 			categories = field.Value
+			if field.ValueNames != nil {
+				categories = field.ValueNames
+			}
 			break
 		}
 	}
