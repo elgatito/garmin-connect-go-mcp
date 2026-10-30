@@ -1,0 +1,108 @@
+{
+  "workoutName": "Interval Run",
+  "description": "Interval workout with repeat groups: warmup, 6x(400m fast + 2min recovery), cooldown",
+  "sportType": {
+    "sportTypeId": 1,
+    "sportTypeKey": "running"
+  },
+  "workoutSegments": [
+    {
+      "segmentOrder": 1,
+      "sportType": {
+        "sportTypeId": 1,
+        "sportTypeKey": "running"
+      },
+      "workoutSteps": [
+        {
+          "type": "ExecutableStepDTO",
+          "stepOrder": 1,
+          "stepType": {
+            "stepTypeId": 1,
+            "stepTypeKey": "warmup"
+          },
+          "description": "Warmup 10 min",
+          "endCondition": {
+            "conditionTypeId": 2,
+            "conditionTypeKey": "time"
+          },
+          "endConditionValue": 600.0,
+          "targetType": {
+            "workoutTargetTypeId": 1,
+            "workoutTargetTypeKey": "no.target"
+          }
+        },
+        {
+          "type": "RepeatGroupDTO",
+          "stepOrder": 2,
+          "stepType": {
+            "stepTypeId": 6,
+            "stepTypeKey": "repeat"
+          },
+          "numberOfIterations": 6,
+          "smartRepeat": false,
+          "endCondition": {
+            "conditionTypeId": 7,
+            "conditionTypeKey": "iterations"
+          },
+          "endConditionValue": 6.0,
+          "workoutSteps": [
+            {
+              "type": "ExecutableStepDTO",
+              "stepOrder": 3,
+              "stepType": {
+                "stepTypeId": 3,
+                "stepTypeKey": "interval"
+              },
+              "description": "Fast 400m",
+              "endCondition": {
+                "conditionTypeId": 3,
+                "conditionTypeKey": "distance"
+              },
+              "endConditionValue": 400.0,
+              "targetType": {
+                "workoutTargetTypeId": 1,
+                "workoutTargetTypeKey": "no.target"
+              }
+            },
+            {
+              "type": "ExecutableStepDTO",
+              "stepOrder": 4,
+              "stepType": {
+                "stepTypeId": 4,
+                "stepTypeKey": "recovery"
+              },
+              "description": "Recovery 2 min",
+              "endCondition": {
+                "conditionTypeId": 2,
+                "conditionTypeKey": "time"
+              },
+              "endConditionValue": 120.0,
+              "targetType": {
+                "workoutTargetTypeId": 1,
+                "workoutTargetTypeKey": "no.target"
+              }
+            }
+          ]
+        },
+        {
+          "type": "ExecutableStepDTO",
+          "stepOrder": 5,
+          "stepType": {
+            "stepTypeId": 2,
+            "stepTypeKey": "cooldown"
+          },
+          "description": "Cooldown 10 min",
+          "endCondition": {
+            "conditionTypeId": 2,
+            "conditionTypeKey": "time"
+          },
+          "endConditionValue": 600.0,
+          "targetType": {
+            "workoutTargetTypeId": 1,
+            "workoutTargetTypeKey": "no.target"
+          }
+        }
+      ]
+    }
+  ]
+}

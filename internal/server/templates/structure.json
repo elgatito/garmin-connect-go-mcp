@@ -1,0 +1,147 @@
+{
+  "description": "Reference guide for Garmin workout JSON structure",
+  "step_types": {
+    "ExecutableStepDTO": "Regular workout step (warmup, interval, cooldown, recovery, rest)",
+    "RepeatGroupDTO": "Repeat group containing nested steps with numberOfIterations. Give it stepType 6 (repeat) and endCondition 7 (iterations) with endConditionValue equal to numberOfIterations."
+  },
+  "stepOrder": "One depth-first counter over the whole workout (1, 2, 3, ...). A RepeatGroupDTO takes the next number and its nested steps continue the count from there (group 2, children 3 and 4, next top-level step 5). Never restart at 1 inside a group.",
+  "stepType_values": {
+    "1": {
+      "stepTypeKey": "warmup",
+      "description": "Warmup phase"
+    },
+    "2": {
+      "stepTypeKey": "cooldown",
+      "description": "Cooldown phase"
+    },
+    "3": {
+      "stepTypeKey": "interval",
+      "description": "Work/effort interval (use for exercises in strength workouts)"
+    },
+    "4": {
+      "stepTypeKey": "recovery",
+      "description": "Recovery between intervals (active recovery)"
+    },
+    "5": {
+      "stepTypeKey": "rest",
+      "description": "Complete rest (use for rest between sets in strength workouts)"
+    },
+    "6": {
+      "stepTypeKey": "repeat",
+      "description": "Repeat group step type (used internally by RepeatGroupDTO)"
+    }
+  },
+  "endCondition_values": {
+    "1": {
+      "conditionTypeKey": "lap.button",
+      "description": "Manual lap press (use for warmup/cooldown in strength workouts)"
+    },
+    "2": {
+      "conditionTypeKey": "time",
+      "description": "Duration in seconds"
+    },
+    "3": {
+      "conditionTypeKey": "distance",
+      "description": "Distance in meters"
+    },
+    "4": {
+      "conditionTypeKey": "calories",
+      "description": "Calories in kcal"
+    },
+    "5": {
+      "conditionTypeKey": "power",
+      "description": "Power in watts"
+    },
+    "6": {
+      "conditionTypeKey": "heart.rate",
+      "description": "Heart rate in bpm"
+    },
+    "7": {
+      "conditionTypeKey": "iterations",
+      "description": "Number of iterations (used internally by RepeatGroupDTO)"
+    },
+    "8": {
+      "conditionTypeKey": "fixed.rest",
+      "description": "Fixed rest duration"
+    },
+    "9": {
+      "conditionTypeKey": "fixed.repetition",
+      "description": "Fixed repetition count"
+    },
+    "10": {
+      "conditionTypeKey": "reps",
+      "description": "Number of repetitions (use for strength exercises)"
+    },
+    "11": {
+      "conditionTypeKey": "training.peaks.tss",
+      "description": "TrainingPeaks TSS"
+    }
+  },
+  "targetType_values": {
+    "1": {
+      "workoutTargetTypeKey": "no.target",
+      "description": "No specific target"
+    },
+    "2": {
+      "workoutTargetTypeKey": "power.zone",
+      "description": "Cycling power zone 1-7 (use zoneNumber; based on FTP %), or a custom % FTP range (targetValueOne/targetValueTwo as percentages with targetValueUnit {\"unitKey\": \"percent\"}). Do NOT use for absolute watt targets."
+    },
+    "4": {
+      "workoutTargetTypeKey": "heart.rate.zone",
+      "description": "Heart rate zone (use zoneNumber 1-5 for named zones, or targetValueOne/targetValueTwo for custom bpm range)"
+    },
+    "6 (running/swim)": {
+      "workoutTargetTypeKey": "pace.zone",
+      "description": "Pace zone for running or swimming (use zoneNumber, or step-level targetValueOne/targetValueTwo in m/s for a custom range)"
+    },
+    "6 (cycling)": {
+      "workoutTargetTypeKey": "power.between",
+      "description": "Cycling absolute watt range (use targetValueOne=low_watts, targetValueTwo=high_watts). Use this instead of power.zone when targeting specific watts, NOT zone numbers."
+    }
+  },
+  "sportType_values": {
+    "1": {
+      "sportTypeKey": "running"
+    },
+    "2": {
+      "sportTypeKey": "cycling"
+    },
+    "3": {
+      "sportTypeKey": "other"
+    },
+    "4": {
+      "sportTypeKey": "swimming"
+    },
+    "5": {
+      "sportTypeKey": "strength_training"
+    },
+    "6": {
+      "sportTypeKey": "cardio_training"
+    },
+    "7": {
+      "sportTypeKey": "yoga"
+    },
+    "8": {
+      "sportTypeKey": "pilates"
+    },
+    "9": {
+      "sportTypeKey": "hiit"
+    },
+    "11": {
+      "sportTypeKey": "mobility"
+    },
+    "12": {
+      "sportTypeKey": "walking"
+    },
+    "13": {
+      "sportTypeKey": "rucking"
+    }
+  },
+  "strength_training_fields": {
+    "description": "Additional fields for strength training workout steps (ExecutableStepDTO)",
+    "category": "Exercise category (e.g., BENCH_PRESS, PULL_UP, CURL, SHOULDER_PRESS, ROW, SQUAT, DEADLIFT, TRICEPS_EXTENSION, PLANK, LUNGE, CARDIO)",
+    "exerciseName": "Specific exercise name (e.g., BARBELL_BENCH_PRESS, PULL_UP, DUMBBELL_BICEPS_CURL, DUMBBELL_SHOULDER_PRESS, BENT_OVER_ROW_WITH_DUMBELL, BODY_WEIGHT_DIP)",
+    "weightValue": "Weight value as number (e.g., 24.0)",
+    "weightUnit": "Weight unit object: {\"unitId\": 8, \"unitKey\": \"kilogram\", \"factor\": 1000.0}"
+  }
+}
