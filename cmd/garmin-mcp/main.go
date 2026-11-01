@@ -27,6 +27,8 @@ type env struct {
 	ReadPassword func() (string, error)
 	Endpoints    func(domain string) garmin.Endpoints // nil: garmin.DefaultEndpoints
 	Login        *garmin.LoginOptions                 // nil: every strategy, system roots
+	ReleaseAPI   string                               // "": GitHub latest-release API (update)
+	Executable   func() (string, error)               // nil: os.Executable (update)
 }
 
 func defaultEnv() env {
@@ -86,6 +88,7 @@ commands:
   accounts                            list saved accounts
   remove <email> [--yes]              delete a saved account
   serve                               run the MCP server over stdio
+  update [--check]                    install the latest release from GitHub
   version                             print version`
 
 func serve(ctx context.Context, e env, st accounts.Store) int {
@@ -129,6 +132,8 @@ func run(ctx context.Context, args []string, e env) int {
 	case "version", "--version":
 		fmt.Fprintf(e.Stdout, "garmin-mcp %s\n", version)
 		return 0
+	case "update":
+		return cmdUpdate(ctx, args[1:], e)
 	case "", "auth", "accounts", "remove", "serve":
 	default:
 		fmt.Fprintf(e.Stderr, "unknown command %q\n%s\n", cmd, usage)

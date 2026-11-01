@@ -3,7 +3,7 @@ VERSION ?= dev
 BINARY := garmin-mcp$(shell $(GO) env GOEXE)
 LDFLAGS := -s -w -X main.version=$(VERSION)
 # Release targets; README download links name these archives.
-PLATFORMS := windows/amd64 linux/arm64 darwin/amd64 darwin/arm64
+PLATFORMS := windows/amd64 linux/amd64 linux/arm64 darwin/amd64 darwin/arm64
 
 .PHONY: help build run test test-race fmt format-check vet lint cross-build check dist clean
 

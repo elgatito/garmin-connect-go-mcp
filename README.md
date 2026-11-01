@@ -13,6 +13,7 @@ Download the latest build for your platform and unpack it:
 | Platform | Download | Claude Desktop extension |
 |----------|----------|----------|
 | Windows x64 | [garmin-mcp_windows_amd64.zip](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_windows_amd64.zip) | [garmin-mcp_windows_amd64.mcpb](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_windows_amd64.mcpb) |
+| Linux x64 | [garmin-mcp_linux_amd64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_linux_amd64.tar.gz) | — |
 | Linux arm64 | [garmin-mcp_linux_arm64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_linux_arm64.tar.gz) | — |
 | macOS Intel | [garmin-mcp_darwin_amd64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_amd64.tar.gz) | [garmin-mcp_darwin_amd64.mcpb](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_amd64.mcpb) |
 | macOS Apple Silicon | [garmin-mcp_darwin_arm64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_arm64.tar.gz) | [garmin-mcp_darwin_arm64.mcpb](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_arm64.mcpb) |
@@ -51,6 +52,15 @@ Run `garmin-mcp auth` again for each additional account. Other commands:
 - `garmin-mcp accounts` lists saved accounts with their token status (`ok`, `expired`, `invalid`; checked offline).
 - `garmin-mcp remove <email> [--yes]` deletes an account's saved data after a confirmation.
 - `garmin-mcp serve` runs the server over stdio explicitly; `garmin-mcp version` prints the version.
+
+## Updating
+
+`garmin-mcp update --check` tells you whether a newer release exists. `garmin-mcp update` downloads the release
+archive for your platform from GitHub, checks it against the release's `checksums.txt`, and replaces the binary you
+ran in place (it needs write access to that folder). Restart your MCP clients afterwards so they start the new
+version. Saved accounts are not touched. On Windows the old binary is left as `garmin-mcp.exe.old` while a client
+still runs it; the next update removes it. The Claude Desktop extension has its own copy of the binary: update it by
+installing the new `.mcpb`.
 
 Started by an MCP client (stdin or stdout is not a terminal), `garmin-mcp` runs the server by itself. Run with no
 arguments in a terminal and with accounts already saved, it only lists them and prints the usage; it does not serve.
@@ -209,7 +219,7 @@ Needs the Go version in `go.mod`. `make help` lists the build, test and release 
 
 ## Releasing
 
-`git tag vX.Y.Z && git push --tags`. The Release workflow runs `make dist`, which builds the four archives, the
+`git tag vX.Y.Z && git push --tags`. The Release workflow runs `make dist`, which builds the five archives, the
 three `.mcpb` bundles and `checksums.txt`, and publishes a GitHub Release. Do the checklist below first.
 
 ### Before tagging a release
