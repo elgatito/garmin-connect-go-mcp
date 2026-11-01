@@ -1,0 +1,270 @@
+{
+ "session": {
+  "sport": "stand_up_paddleboarding",
+  "sub_sport": "generic",
+  "start_time": "2022-08-15 17:39:09",
+  "total_elapsed_time_s": 3601.0,
+  "total_timer_time_s": 3601.0,
+  "grade_analysis": {
+   "descending": {
+    "time_s": 1381,
+    "avg_power_w": 201,
+    "avg_cadence_rpm": 128,
+    "avg_hr_bpm": 126
+   },
+   "steep": {
+    "time_s": 2220,
+    "avg_power_w": 180,
+    "avg_cadence_rpm": 125,
+    "avg_hr_bpm": 127
+   }
+  }
+ },
+ "laps": [
+  {
+   "lap_number": 1,
+   "start_time": "2022-08-15 17:39:09",
+   "total_elapsed_time_s": 3601.0,
+   "avg_power_w": 188,
+   "max_power_w": 250
+  }
+ ],
+ "shift_summary": {
+  "total_shifts": 0,
+  "note": "No DI2 shift events found in FIT file"
+ },
+ "shifts": [],
+ "climbs": [
+  {
+   "start_time": "2022-08-15 17:39:09",
+   "end_time": "2022-08-15 17:42:33",
+   "duration_s": 205,
+   "elevation_gain_m": 204.0,
+   "vam_m_per_hr": 3582,
+   "distance_m": 204,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 173,
+   "avg_cadence_rpm": 102,
+   "avg_hr_bpm": 127
+  },
+  {
+   "start_time": "2022-08-15 17:44:14",
+   "end_time": "2022-08-15 17:46:48",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 150
+  },
+  {
+   "start_time": "2022-08-15 17:48:29",
+   "end_time": "2022-08-15 17:51:03",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 108
+  },
+  {
+   "start_time": "2022-08-15 17:52:44",
+   "end_time": "2022-08-15 17:55:18",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 139
+  },
+  {
+   "start_time": "2022-08-15 17:56:59",
+   "end_time": "2022-08-15 17:59:33",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 122
+  },
+  {
+   "start_time": "2022-08-15 18:01:14",
+   "end_time": "2022-08-15 18:03:48",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 123
+  },
+  {
+   "start_time": "2022-08-15 18:05:29",
+   "end_time": "2022-08-15 18:08:03",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 137
+  },
+  {
+   "start_time": "2022-08-15 18:09:44",
+   "end_time": "2022-08-15 18:12:18",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 109
+  },
+  {
+   "start_time": "2022-08-15 18:13:59",
+   "end_time": "2022-08-15 18:16:33",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 149
+  },
+  {
+   "start_time": "2022-08-15 18:18:14",
+   "end_time": "2022-08-15 18:20:48",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 101
+  },
+  {
+   "start_time": "2022-08-15 18:22:29",
+   "end_time": "2022-08-15 18:25:03",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 152
+  },
+  {
+   "start_time": "2022-08-15 18:26:44",
+   "end_time": "2022-08-15 18:29:18",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 103
+  },
+  {
+   "start_time": "2022-08-15 18:30:59",
+   "end_time": "2022-08-15 18:33:33",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 145
+  },
+  {
+   "start_time": "2022-08-15 18:35:14",
+   "end_time": "2022-08-15 18:37:48",
+   "duration_s": 155,
+   "elevation_gain_m": 154.0,
+   "vam_m_per_hr": 3577,
+   "distance_m": 154,
+   "avg_grade_pct": 40.0,
+   "max_grade_pct": 40.0,
+   "avg_power_w": 181,
+   "avg_cadence_rpm": 127,
+   "avg_hr_bpm": 114
+  }
+ ],
+ "power_duration_curve": {
+  "5s": 250,
+  "30s": 250,
+  "1min": 250,
+  "5min": 198,
+  "10min": 198,
+  "20min": 191,
+  "60min": 188
+ },
+ "grade_source": "derived",
+ "records": [
+  {
+   "timestamp": "2022-08-15 17:39:09",
+   "power_w": 150,
+   "cadence_rpm": 0,
+   "heart_rate_bpm": 126,
+   "speed_mps": 1.0,
+   "altitude_m": -127.0,
+   "distance_m": 0.0,
+   "lat_deg": 0.0,
+   "lon_deg": 0.0,
+   "grade_pct": 40.0
+  },
+  {
+   "timestamp": "2022-08-15 17:39:10",
+   "power_w": 150,
+   "cadence_rpm": 1,
+   "heart_rate_bpm": 134,
+   "speed_mps": 1.0,
+   "altitude_m": -126.0,
+   "distance_m": 1.0,
+   "lat_deg": 0.0,
+   "lon_deg": 9e-06,
+   "grade_pct": 40.0
+  },
+  {
+   "timestamp": "2022-08-15 17:39:11",
+   "power_w": 150,
+   "cadence_rpm": 2,
+   "heart_rate_bpm": 142,
+   "speed_mps": 1.0,
+   "altitude_m": -125.0,
+   "distance_m": 2.0,
+   "lat_deg": 0.0,
+   "lon_deg": 1.8e-05,
+   "grade_pct": 40.0
+  }
+ ],
+ "records_total": 3601
+}

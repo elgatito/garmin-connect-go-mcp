@@ -1,0 +1,503 @@
+{
+ "session": {
+  "grade_analysis": {
+   "descending": {
+    "time_s": 89,
+    "avg_power_w": 32,
+    "avg_cadence_rpm": 32,
+    "avg_hr_bpm": 85
+   },
+   "flat": {
+    "time_s": 1495,
+    "avg_power_w": 108,
+    "avg_cadence_rpm": 87,
+    "avg_hr_bpm": 102
+   },
+   "gentle": {
+    "time_s": 330,
+    "avg_power_w": 182,
+    "avg_cadence_rpm": 81,
+    "avg_hr_bpm": 119
+   },
+   "moderate": {
+    "time_s": 65,
+    "avg_power_w": 219,
+    "avg_cadence_rpm": 66,
+    "avg_hr_bpm": 129
+   }
+  },
+  "temperature_stats": {
+   "avg_temp_c": 25.6,
+   "min_temp_c": 20,
+   "max_temp_c": 31,
+   "temp_range_c": 11,
+   "avg_hr_coolest_third_bpm": 100.3,
+   "avg_hr_hottest_third_bpm": 107.9,
+   "avg_power_coolest_third_w": 117.3,
+   "avg_power_hottest_third_w": 114.4
+  }
+ },
+ "laps": [],
+ "shift_summary": {
+  "total_shifts": 37,
+  "front_shifts": 0,
+  "rear_shifts": 37,
+  "proactive_shifts": 0,
+  "reactive_shifts": 0,
+  "coasting_shifts": 37,
+  "spun_out_shifts": 0,
+  "proactive_pct": 0.0,
+  "reactive_pct": 0.0,
+  "panic_burst_episodes": 2,
+  "gear_usage": {
+   "22/24t": 1,
+   "22/21t": 1
+  },
+  "by_terrain": {
+   "climbing": {
+    "total": 37,
+    "proactive": 0,
+    "reactive": 0,
+    "reactive_pct": 0.0
+   }
+  },
+  "avg_cadence_at_shift_rpm": 0.0,
+  "min_cadence_at_shift_rpm": 0,
+  "max_cadence_at_shift_rpm": 0
+ },
+ "shifts": [
+  {
+   "timestamp": "2022-06-22 23:08:37",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 5,
+   "front_gear_num": 255,
+   "rear_teeth": 24,
+   "front_teeth": 22,
+   "gear_combo": "22/24t",
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:09:20",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 6,
+   "front_gear_num": 255,
+   "rear_teeth": 21,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:10:19",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 7,
+   "front_gear_num": 255,
+   "rear_teeth": 19,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:10:50",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 6,
+   "front_gear_num": 255,
+   "rear_teeth": 21,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:23:21",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 7,
+   "front_gear_num": 255,
+   "rear_teeth": 19,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:23:44",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 8,
+   "front_gear_num": 255,
+   "rear_teeth": 17,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:24:54",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 7,
+   "front_gear_num": 255,
+   "rear_teeth": 19,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:24:58",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 6,
+   "front_gear_num": 255,
+   "rear_teeth": 21,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:25:27",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 7,
+   "front_gear_num": 255,
+   "rear_teeth": 19,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:25:55",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 8,
+   "front_gear_num": 255,
+   "rear_teeth": 17,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:27:04",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 7,
+   "front_gear_num": 255,
+   "rear_teeth": 19,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:27:09",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 6,
+   "front_gear_num": 255,
+   "rear_teeth": 21,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:27:44",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 7,
+   "front_gear_num": 255,
+   "rear_teeth": 19,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:28:33",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 6,
+   "front_gear_num": 255,
+   "rear_teeth": 21,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:28:47",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 4,
+   "front_gear_num": 255,
+   "rear_teeth": 27,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:31:37",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 5,
+   "front_gear_num": 255,
+   "rear_teeth": 24,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:31:37",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 6,
+   "front_gear_num": 255,
+   "rear_teeth": 21,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:31:51",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 5,
+   "front_gear_num": 255,
+   "rear_teeth": 24,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:32:06",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 4,
+   "front_gear_num": 255,
+   "rear_teeth": 27,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:34:11",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 3,
+   "front_gear_num": 255,
+   "rear_teeth": 31,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:34:25",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 4,
+   "front_gear_num": 255,
+   "rear_teeth": 27,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:34:31",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 5,
+   "front_gear_num": 255,
+   "rear_teeth": 24,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:34:51",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 6,
+   "front_gear_num": 255,
+   "rear_teeth": 21,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:36:04",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 7,
+   "front_gear_num": 255,
+   "rear_teeth": 19,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:36:28",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 8,
+   "front_gear_num": 255,
+   "rear_teeth": 17,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:37:03",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 9,
+   "front_gear_num": 255,
+   "rear_teeth": 15,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:38:35",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 8,
+   "front_gear_num": 255,
+   "rear_teeth": 17,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:39:49",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 7,
+   "front_gear_num": 255,
+   "rear_teeth": 19,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:40:15",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 8,
+   "front_gear_num": 255,
+   "rear_teeth": 17,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:40:16",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 9,
+   "front_gear_num": 255,
+   "rear_teeth": 15,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:40:21",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 10,
+   "front_gear_num": 255,
+   "rear_teeth": 13,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:40:22",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 11,
+   "front_gear_num": 255,
+   "rear_teeth": 11,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:40:51",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 9,
+   "front_gear_num": 255,
+   "rear_teeth": 15,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:40:58",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 8,
+   "front_gear_num": 255,
+   "rear_teeth": 17,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:40:58",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 7,
+   "front_gear_num": 255,
+   "rear_teeth": 19,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:41:05",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 6,
+   "front_gear_num": 255,
+   "rear_teeth": 21,
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  },
+  {
+   "timestamp": "2022-06-22 23:41:35",
+   "event": "rear_gear_change",
+   "cadence_at_shift_rpm": 0,
+   "rear_gear_num": 6,
+   "front_gear_num": 255,
+   "rear_teeth": 21,
+   "front_teeth": 22,
+   "gear_combo": "22/21t",
+   "quality": "coasting",
+   "grade_at_shift_pct": 3.8
+  }
+ ],
+ "climbs": [
+  {
+   "start_time": "2022-06-22 23:28:49",
+   "end_time": "2022-06-22 23:34:33",
+   "duration_s": 345,
+   "elevation_gain_m": 63.8,
+   "vam_m_per_hr": 666,
+   "distance_m": 1496,
+   "avg_grade_pct": 4.4,
+   "max_grade_pct": 7.6,
+   "avg_power_w": 187,
+   "avg_cadence_rpm": 81,
+   "avg_hr_bpm": 122
+  }
+ ],
+ "power_duration_curve": {
+  "5s": 327,
+  "30s": 258,
+  "1min": 214,
+  "5min": 192,
+  "10min": 166,
+  "20min": 142
+ },
+ "grade_source": "derived",
+ "records": [
+  {
+   "timestamp": "2022-06-22 23:08:37",
+   "power_w": 0,
+   "heart_rate_bpm": 61,
+   "speed_mps": 0.0,
+   "altitude_m": 1587.0,
+   "distance_m": 0.09,
+   "temperature_c": 20,
+   "lat_deg": 40.023914,
+   "lon_deg": -105.221804,
+   "grade_pct": 0.0
+  },
+  {
+   "timestamp": "2022-06-22 23:08:38",
+   "power_w": 0,
+   "heart_rate_bpm": 62,
+   "speed_mps": 0.0,
+   "altitude_m": 1587.0,
+   "distance_m": 0.19,
+   "temperature_c": 20,
+   "grade_pct": 0.0
+  },
+  {
+   "timestamp": "2022-06-22 23:08:39",
+   "power_w": 0,
+   "heart_rate_bpm": 62,
+   "speed_mps": 0.0,
+   "altitude_m": 1587.0,
+   "distance_m": 0.23,
+   "temperature_c": 20,
+   "grade_pct": 0.0
+  }
+ ],
+ "records_total": 1979
+}

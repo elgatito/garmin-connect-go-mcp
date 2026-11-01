@@ -1,0 +1,775 @@
+{
+  "fit_size_bytes": 94199,
+  "message_counts": {
+    "file_id": 1,
+    "device_info": 1,
+    "event": 2,
+    "developer_data_id": 1,
+    "field_description": 4,
+    "record": 3601,
+    "lap": 1,
+    "session": 1,
+    "activity": 1
+  },
+  "returned_message_counts": {
+    "file_id": 1,
+    "device_info": 1,
+    "event": 2,
+    "developer_data_id": 1,
+    "field_description": 4,
+    "lap": 1,
+    "session": 1,
+    "activity": 1
+  },
+  "record_stream": {
+    "included": false,
+    "total_count": 3601,
+    "returned_count": 0,
+    "hint": "Set include_records=true and use message pagination to retrieve records."
+  },
+  "pagination": {
+    "total_eligible_count": 12,
+    "returned_count": 12,
+    "offset": 0,
+    "limit": 1000
+  },
+  "messages": [
+    {
+      "message_index": 0,
+      "type_index": 0,
+      "type": "file_id",
+      "fields": [
+        {
+          "name": "type",
+          "value": "activity",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "file",
+          "field_type": "field",
+          "value_name": "activity",
+          "raw_value": 4
+        },
+        {
+          "name": "manufacturer",
+          "value": "development",
+          "definition_number": 1,
+          "base_type": "uint16",
+          "profile_type": "manufacturer",
+          "field_type": "field",
+          "value_name": "development",
+          "raw_value": 255
+        },
+        {
+          "name": "product",
+          "value": 0,
+          "definition_number": 2,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "time_created",
+          "value": "2022-08-15T17:39:09",
+          "definition_number": 4,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1029519549
+        },
+        {
+          "name": "serial_number",
+          "value": 506013083,
+          "definition_number": 3,
+          "base_type": "uint32z",
+          "profile_type": "uint32z",
+          "field_type": "field",
+          "raw_value": 506013083
+        }
+      ],
+      "global_message_number": 0
+    },
+    {
+      "message_index": 1,
+      "type_index": 0,
+      "type": "device_info",
+      "fields": [
+        {
+          "name": "device_index",
+          "value": "creator",
+          "definition_number": 0,
+          "base_type": "uint8",
+          "profile_type": "device_index",
+          "field_type": "field",
+          "value_name": "creator",
+          "raw_value": 0
+        },
+        {
+          "name": "manufacturer",
+          "value": "development",
+          "definition_number": 2,
+          "base_type": "uint16",
+          "profile_type": "manufacturer",
+          "field_type": "field",
+          "value_name": "development",
+          "raw_value": 255
+        },
+        {
+          "name": "product",
+          "value": 0,
+          "definition_number": 4,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "product_name",
+          "value": "FIT Cookbook",
+          "definition_number": 27,
+          "base_type": "string",
+          "profile_type": "string",
+          "field_type": "field",
+          "raw_value": "FIT Cookbook"
+        },
+        {
+          "name": "serial_number",
+          "value": 506013083,
+          "definition_number": 3,
+          "base_type": "uint32z",
+          "profile_type": "uint32z",
+          "field_type": "field",
+          "raw_value": 506013083
+        },
+        {
+          "name": "software_version",
+          "value": 1.0,
+          "definition_number": 5,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 100
+        },
+        {
+          "name": "timestamp",
+          "value": "2022-08-15T17:39:09",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1029519549
+        }
+      ],
+      "global_message_number": 23
+    },
+    {
+      "message_index": 2,
+      "type_index": 0,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-08-15T17:39:09",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1029519549
+        },
+        {
+          "name": "event",
+          "value": "timer",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "timer",
+          "raw_value": 0
+        },
+        {
+          "name": "event_type",
+          "value": "start",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "start",
+          "raw_value": 0
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 3,
+      "type_index": 0,
+      "type": "developer_data_id",
+      "fields": [
+        {
+          "name": "application_id",
+          "value": [
+            1,
+            1,
+            2,
+            3,
+            5,
+            8,
+            13,
+            21,
+            34,
+            55,
+            89,
+            255,
+            255,
+            121,
+            98,
+            255
+          ],
+          "definition_number": 1,
+          "base_type": "byte",
+          "profile_type": "byte",
+          "field_type": "field",
+          "raw_value": [
+            1,
+            1,
+            2,
+            3,
+            5,
+            8,
+            13,
+            21,
+            34,
+            55,
+            89,
+            255,
+            255,
+            121,
+            98,
+            255
+          ]
+        },
+        {
+          "name": "developer_data_index",
+          "value": 0,
+          "definition_number": 3,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 0
+        }
+      ],
+      "global_message_number": 207
+    },
+    {
+      "message_index": 4,
+      "type_index": 0,
+      "type": "field_description",
+      "fields": [
+        {
+          "name": "developer_data_index",
+          "value": 0,
+          "definition_number": 0,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "field_definition_number",
+          "value": 0,
+          "definition_number": 1,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "fit_base_type_id",
+          "value": "float32",
+          "definition_number": 2,
+          "base_type": "uint8",
+          "profile_type": "fit_base_type",
+          "field_type": "field",
+          "value_name": "float32",
+          "raw_value": 136
+        },
+        {
+          "name": "units",
+          "value": "doughnuts",
+          "definition_number": 8,
+          "base_type": "string",
+          "profile_type": "string",
+          "field_type": "field",
+          "raw_value": "doughnuts"
+        },
+        {
+          "name": "native_mesg_num",
+          "value": "session",
+          "definition_number": 14,
+          "base_type": "uint16",
+          "profile_type": "mesg_num",
+          "field_type": "field",
+          "value_name": "session",
+          "raw_value": 18
+        }
+      ],
+      "global_message_number": 206
+    },
+    {
+      "message_index": 5,
+      "type_index": 1,
+      "type": "field_description",
+      "fields": [
+        {
+          "name": "developer_data_index",
+          "value": 0,
+          "definition_number": 0,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "field_definition_number",
+          "value": 1,
+          "definition_number": 1,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 1
+        },
+        {
+          "name": "fit_base_type_id",
+          "value": "uint8",
+          "definition_number": 2,
+          "base_type": "uint8",
+          "profile_type": "fit_base_type",
+          "field_type": "field",
+          "value_name": "uint8",
+          "raw_value": 2
+        },
+        {
+          "name": "field_name",
+          "value": "Heart Rate",
+          "definition_number": 3,
+          "base_type": "string",
+          "profile_type": "string",
+          "field_type": "field",
+          "raw_value": "Heart Rate"
+        },
+        {
+          "name": "units",
+          "value": "bpm",
+          "definition_number": 8,
+          "base_type": "string",
+          "profile_type": "string",
+          "field_type": "field",
+          "raw_value": "bpm"
+        },
+        {
+          "name": "native_field_num",
+          "value": 3,
+          "definition_number": 15,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 3
+        },
+        {
+          "name": "native_mesg_num",
+          "value": "record",
+          "definition_number": 14,
+          "base_type": "uint16",
+          "profile_type": "mesg_num",
+          "field_type": "field",
+          "value_name": "record",
+          "raw_value": 20
+        }
+      ],
+      "global_message_number": 206
+    },
+    {
+      "message_index": 6,
+      "type_index": 2,
+      "type": "field_description",
+      "fields": [
+        {
+          "name": "developer_data_index",
+          "value": 0,
+          "definition_number": 0,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "field_definition_number",
+          "value": 2,
+          "definition_number": 1,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 2
+        },
+        {
+          "name": "fit_base_type_id",
+          "value": "sint64",
+          "definition_number": 2,
+          "base_type": "uint8",
+          "profile_type": "fit_base_type",
+          "field_type": "field",
+          "value_name": "sint64",
+          "raw_value": 142
+        },
+        {
+          "name": "native_mesg_num",
+          "value": "session",
+          "definition_number": 14,
+          "base_type": "uint16",
+          "profile_type": "mesg_num",
+          "field_type": "field",
+          "value_name": "session",
+          "raw_value": 18
+        },
+        {
+          "name": "field_name",
+          "value": "thingys",
+          "definition_number": 3,
+          "base_type": "string",
+          "profile_type": "string",
+          "field_type": "field",
+          "raw_value": "thingys"
+        },
+        {
+          "name": "units",
+          "value": "thingys/min",
+          "definition_number": 8,
+          "base_type": "string",
+          "profile_type": "string",
+          "field_type": "field",
+          "raw_value": "thingys/min"
+        }
+      ],
+      "global_message_number": 206
+    },
+    {
+      "message_index": 7,
+      "type_index": 3,
+      "type": "field_description",
+      "fields": [
+        {
+          "name": "developer_data_index",
+          "value": 0,
+          "definition_number": 0,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "field_definition_number",
+          "value": 3,
+          "definition_number": 1,
+          "base_type": "uint8",
+          "profile_type": "uint8",
+          "field_type": "field",
+          "raw_value": 3
+        },
+        {
+          "name": "fit_base_type_id",
+          "value": "string",
+          "definition_number": 2,
+          "base_type": "uint8",
+          "profile_type": "fit_base_type",
+          "field_type": "field",
+          "value_name": "string",
+          "raw_value": 7
+        },
+        {
+          "name": "native_mesg_num",
+          "value": "session",
+          "definition_number": 14,
+          "base_type": "uint16",
+          "profile_type": "mesg_num",
+          "field_type": "field",
+          "value_name": "session",
+          "raw_value": 18
+        },
+        {
+          "name": "field_name",
+          "value": "message field",
+          "definition_number": 3,
+          "base_type": "string",
+          "profile_type": "string",
+          "field_type": "field",
+          "raw_value": "message field"
+        }
+      ],
+      "global_message_number": 206
+    },
+    {
+      "message_index": 3609,
+      "type_index": 1,
+      "type": "event",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-08-15T18:39:10",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1029523150
+        },
+        {
+          "name": "event",
+          "value": "timer",
+          "definition_number": 0,
+          "base_type": "enum",
+          "profile_type": "event",
+          "field_type": "field",
+          "value_name": "timer",
+          "raw_value": 0
+        },
+        {
+          "name": "event_type",
+          "value": "stop_all",
+          "definition_number": 1,
+          "base_type": "enum",
+          "profile_type": "event_type",
+          "field_type": "field",
+          "value_name": "stop_all",
+          "raw_value": 4
+        }
+      ],
+      "global_message_number": 21
+    },
+    {
+      "message_index": 3610,
+      "type_index": 0,
+      "type": "lap",
+      "fields": [
+        {
+          "name": "message_index",
+          "value": 0,
+          "definition_number": 254,
+          "base_type": "uint16",
+          "profile_type": "message_index",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "timestamp",
+          "value": "2022-08-15T18:39:10",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1029523150
+        },
+        {
+          "name": "start_time",
+          "value": "2022-08-15T17:39:09",
+          "definition_number": 2,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1029519549
+        },
+        {
+          "name": "total_elapsed_time",
+          "value": 3601.0,
+          "units": "s",
+          "definition_number": 7,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 3601000
+        },
+        {
+          "name": "total_timer_time",
+          "value": 3601.0,
+          "units": "s",
+          "definition_number": 8,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 3601000
+        }
+      ],
+      "global_message_number": 19
+    },
+    {
+      "message_index": 3611,
+      "type_index": 0,
+      "type": "session",
+      "fields": [
+        {
+          "name": "message_index",
+          "value": 0,
+          "definition_number": 254,
+          "base_type": "uint16",
+          "profile_type": "message_index",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "timestamp",
+          "value": "2022-08-15T18:39:10",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1029523150
+        },
+        {
+          "name": "start_time",
+          "value": "2022-08-15T17:39:09",
+          "definition_number": 2,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1029519549
+        },
+        {
+          "name": "total_elapsed_time",
+          "value": 3601.0,
+          "units": "s",
+          "definition_number": 7,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 3601000
+        },
+        {
+          "name": "total_timer_time",
+          "value": 3601.0,
+          "units": "s",
+          "definition_number": 8,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 3601000
+        },
+        {
+          "name": "sport",
+          "value": "stand_up_paddleboarding",
+          "definition_number": 5,
+          "base_type": "enum",
+          "profile_type": "sport",
+          "field_type": "field",
+          "value_name": "stand_up_paddleboarding",
+          "raw_value": 37
+        },
+        {
+          "name": "sub_sport",
+          "value": "generic",
+          "definition_number": 6,
+          "base_type": "enum",
+          "profile_type": "sub_sport",
+          "field_type": "field",
+          "value_name": "generic",
+          "raw_value": 0
+        },
+        {
+          "name": "first_lap_index",
+          "value": 0,
+          "definition_number": 25,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 0
+        },
+        {
+          "name": "num_laps",
+          "value": 1,
+          "definition_number": 26,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 1
+        },
+        {
+          "name": "message field",
+          "value": "Hello!",
+          "definition_number": 3,
+          "base_type": "string",
+          "profile_type": "string",
+          "field_type": "devfield",
+          "raw_value": "Hello!"
+        },
+        {
+          "name": "unnamed_dev_field_0",
+          "value": 3.00083327293396,
+          "units": "doughnuts",
+          "definition_number": 0,
+          "base_type": "float32",
+          "profile_type": "float32",
+          "field_type": "devfield",
+          "raw_value": 3.00083327293396
+        },
+        {
+          "name": "thingys",
+          "value": [
+            -10,
+            12
+          ],
+          "units": "thingys/min",
+          "definition_number": 2,
+          "base_type": "sint64",
+          "profile_type": "sint64",
+          "field_type": "devfield",
+          "raw_value": [
+            -10,
+            12
+          ]
+        }
+      ],
+      "global_message_number": 18
+    },
+    {
+      "message_index": 3612,
+      "type_index": 0,
+      "type": "activity",
+      "fields": [
+        {
+          "name": "timestamp",
+          "value": "2022-08-15T18:39:10",
+          "definition_number": 253,
+          "base_type": "uint32",
+          "profile_type": "date_time",
+          "field_type": "field",
+          "raw_value": 1029523150
+        },
+        {
+          "name": "num_sessions",
+          "value": 1,
+          "definition_number": 1,
+          "base_type": "uint16",
+          "profile_type": "uint16",
+          "field_type": "field",
+          "raw_value": 1
+        },
+        {
+          "name": "local_timestamp",
+          "value": "2022-08-15T12:39:10",
+          "definition_number": 5,
+          "base_type": "uint32",
+          "profile_type": "local_date_time",
+          "field_type": "field",
+          "raw_value": 1029501550
+        },
+        {
+          "name": "total_timer_time",
+          "value": 3601.0,
+          "units": "s",
+          "definition_number": 0,
+          "base_type": "uint32",
+          "profile_type": "uint32",
+          "field_type": "field",
+          "raw_value": 3601000
+        }
+      ],
+      "global_message_number": 34
+    }
+  ]
+}
