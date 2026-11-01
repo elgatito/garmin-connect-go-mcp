@@ -11,6 +11,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"strings"
 	"sync"
@@ -257,6 +258,42 @@ func TestNoArgsNotTerminalServes(t *testing.T) {
 	}
 	if !strings.Contains(reply, `"serverInfo":{"name":"garmin-mcp"`) || r.errb.Len() != 0 || r.count("/mobile/api/login") != 0 {
 		t.Fatalf("reply=%q stderr=%q", reply, r.errb.String())
+	}
+}
+
+func TestServeWritesLogFile(t *testing.T) {
+	r := newRig(t, "", false)
+	if code := r.run("serve"); code != 0 { // empty stdin: starts and stops at once
+		t.Fatalf("code=%d stderr=%q", code, r.errb.String())
+	}
+	b, err := os.ReadFile(filepath.Join(r.home, "garmin-mcp.log"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	re := regexp.MustCompile(`^\d{4}/\d\d/\d\d \d\d:\d\d:\d\d\.\d{6} pid=\d+ garmin-mcp dev started\n.* pid=\d+ garmin-mcp stopped\n$`)
+	if !re.Match(b) {
+		t.Fatalf("log file = %q", b)
+	}
+}
+
+func TestOpenLogFileRotatesLargeLog(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "sub", "x.log")
+	getenv := func(k string) string { return map[string]string{"GARMIN_MCP_LOG_FILE": path}[k] }
+	f, err := openLogFile("unused", getenv)
+	if err != nil {
+		t.Fatal(err)
+	}
+	f.Truncate(maxLogSize + 1)
+	f.Close()
+	if f, err = openLogFile("unused", getenv); err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	if fi, err := f.Stat(); err != nil || fi.Size() != 0 {
+		t.Fatalf("new log not empty: %v %v", fi, err)
+	}
+	if fi, err := os.Stat(path + ".1"); err != nil || fi.Size() != maxLogSize+1 {
+		t.Fatalf("rotated log: %v %v", fi, err)
 	}
 }
 

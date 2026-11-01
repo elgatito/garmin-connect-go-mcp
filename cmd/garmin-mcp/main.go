@@ -89,9 +89,19 @@ commands:
   version                             print version`
 
 func serve(ctx context.Context, e env, st accounts.Store) int {
-	srv, err := server.New(server.Options{Store: st, Endpoints: e.Endpoints, Getenv: e.Getenv, Version: version, Log: e.Stderr})
+	logw := e.Stderr
+	if f, err := openLogFile(st.Base, e.Getenv); err != nil {
+		fmt.Fprintf(e.Stderr, "log file disabled: %v\n", err)
+	} else {
+		defer f.Close()
+		file := newStampWriter(f)
+		fmt.Fprintf(file, "garmin-mcp %s started\n", version)
+		defer fmt.Fprintln(file, "garmin-mcp stopped")
+		logw = io.MultiWriter(e.Stderr, file)
+	}
+	srv, err := server.New(server.Options{Store: st, Endpoints: e.Endpoints, Getenv: e.Getenv, Version: version, Log: logw})
 	if err != nil {
-		fmt.Fprintln(e.Stderr, err)
+		fmt.Fprintln(logw, err)
 		return 1
 	}
 	// Same as mcp.StdioTransport, but over e's streams so tests can drive it.
@@ -100,7 +110,7 @@ func serve(ctx context.Context, e env, st accounts.Store) int {
 		in = io.NopCloser(e.Stdin)
 	}
 	if err := srv.Run(ctx, &mcp.IOTransport{Reader: in, Writer: nopWriteCloser{e.Stdout}}); err != nil && ctx.Err() == nil {
-		fmt.Fprintln(e.Stderr, err)
+		fmt.Fprintln(logw, err)
 		return 1
 	}
 	return 0

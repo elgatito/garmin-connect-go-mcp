@@ -130,6 +130,16 @@ Each account folder has `tokens.json` (`di_token`, `di_refresh_token`, `di_clien
 atomic. **The tokens are bearer credentials**: anyone with the file can use your Garmin account. Keep the folder out of
 synced or backed-up shared folders (Dropbox, iCloud, OneDrive, git).
 
+## Log file
+
+The server appends to `~/.garmin-mcp/garmin-mcp.log` (or `GARMIN_MCP_LOG_FILE`): one line per tool call with the
+tool name, its arguments, how long it took and whether it succeeded (with the error text if not), plus start/stop,
+warnings, deletions and failed writes. Each line starts with the time and the process id, so you can tell apart
+several clients sharing the file. Results themselves are not logged, only their size. When the file is over 10 MB at
+startup it is renamed to `garmin-mcp.log.1` (replacing the previous one). The same lines also go to stderr, which
+Claude Desktop keeps in its own `mcp-server-*.log`. Tool arguments can include personal data (weights, food entries),
+so the file is created `0600`, like the tokens.
+
 ## Environment variables
 
 | Variable | Meaning |
@@ -140,6 +150,7 @@ synced or backed-up shared folders (Dropbox, iCloud, OneDrive, git).
 | `GARMIN_FIT_DOWNLOAD_DIR` | Default directory for downloaded FIT files and GPX courses (created if missing, mode 0755); overrides the per-account setting from `set_fit_download_dir`. An explicit `output_dir` argument wins over both. |
 | `GARMIN_MCP_CALL_TIMEOUT` | Per-tool-call timeout in seconds. Default `90`; `0` or negative disables it. |
 | `GARMIN_MCP_HOME` | Base folder for account data (default `~/.garmin-mcp`). |
+| `GARMIN_MCP_LOG_FILE` | Server log file (default `garmin-mcp.log` in the base folder). |
 
 ## Tools
 

@@ -68,7 +68,9 @@ func addPlainTool[In any](r *registry, name, description string, h func(ctx cont
 		r.unannotated = append(r.unannotated, name)
 	}
 	mcp.AddTool(r.srv, &mcp.Tool{Name: name, Description: description, Annotations: ann},
-		func(ctx context.Context, _ *mcp.CallToolRequest, in In) (res *mcp.CallToolResult, _ any, _ error) {
+		func(ctx context.Context, req *mcp.CallToolRequest, in In) (res *mcp.CallToolResult, _ any, _ error) {
+			start := time.Now()
+			defer func() { r.logCall(name, req, res, time.Since(start)) }() // runs after the recover below
 			// The SDK doesn't recover; a panicking handler would kill the server for every account.
 			defer func() {
 				if p := recover(); p != nil {
@@ -91,6 +93,33 @@ func addPlainTool[In any](r *registry, name, description string, h func(ctx cont
 			}
 			return toolResult(v, err), nil, nil
 		})
+}
+
+// logCall writes one line per tool call: name, arguments, duration and outcome. Successful results are logged
+// by size only; error texts are flattened to one line. Long values are cut so one call can't flood the log.
+func (r *registry) logCall(name string, req *mcp.CallToolRequest, res *mcp.CallToolResult, took time.Duration) {
+	args := "{}"
+	if req != nil && req.Params != nil && len(req.Params.Arguments) > 0 {
+		args = clip(string(req.Params.Arguments), 1000)
+	}
+	var text strings.Builder
+	for _, c := range res.Content {
+		if tc, ok := c.(*mcp.TextContent); ok {
+			text.WriteString(tc.Text)
+		}
+	}
+	outcome := fmt.Sprintf("ok (%d bytes)", text.Len())
+	if res.IsError {
+		outcome = "error: " + clip(strings.Join(strings.Fields(text.String()), " "), 500)
+	}
+	fmt.Fprintf(r.log, "tool %s args=%s took=%s %s\n", name, args, took.Round(time.Millisecond), outcome)
+}
+
+func clip(s string, n int) string {
+	if len(s) <= n {
+		return s
+	}
+	return s[:n] + "…(truncated)"
 }
 
 // toolResult is the one place results are rendered: a string as-is, anything else as indented JSON,

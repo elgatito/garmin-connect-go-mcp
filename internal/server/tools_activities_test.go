@@ -1092,7 +1092,7 @@ func TestDeleteActivityWithConfirm(t *testing.T) {
 	if n := len(f.requests("DELETE " + actBase + actID)); n != 1 {
 		t.Errorf("%d DELETEs", n)
 	}
-	if got := log.String(); !strings.HasPrefix(got, "delete_activity: deleted activity 12345678901 name='Morning Run' at 20") || !strings.HasSuffix(got, "+00:00\n") {
+	if got, _, _ := strings.Cut(log.String(), "\n"); !strings.HasPrefix(got, "delete_activity: deleted activity 12345678901 name='Morning Run' at 20") || !strings.HasSuffix(got, "+00:00") {
 		t.Errorf("log = %q", got)
 	}
 }
@@ -1105,7 +1105,7 @@ func TestDeleteActivityPreviewDoesNotLogOrDelete(t *testing.T) {
 		t.Fatal(err)
 	}
 	callOK(t, connect(t, srv), "delete_activity", map[string]any{"activity_id": 12345678901, "confirm": false})
-	if strings.Contains(log.String(), "delete_activity") {
+	if strings.Contains(log.String(), "deleted activity") {
 		t.Errorf("log = %q", log.String())
 	}
 	noRequests(t, f, "DELETE")

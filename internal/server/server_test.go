@@ -664,3 +664,25 @@ func TestRemovedAccountStopsWorkingAndStaysRemoved(t *testing.T) {
 		t.Fatalf("account folder recreated: %v", err)
 	}
 }
+
+func TestToolCallLog(t *testing.T) {
+	var log bytes.Buffer
+	srv, err := New(testOptions(newFakeGarmin(t), newStore(t), nil, &log))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cs := connect(t, srv)
+	callOK(t, cs, "list_accounts", nil)
+	callTool(t, cs, "get_full_name", map[string]any{"email": "nobody@x.com"})
+	lines := strings.Split(strings.TrimSpace(log.String()), "\n")
+	if len(lines) != 2 {
+		t.Fatalf("log = %q", log.String())
+	}
+	if !regexp.MustCompile(`^tool list_accounts args=\{\} took=\d+(\.\d+)?m?s ok \(\d+ bytes\)$`).MatchString(lines[0]) {
+		t.Errorf("success line = %q", lines[0])
+	}
+	if want := `tool get_full_name args={"email":"nobody@x.com"} took=`; !strings.HasPrefix(lines[1], want) ||
+		!strings.Contains(lines[1], ` error: No Garmin account "nobody@x.com" is set up.`) {
+		t.Errorf("error line = %q", lines[1])
+	}
+}
