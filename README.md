@@ -8,9 +8,19 @@ once**: every tool takes the account's `email`. No Python, no runtime, no CGO.
 
 ## Install
 
-Download the archive for your platform from the [Releases](../../releases) page and unpack it. Platforms: Windows,
-Linux and macOS, each for amd64 (x64) and arm64. Each archive holds `garmin-mcp` (`garmin-mcp.exe` on Windows),
-this README and the LICENSE; `checksums.txt` has the sha256 sums.
+Download the latest build for your platform and unpack it:
+
+| Platform | Download |
+|----------|----------|
+| Windows x64 | [garmin-mcp_windows_amd64.zip](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_windows_amd64.zip) |
+| Linux arm64 | [garmin-mcp_linux_arm64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_linux_arm64.tar.gz) |
+| macOS Intel | [garmin-mcp_darwin_amd64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_amd64.tar.gz) |
+| macOS Apple Silicon | [garmin-mcp_darwin_arm64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_arm64.tar.gz) |
+
+Older versions are on the [Releases](https://github.com/elgatito/garmin-connect-go-mcp/releases) page. Each archive
+holds `garmin-mcp` (`garmin-mcp.exe` on Windows), this README and the LICENSE;
+[checksums.txt](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/checksums.txt) has the
+sha256 sums.
 
 - **macOS:** the binary is not signed or notarized. Remove the quarantine flag once:
   `xattr -d com.apple.quarantine garmin-mcp`
