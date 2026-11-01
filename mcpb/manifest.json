@@ -1,0 +1,42 @@
+{
+  "manifest_version": "0.3",
+  "name": "garmin-mcp",
+  "display_name": "Garmin Connect",
+  "version": "__VERSION__",
+  "description": "Access your Garmin Connect data (activities, health, training, workouts, nutrition) for one or more accounts.",
+  "long_description": "Before first use, log in once in a terminal with `garmin-mcp auth` (see the README). Every tool takes the account's email.",
+  "author": {
+    "name": "Denis Kuzmenok",
+    "url": "https://github.com/elgatito"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/elgatito/garmin-connect-go-mcp"
+  },
+  "homepage": "https://github.com/elgatito/garmin-connect-go-mcp",
+  "license": "Apache-2.0",
+  "server": {
+    "type": "binary",
+    "entry_point": "server/garmin-mcp__EXT__",
+    "mcp_config": {
+      "command": "${__dirname}/server/garmin-mcp__EXT__",
+      "args": ["serve"],
+      "env": {
+        "GARMIN_TOOL_PROFILE": "${user_config.tool_profile}"
+      }
+    }
+  },
+  "tools_generated": true,
+  "user_config": {
+    "tool_profile": {
+      "type": "string",
+      "title": "Tool profile",
+      "description": "Limit the exposed tools: minimal, health, activities, workouts, training, nutrition or all (comma-separate to combine). Empty means all.",
+      "default": "",
+      "required": false
+    }
+  },
+  "compatibility": {
+    "platforms": ["__PLATFORM__"]
+  }
+}

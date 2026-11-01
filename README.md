@@ -10,12 +10,12 @@ once**: every tool takes the account's `email`. No Python, no runtime, no CGO.
 
 Download the latest build for your platform and unpack it:
 
-| Platform | Download |
-|----------|----------|
-| Windows x64 | [garmin-mcp_windows_amd64.zip](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_windows_amd64.zip) |
-| Linux arm64 | [garmin-mcp_linux_arm64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_linux_arm64.tar.gz) |
-| macOS Intel | [garmin-mcp_darwin_amd64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_amd64.tar.gz) |
-| macOS Apple Silicon | [garmin-mcp_darwin_arm64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_arm64.tar.gz) |
+| Platform | Download | Claude Desktop extension |
+|----------|----------|----------|
+| Windows x64 | [garmin-mcp_windows_amd64.zip](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_windows_amd64.zip) | [garmin-mcp_windows_amd64.mcpb](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_windows_amd64.mcpb) |
+| Linux arm64 | [garmin-mcp_linux_arm64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_linux_arm64.tar.gz) | — |
+| macOS Intel | [garmin-mcp_darwin_amd64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_amd64.tar.gz) | [garmin-mcp_darwin_amd64.mcpb](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_amd64.mcpb) |
+| macOS Apple Silicon | [garmin-mcp_darwin_arm64.tar.gz](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_arm64.tar.gz) | [garmin-mcp_darwin_arm64.mcpb](https://github.com/elgatito/garmin-connect-go-mcp/releases/latest/download/garmin-mcp_darwin_arm64.mcpb) |
 
 Older versions are on the [Releases](https://github.com/elgatito/garmin-connect-go-mcp/releases) page. Each archive
 holds `garmin-mcp` (`garmin-mcp.exe` on Windows), this README and the LICENSE;
@@ -57,19 +57,64 @@ arguments in a terminal and with accounts already saved, it only lists them and 
 
 ## Client configuration
 
-Claude Desktop (`claude_desktop_config.json`):
+`garmin-mcp` is a standard stdio MCP server: the command is the full path to the binary, with no arguments. Log in
+with `garmin-mcp auth` first (see [First login](#first-login)). On Windows use the full path to `garmin-mcp.exe`
+(in JSON, write backslashes as `\\` or use forward slashes). [Environment variables](#environment-variables) go in the
+client's `env` block.
+
+### Claude Desktop
+
+**Extension (easiest):** download the `.mcpb` file for your platform from the [Install](#install) table and
+double-click it, or drag it into Claude Desktop's Settings > Extensions. The settings let you pick a
+[tool profile](#environment-variables). The extension bundles its own copy of the binary, so you still need the
+archive from the table to run `garmin-mcp auth` in a terminal; both use the same saved accounts.
+
+**Manual:** add to `claude_desktop_config.json` (Settings > Developer > Edit Config) and restart Claude Desktop:
 
 ```json
 {"mcpServers": {"garmin": {"command": "/path/to/garmin-mcp"}}}
 ```
 
-Claude Code:
+### Claude Code
 
 ```
-claude mcp add garmin /path/to/garmin-mcp
+claude mcp add --scope user garmin /path/to/garmin-mcp
 ```
 
-Environment variables (below) can be set in the client's `env` block. On Windows use the full path to `garmin-mcp.exe`.
+### Cursor, Windsurf, Gemini CLI and other `mcpServers` clients
+
+Add the same block as for Claude Desktop to the client's config file:
+
+| Client | Config file |
+|---|---|
+| Cursor | `~/.cursor/mcp.json` (all projects) or `.cursor/mcp.json` (one project) |
+| Windsurf | `~/.codeium/windsurf/mcp_config.json` |
+| Gemini CLI | `~/.gemini/settings.json`, or run `gemini mcp add garmin /path/to/garmin-mcp` |
+
+```json
+{"mcpServers": {"garmin": {"command": "/path/to/garmin-mcp"}}}
+```
+
+### VS Code (GitHub Copilot agent mode)
+
+Run **MCP: Open User Configuration** (or create `.vscode/mcp.json` for one workspace) and add:
+
+```json
+{"servers": {"garmin": {"type": "stdio", "command": "/path/to/garmin-mcp"}}}
+```
+
+### OpenAI Codex CLI
+
+```
+codex mcp add garmin -- /path/to/garmin-mcp
+```
+
+or in `~/.codex/config.toml`:
+
+```toml
+[mcp_servers.garmin]
+command = "/path/to/garmin-mcp"
+```
 
 ## Asking for data
 
@@ -126,7 +171,7 @@ names, argument names and descriptions match the Python original, so its documen
 ## Differences from the Python original
 
 - Multi-account: every tool takes a required `email` argument, and there is an extra `list_accounts` tool.
-- stdio only: no HTTP/SSE transport, bearer token, Docker or `.dxt` packaging.
+- stdio only: no HTTP/SSE transport, bearer token or Docker. Claude Desktop gets a `.mcpb` bundle (the format formerly called `.dxt`).
 - Login happens in a terminal (`garmin-mcp auth`); there are no login tools and no `GARMIN_EMAIL`,
   `GARMIN_PASSWORD`, `GARMINTOKENS` or `GARMIN_IS_CN` environment variables.
 - The FIT download directory is per account (`set_fit_download_dir` writes to that account's `settings.json` and creates the directory, mode 0755).
@@ -145,16 +190,16 @@ names, argument names and descriptions match the Python original, so its documen
 ## Building from source
 
 ```
-go build -trimpath -ldflags "-s -w -X main.version=dev" -o garmin-mcp ./cmd/garmin-mcp
-go vet ./... && go test -race ./...
+make build   # or: go build -trimpath -o garmin-mcp ./cmd/garmin-mcp
+make check   # lint, race tests, cross-compile (what CI runs)
 ```
 
-Needs the Go version in `go.mod`. `CGO_ENABLED=0` builds work for all six targets.
+Needs the Go version in `go.mod`. `make help` lists the build, test and release targets.
 
 ## Releasing
 
-`git tag vX.Y.Z && git push --tags`. The Release workflow builds the six archives and `checksums.txt` and publishes
-a GitHub Release. Do the checklist below first.
+`git tag vX.Y.Z && git push --tags`. The Release workflow runs `make dist`, which builds the four archives, the
+three `.mcpb` bundles and `checksums.txt`, and publishes a GitHub Release. Do the checklist below first.
 
 ### Before tagging a release
 

@@ -17,7 +17,7 @@ help:
 		'lint         Check formatting and run go vet' \
 		'cross-build  Check that every release platform compiles' \
 		'check        Run the CI checks (lint, test-race, cross-build)' \
-		'dist         Build release archives and checksums.txt into dist/' \
+		'dist         Build release archives, Claude Desktop .mcpb bundles and checksums.txt into dist/' \
 		'clean        Remove the built executable and dist/'
 
 build:
@@ -55,17 +55,25 @@ check: lint test-race cross-build
 
 dist:
 	@set -eu; rm -rf dist; \
+	ver=$(VERSION); ver=$${ver#v}; case "$$ver" in [0-9]*) ;; *) ver="0.0.0-$$ver" ;; esac; \
 	for t in $(PLATFORMS); do \
 		os=$${t%/*}; arch=$${t#*/}; ext=""; [ "$$os" = windows ] && ext=".exe"; \
 		mkdir -p dist/stage; \
 		CGO_ENABLED=0 GOOS=$$os GOARCH=$$arch $(GO) build -trimpath -ldflags "$(LDFLAGS)" -o "dist/stage/garmin-mcp$$ext" ./cmd/garmin-mcp; \
-		cp README.md LICENSE dist/stage/; \
 		name="garmin-mcp_$${os}_$${arch}"; \
+		if [ "$$os" != linux ]; then \
+			mkdir -p dist/mcpb/server; cp "dist/stage/garmin-mcp$$ext" dist/mcpb/server/; \
+			plat=$$os; [ "$$os" = windows ] && plat=win32; \
+			sed -e "s/__VERSION__/$$ver/" -e "s/__PLATFORM__/$$plat/" -e "s/__EXT__/$$ext/g" mcpb/manifest.json > dist/mcpb/manifest.json; \
+			(cd dist/mcpb && zip -qr "../$$name.mcpb" .); \
+			rm -rf dist/mcpb; \
+		fi; \
+		cp README.md LICENSE dist/stage/; \
 		if [ "$$os" = windows ]; then zip -qj "dist/$$name.zip" dist/stage/*; \
 		else tar -C dist/stage -czf "dist/$$name.tar.gz" .; fi; \
 		rm -rf dist/stage; \
 	done; \
-	cd dist && sha256sum *.tar.gz *.zip > checksums.txt
+	cd dist && sha256sum *.tar.gz *.zip *.mcpb > checksums.txt
 
 clean:
 	rm -rf $(BINARY) dist
